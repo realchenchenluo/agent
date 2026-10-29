@@ -74,12 +74,12 @@ async function readCloudStream(stream, onDelta, signal) {
   }
 }
 
-export async function callCloudProvider(env, messages, {stream = false, signal, onDelta = () => {}} = {}) {
+export async function callCloudProvider(env, messages, {stream = false, signal, onDelta = () => {}, maxOutputTokens = MAX_OUTPUT_TOKENS} = {}) {
   if (!env.AI || env.MODEL_NAME !== CLOUD_MODEL || env.MODEL_ENABLED !== 'true') throw new ProviderError('CHAT_PROVIDER_NOT_CONFIGURED');
   const timeout = AbortSignal.timeout(70_000), combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
   const started = Date.now();
   try {
-    const raw = await abortable(env.AI.run(CLOUD_MODEL, {messages, max_tokens: MAX_OUTPUT_TOKENS, temperature: 0, stream}), combined);
+    const raw = await abortable(env.AI.run(CLOUD_MODEL, {messages, max_tokens: maxOutputTokens, temperature: 0, stream}), combined);
     const provider_response_id = env.AI.lastRequestId || null;
     if (!provider_response_id) throw new ProviderError('MODEL_RECEIPT_MISSING');
     let result;

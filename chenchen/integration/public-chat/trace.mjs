@@ -1,6 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import {sha} from './risk.mjs';
-export const PROMPT_VERSION='quality-20261024-r1';
+export const PROMPT_VERSION='finance-semantics-20261029-r2';
 export function ensureTrace(t,c,env){
  if(t.trace)return t.trace;
  t.trace_id='trace-'+randomUUID();

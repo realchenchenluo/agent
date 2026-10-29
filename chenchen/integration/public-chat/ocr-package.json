@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "description": "Pinned packages used by prepare-ocr.mjs; browser assets are self hosted",
+  "dependencies": {
+    "tesseract.js": "6.0.1",
+    "@tesseract.js-data/chi_sim": "1.0.0",
+    "@tesseract.js-data/eng": "1.0.0"
+  }
+}

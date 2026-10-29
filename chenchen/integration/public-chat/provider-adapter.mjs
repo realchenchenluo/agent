@@ -81,7 +81,7 @@ export function providerSlot(env, slot) {
   return {slot, provider, protocol, url: new URL(url.href.replace(/\/$/, '') + '/chat/completions'), model, key,
     ...(provider === 'bailian' ? {enableThinking: false} : {}),
     connectTimeoutMs: integer('CONNECT_TIMEOUT_MS', 8000, 1000, 15000), responseTimeoutMs: integer('RESPONSE_TIMEOUT_MS', 45000, 1000, 60000),
-    maxOutputTokens: integer('MAX_OUTPUT_TOKENS', MAX_OUTPUT, 1, MAX_OUTPUT), maxAttempts: integer('MAX_ATTEMPTS', 1, 1, 2),
+    maxOutputTokens: integer('MAX_OUTPUT_TOKENS', MAX_OUTPUT, 1, 4_096), maxAttempts: integer('MAX_ATTEMPTS', 1, 1, 2),
     maxMessageChars: integer('MAX_MESSAGE_CHARS', MAX_CHARS, 6000, MAX_CHARS), temperature: temperatureText === 'omit' ? null : Number(temperatureText), jsonMode};
 }
 
@@ -145,8 +145,8 @@ async function readStream(response, onDelta, signal, nonThinking = false) {
   }
 }
 
-export async function callProvider(config, messages, {stream = false, phase, onDelta = () => {}, fetchImpl = fetch, connectTimeoutMs = config.connectTimeoutMs || 8000, responseTimeoutMs = config.responseTimeoutMs || 45000, requestId, signal} = {}) {
-  if (!Array.isArray(messages) || JSON.stringify(messages).length > (config.maxMessageChars || MAX_CHARS) || !messages.every(m =>
+export async function callProvider(config, messages, {stream = false, phase, maxOutputTokens, maxMessageChars, onDelta = () => {}, fetchImpl = fetch, connectTimeoutMs = config.connectTimeoutMs || 8000, responseTimeoutMs = config.responseTimeoutMs || 45000, requestId, signal} = {}) {
+  if (!Array.isArray(messages) || JSON.stringify(messages).length > (maxMessageChars || config.maxMessageChars || MAX_CHARS) || !messages.every(m =>
     ['system', 'user', 'assistant'].includes(m.role) && typeof m.content === 'string')) {
     throw new ProviderError('CHAT_CONTEXT_TOO_LONG');
   }
@@ -162,7 +162,7 @@ export async function callProvider(config, messages, {stream = false, phase, onD
     try {
       response = await abortable(fetchImpl(config.url, {method: 'POST', redirect: 'manual', signal: controller.signal,
         headers: {'Authorization': `Bearer ${config.key}`, 'Content-Type': 'application/json', 'X-Client-Request-Id': requestId || crypto.randomUUID()},
-        body: JSON.stringify({model: config.model, messages, stream, max_tokens: config.maxOutputTokens || MAX_OUTPUT,
+        body: JSON.stringify({model: config.model, messages, stream, max_tokens: maxOutputTokens || config.maxOutputTokens || MAX_OUTPUT,
           ...(config.enableThinking === false ? {enable_thinking: false} : {}),
           ...(config.temperature === null ? {} : {temperature: config.temperature ?? 0}),
           ...(phase === 'plan' && config.jsonMode === 'json_object' ? {response_format: {type: 'json_object'}} : {}),

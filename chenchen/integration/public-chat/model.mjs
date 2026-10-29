@@ -2,7 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {PLAN_PROMPT,ANSWER_PROMPT,answerFacts} from './shared.mjs';
 import {sha} from './risk.mjs';
 import {PROMPT_VERSION} from './trace.mjs';
-import {CLOUD_MAX_INPUT_TOKENS,requestInputTokenBound} from './gateway-policy.mjs';
+import {CLOUD_MAX_INPUT_TOKENS,MAX_OUTPUT_TOKENS,OCR_MAX_INPUT_TOKENS,OCR_MAX_OUTPUT_TOKENS,requestInputTokenBound} from './gateway-policy.mjs';
 import {classifyCloudflareError} from './cloud-transport.mjs';
 export const MODEL='@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 const fail=code=>{throw Object.assign(Error(code),{code});};
@@ -26,14 +26,15 @@ export function buildModelRequest(phase,context,maxChars=12000,maxInputTokens=In
 export function createCloudModel(env,lease){
  async function invoke(messages,{stream=false,signal,onDelta=()=>{},binding,onEvent=()=>{},onCapture=()=>{},clipping=null}){
   if(env.MODEL_ENABLED!=='true'||env.MODEL_NAME!==MODEL||!env.AI)fail('CHAT_PROVIDER_NOT_CONFIGURED');
+  const maxTokens=binding.phase==='extract'?OCR_MAX_OUTPUT_TOKENS:MAX_OUTPUT_TOKENS;
   const input_bound_tokens=requestInputTokenBound(messages);
-  if(JSON.stringify(messages).length>12000||input_bound_tokens>CLOUD_MAX_INPUT_TOKENS)fail('CHAT_CONTEXT_TOO_LONG');signal.throwIfAborted();
+  if(JSON.stringify(messages).length>(binding.phase==='extract'?16_000:12_000)||input_bound_tokens>(binding.phase==='extract'?OCR_MAX_INPUT_TOKENS:CLOUD_MAX_INPUT_TOKENS))fail('CHAT_CONTEXT_TOO_LONG');signal.throwIfAborted();
   const request_id='chat-ai-'+randomUUID(),request_hash=sha({messages,stream,binding}),started=Date.now();
   const reserved=await gate(env,'reserve',{lease,request_id,phase:binding.phase,request_hash,input_bound_tokens});if(reserved.call_allowed!==true)fail('MODEL_ALREADY_RESERVED');
   const timeout=AbortSignal.timeout(70000),combined=AbortSignal.any([signal,timeout]);let text='',usage=null,provider_response_id=null,reported_model=null,delta_count=0,numeric_delta_count=0,first_delta_at=null,last_delta_at=null,status='UNKNOWN',error_code=null,reader,finish_reason=null;
   try{
-   onEvent({type:'request',request_id,phase:binding.phase,provider:'cloudflare_workers_ai',model:MODEL,prompt_version:PROMPT_VERSION,messages_hash:sha(messages),request_hash,roles:messages.map(m=>m.role),message_characters:messages.map(m=>m.content.length),max_tokens:1024,temperature:0,clipping,at:new Date().toISOString()});onCapture({request_id,messages,parameters:{max_tokens:1024,temperature:0,stream},binding,messages_hash:sha(messages)});
-   const raw=await cancellable(env.AI.run(MODEL,{messages,max_tokens:1024,temperature:0,stream}),combined);provider_response_id=env.AI.lastRequestId||null;
+   onEvent({type:'request',request_id,phase:binding.phase,provider:'cloudflare_workers_ai',model:MODEL,prompt_version:PROMPT_VERSION,messages_hash:sha(messages),request_hash,roles:messages.map(m=>m.role),message_characters:messages.map(m=>m.content.length),max_tokens:maxTokens,temperature:0,clipping,at:new Date().toISOString()});onCapture({request_id,messages,parameters:{max_tokens:maxTokens,temperature:0,stream},binding,messages_hash:sha(messages)});
+   const raw=await cancellable(env.AI.run(MODEL,{messages,max_tokens:maxTokens,temperature:0,stream}),combined);provider_response_id=env.AI.lastRequestId||null;
    if(!provider_response_id)fail('MODEL_RECEIPT_MISSING');
    if(stream){
     if(!raw||typeof raw.getReader!=='function')fail('MODEL_STREAM_REQUIRED');reader=raw.getReader();const decoder=new TextDecoder();let buffer='',done=false,eventData=[];
@@ -56,5 +57,5 @@ export function createCloudModel(env,lease){
   }
   return {text,receipt:{request_id,request_hash,...binding,provider:'cloudflare_workers_ai',model:MODEL,reported_model,provider_response_id,usage,finish_reason:finish_reason||'NOT_REPORTED',prompt_version:PROMPT_VERSION,stream,delta_count,numeric_delta_count,first_delta_at,last_delta_at,duration_ms:Date.now()-started,retry_count:0,completed:true}};
  }
- return {evaluate(messages,options){if(!Array.isArray(messages)||messages.length!==2||messages[0]?.role!=='system'||messages[1]?.role!=='user'||messages.some(m=>typeof m.content!=='string'||Object.keys(m).some(k=>!['role','content'].includes(k))))fail('INVALID_EVALUATION_REQUEST');return invoke(messages,{...options,stream:true});},async plan(context,options){const request=buildModelRequest('plan',context,12000,CLOUD_MAX_INPUT_TOKENS),result=await invoke(request.messages,{...options,clipping:request.clipping});let value;try{value=JSON.parse(result.text.replace(/^```(?:json)?\s*|\s*```$/g,''));}catch{fail('MODEL_PLAN_INVALID');}return {value,receipt:result.receipt};},answer(context,options){const request=buildModelRequest('answer',context,12000,CLOUD_MAX_INPUT_TOKENS);return invoke(request.messages,{...options,clipping:request.clipping,stream:true});}};
+ return {async extract(messages,options){const result=await invoke(messages,options);let value;try{value=JSON.parse(result.text.replace(/^```(?:json)?\s*|\s*```$/g,''));}catch{fail('OCR_RESULT_INVALID');}return {...result,value};},evaluate(messages,options){if(!Array.isArray(messages)||messages.length!==2||messages[0]?.role!=='system'||messages[1]?.role!=='user'||messages.some(m=>typeof m.content!=='string'||Object.keys(m).some(k=>!['role','content'].includes(k))))fail('INVALID_EVALUATION_REQUEST');return invoke(messages,{...options,stream:true});},async plan(context,options){const request=buildModelRequest('plan',context,12000,CLOUD_MAX_INPUT_TOKENS),result=await invoke(request.messages,{...options,clipping:request.clipping});let value;try{value=JSON.parse(result.text.replace(/^```(?:json)?\s*|\s*```$/g,''));}catch{fail('MODEL_PLAN_INVALID');}return {value,receipt:result.receipt};},answer(context,options){const request=buildModelRequest('answer',context,12000,CLOUD_MAX_INPUT_TOKENS);return invoke(request.messages,{...options,clipping:request.clipping,stream:true});}};
 }

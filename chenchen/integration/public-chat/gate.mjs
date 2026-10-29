@@ -89,8 +89,9 @@ function receipt(input, reservation, now) {
     (usage.input_tokens === undefined || usage.input_tokens === p) &&
     (usage.output_tokens === undefined || usage.output_tokens === c);
   const inputLimit = reservation.input_bound_tokens ?? selected.max_input_tokens ?? 24_000;
+  const outputLimit = reservation.phase === 'extract' ? (selected.max_extract_output_tokens || selected.max_output_tokens || 1024) : (selected.max_output_tokens || 1024);
   const validUsage = input.status === 'COMPLETE' && input.attempt_count === 1 && responseId && consistentUsage &&
-    Number.isInteger(p) && p > 0 && p <= inputLimit && Number.isInteger(c) && c >= 0 && c <= (selected.max_output_tokens || 1024);
+    Number.isInteger(p) && p > 0 && p <= inputLimit && Number.isInteger(c) && c >= 0 && c <= outputLimit;
   const estimated = validUsage ? (policy.mode === 'cloudflare' ? Math.ceil((p * 293 + c * 2253) / 100) : estimatedMicroCny(usage, selected.prices)) : reservedMicro;
   const settled = validUsage && estimated <= reservedMicro;
   // Explicit allowlist: never persist request text, errors with financial content,
@@ -243,7 +244,7 @@ export class ChatGate {
             const requestId = id(body.request_id, 'request_id'), key = `call:${requestId}`, call = await txn.get(key);
             if (route === 'reserve') {
               const requestHash = hash(body.request_hash, 'request_hash');
-              if (!['plan', 'answer'].includes(body.phase)) throw error('PHASE_NOT_ALLOWED', '未授权的模型步骤。');
+              if (!['plan', 'answer', 'extract'].includes(body.phase)) throw error('PHASE_NOT_ALLOWED', '未授权的模型步骤。');
               const inputBound = body.input_bound_tokens == null ? null : body.input_bound_tokens;
               if (inputBound !== null && (!Number.isSafeInteger(inputBound) || inputBound < 512 || inputBound > 100_000)) throw error('INVALID_REQUEST', '模型输入预算无效。');
               const preferredBackup = body.preferred_backup_slot == null ? null : body.preferred_backup_slot;
@@ -255,7 +256,7 @@ export class ChatGate {
                 if (lease.released_at || lease.expires_at <= now) throw error('LEASE_EXPIRED', '本次请求已结束，请主动重试。', 409);
                 if (lease.calls >= 2 || lease.phases.includes(body.phase)) throw error('AGENT_STEP_LIMIT', '本次请求已达到模型调用上限。', 429);
                 const policy = gatewayPolicy(this.env);
-                let bound = inputBound === null ? {micro: CALL_MICRO, slot_costs: policy.slots.map(slot => slot.max_micro_cny || CALL_MICRO)} : reservationForInput(policy, inputBound);
+                let bound = inputBound === null ? {micro: CALL_MICRO, slot_costs: policy.slots.map(slot => slot.max_micro_cny || CALL_MICRO)} : reservationForInput(policy, inputBound, null, body.phase);
                 let authorizedBackupSlot = null;
                 if (policy.mode !== 'cloudflare') {
                   const providerDay = meta.provider_by_day[today] ||= {};
@@ -269,7 +270,7 @@ export class ChatGate {
                   const selected = policy.mode === 'hybrid' ? candidates.find(available) : null;
                   if ((policy.mode === 'hybrid' && !selected) || (policy.mode === 'external' && candidates.some(candidate => !available(candidate)))) throw error('MODEL_DAILY_LIMIT', '所选模型的独立日限额已用完，未发起上游请求。', 429);
                   authorizedBackupSlot = selected?.[1].slot || null;
-                  if (inputBound !== null && policy.mode === 'hybrid') bound = reservationForInput(policy, inputBound, authorizedBackupSlot);
+                  if (inputBound !== null && policy.mode === 'hybrid') bound = reservationForInput(policy, inputBound, authorizedBackupSlot, body.phase);
                   paidAllowed(bound.micro);
                   for (const [index, slot] of policy.mode === 'hybrid' ? [selected] : candidates) {
                     const identity = `${slot.provider}:${slot.model}`, row = providerDay[identity] ||= {calls: 0, micro_cny: 0};

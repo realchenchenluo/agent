@@ -4,6 +4,10 @@ export const CLOUD_PROVIDER = 'cloudflare_workers_ai';
 export const CLOUD_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 export const CALL_RESERVATION_MICRO_CNY = 100_000; // Existing 10-fen bound, not new spending authority.
 export const MAX_OUTPUT_TOKENS = 1_024;
+// OCR returns a bounded table, so it needs a larger output budget while its
+// input remains separately bounded inside the existing per-call reservation.
+export const OCR_MAX_OUTPUT_TOKENS = 2_304;
+export const OCR_MAX_INPUT_TOKENS = 14_000;
 export const CLOUD_CONTEXT_TOKENS = 24_000;
 export const CLOUD_MAX_INPUT_TOKENS = CLOUD_CONTEXT_TOKENS - MAX_OUTPUT_TOKENS;
 export const TOKEN_FRAMING_ALLOWANCE = 512;
@@ -62,15 +66,15 @@ function slotPrices(env, slot, provider) {
 export function gatewayPolicy(env) {
   if (env.LLM_GATEWAY_MODE == null || env.LLM_GATEWAY_MODE === 'cloudflare') {
     return {mode: 'cloudflare', slots: [{provider: CLOUD_PROVIDER, model: CLOUD_MODEL,
-      prices: CLOUD_PRICES, max_output_tokens: MAX_OUTPUT_TOKENS, max_attempts: 1,
-      max_input_tokens: CLOUD_MAX_INPUT_TOKENS, max_message_chars: 12_000}], max_micro_cny: CALL_RESERVATION_MICRO_CNY};
+      prices: CLOUD_PRICES, max_output_tokens: MAX_OUTPUT_TOKENS, max_extract_output_tokens: OCR_MAX_OUTPUT_TOKENS, max_attempts: 1,
+      max_input_tokens: CLOUD_MAX_INPUT_TOKENS, max_extract_input_tokens: OCR_MAX_INPUT_TOKENS, max_message_chars: 12_000}], max_micro_cny: CALL_RESERVATION_MICRO_CNY};
   }
   const hybrid = env.LLM_GATEWAY_MODE === 'hybrid';
   if (!['external', 'hybrid'].includes(env.LLM_GATEWAY_MODE) || env.LLM_PAID_PROVIDER_APPROVED !== 'true') throw invalid();
   const primary = env.LLM_PRIMARY === 'B' ? 'B' : 'A';
   const slots = hybrid ? [{provider: CLOUD_PROVIDER, model: CLOUD_MODEL, prices: CLOUD_PRICES,
-    max_output_tokens: MAX_OUTPUT_TOKENS, max_attempts: 1, max_input_tokens: CLOUD_MAX_INPUT_TOKENS,
-    max_message_chars: 12_000, temperature: 0}] : [];
+    max_output_tokens: MAX_OUTPUT_TOKENS, max_extract_output_tokens: OCR_MAX_OUTPUT_TOKENS, max_attempts: 1, max_input_tokens: CLOUD_MAX_INPUT_TOKENS,
+    max_extract_input_tokens: OCR_MAX_INPUT_TOKENS, max_message_chars: 12_000, temperature: 0}] : [];
   for (const slot of [primary, primary === 'A' ? 'B' : 'A']) {
     if (!env[`LLM_${slot}_PROVIDER`]) {
       if (slot === primary) throw invalid();
@@ -81,9 +85,9 @@ export function gatewayPolicy(env) {
     const prices = slotPrices(env, slot, config.provider);
     const max_input_tokens = inputTokenBound(config.maxMessageChars);
     const max_micro_cny = estimatedMicroCny({prompt_tokens: max_input_tokens, completion_tokens: config.maxOutputTokens}, prices);
-    slots.push({slot, provider: config.provider, model: config.model, prices, max_micro_cny, max_output_tokens: config.maxOutputTokens,
+    slots.push({slot, provider: config.provider, model: config.model, prices, max_micro_cny, max_output_tokens: config.maxOutputTokens, max_extract_output_tokens: Math.max(config.maxOutputTokens, OCR_MAX_OUTPUT_TOKENS),
       max_attempts: hybrid ? 1 : config.maxAttempts, max_duration_ms: config.connectTimeoutMs + config.responseTimeoutMs,
-      max_message_chars: config.maxMessageChars, max_input_tokens, temperature: config.temperature, json_mode: config.jsonMode,
+      max_message_chars: config.maxMessageChars, max_input_tokens, max_extract_input_tokens: Math.min(OCR_MAX_INPUT_TOKENS, max_input_tokens), temperature: config.temperature, json_mode: config.jsonMode,
       ...(config.enableThinking === false ? {enable_thinking: false} : {}),
       daily_max_calls: integer(env[`LLM_${slot}_DAILY_MAX_CALLS`], 1000), daily_cap_micro_cny: integer(env[`LLM_${slot}_DAILY_CAP_CENTS`], 1000) * 10_000});
   }
@@ -100,11 +104,13 @@ export function gatewayPolicy(env) {
   return {mode: hybrid ? 'hybrid' : 'external', slots, max_micro_cny};
 }
 
-export function reservationForInput(policy, inputTokens, backupSlot = null) {
+export function reservationForInput(policy, inputTokens, backupSlot = null, phase = 'plan') {
   if (!Number.isSafeInteger(inputTokens) || inputTokens < TOKEN_FRAMING_ALLOWANCE || inputTokens > 100_000) throw invalid();
+  const outputLimit = slot => phase === 'extract' ? (slot.max_extract_output_tokens || slot.max_output_tokens) : slot.max_output_tokens;
+  const inputLimit = slot => phase === 'extract' ? (slot.max_extract_input_tokens || slot.max_input_tokens) : slot.max_input_tokens;
   const slotCosts = policy.slots.map(slot => {
-    if (inputTokens > slot.max_input_tokens) throw new ProviderError('CHAT_CONTEXT_TOO_LONG');
-    return estimatedMicroCny({prompt_tokens: inputTokens, completion_tokens: slot.max_output_tokens}, slot.prices);
+    if (inputTokens > inputLimit(slot)) throw new ProviderError('CHAT_CONTEXT_TOO_LONG');
+    return estimatedMicroCny({prompt_tokens: inputTokens, completion_tokens: outputLimit(slot)}, slot.prices);
   });
   const possible = policy.mode === 'hybrid' && backupSlot ? [slotCosts[0]] :
     slotCosts.map((cost, index) => cost * policy.slots[index].max_attempts);

@@ -2,6 +2,19 @@ const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,
 export const enterSends=(event,isComposing)=>event.key==='Enter'&&!event.shiftKey&&!event.isComposing&&!isComposing&&event.keyCode!==229;
 let csrf='',current=null,history=[],source=null,nearBottom=true,submitting=false,selecting=false,viewRevision=0,historyRevision=0,composing=false;
 let snapshots=[],draft=null,draftConversation=null,draftVersion=null,record=null,recordMode='',reviewBusy=false;
+const screenshotFields=[
+ {key:'name',label:'标的名称'},
+ {key:'code',label:'代码'},
+ {key:'quantity',label:'持仓数量'},
+ {key:'cost',label:'持仓成本'},
+ {key:'current_price',label:'当前价'},
+ {key:'market_value',label:'市值'},
+ {key:'pnl',label:'盈亏金额'},
+ {key:'pnl_percent',label:'盈亏比例'},
+ {key:'weight',label:'持仓占比'}
+];
+const screenshotState={file:null,objectUrl:'',extraction:null,conversationId:null,viewRevision:null,baseVersion:null,busy:false,worker:null,job:0};
+const screenshotFailure='【识别失败，待人工补充】';
 const money=c=>(c/100).toLocaleString('zh-CN',{maximumFractionDigits:2,minimumFractionDigits:0});
 const beijingDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const dateLabel=s=>s||'日期未提供';
@@ -53,9 +66,134 @@ function markdown(text){const lines=String(text||'').split('\n');let out='',list
   if(list){out+=ordered?'</ol>':'</ul>';list=false;}if(heading){flush();out+=`<h${heading[1].length}>${inline(heading[2])}</h${heading[1].length}>`;}else if(!line.trim())flush();else paragraph.push(line);
  }flush();if(list)out+=ordered?'</ol>':'</ul>';if(code)out+='</code></pre>';return out;}
 async function api(path,body){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);try{const r=await fetch('/api/local'+path,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},...(body===undefined?{}:{body:JSON.stringify(body)}),signal:controller.signal});const data=await r.json();if(!r.ok)throw Error(data.error?.message||data.error?.code||'REQUEST_FAILED');return data;}finally{clearTimeout(timer);}}
+function screenshotStatus(text=''){
+ const node=$('holdings-ocr-status');if(node){node.textContent=text;node.hidden=!text;}
+}
+function setScreenshotOpen(open){
+ const section=$('holdings-screenshot'),button=$('open-holdings-screenshot');if(!section||!button)return;
+ section.hidden=!open;button.setAttribute('aria-expanded',String(open));
+ if(open){section.scrollIntoView({block:'start',behavior:'smooth'});$('holdings-screenshot-title')?.focus({preventScroll:true});}
+}
+function screenshotFieldValue(field){const value=field?.value;return value==null?'':String(value).trim();}
+function screenshotRows(extraction){
+ return Array.isArray(extraction?.rows)?extraction.rows.map(row=>{
+  const out={};for(const field of screenshotFields){const raw=row?.[field.key];out[field.key]={value:screenshotFieldValue(raw),evidence:raw?.evidence==null?'':String(raw.evidence)};}return out;
+ }):[];
+}
+function screenshotExtractionHTML(extraction){
+ const rows=screenshotRows(extraction),warnings=Array.isArray(extraction?.warnings)?extraction.warnings:[];
+ const date=extraction?.as_of&&/^\d{4}-\d{2}-\d{2}$/.test(extraction.as_of)?extraction.as_of:'';
+ return '<div class="extraction-heading"><div><p class="eyebrow">OCR 结果 · 逐字段核对</p><h3>识别到 '+rows.length+' 行持仓</h3></div><span class="tag">尚未写入持仓</span></div>'+
+  (warnings.length?'<div class="screenshot-warnings" role="alert"><strong>请留意：</strong>'+warnings.map(item=>'<span>'+esc(item)+'</span>').join('')+'</div>':'')+
+  '<form id="holdings-extraction-form"><div class="table-wrap screenshot-table-wrap" tabindex="0" aria-label="可左右滚动的持仓识别表"><table class="screenshot-table"><thead><tr><th>行</th>'+screenshotFields.map(field=>'<th>'+field.label+'</th>').join('')+'</tr></thead><tbody>'+
+  rows.map((row,index)=>'<tr data-screenshot-row="'+index+'"><th scope="row">'+(index+1)+'</th>'+screenshotFields.map(field=>{
+   const item=row[field.key]||{value:'',evidence:''},value=String(item.value||''),evidence=String(item.evidence||'');
+   return '<td><label class="sr-only" for="screenshot-'+index+'-'+field.key+'">第'+(index+1)+'行'+field.label+'</label><input id="screenshot-'+index+'-'+field.key+'" name="'+field.key+'" value="'+esc(value)+'" data-original="'+esc(value)+'" data-evidence="'+esc(evidence)+'" placeholder="'+screenshotFailure+'" maxlength="80" inputmode="'+(['market_value','quantity'].includes(field.key)?'decimal':'text')+'"><small class="screenshot-missing"'+(value?' hidden':'')+'>'+screenshotFailure+'</small><details class="screenshot-evidence"><summary>识别依据</summary>'+esc(evidence||'没有可核实 OCR 证据')+'</details></td>';
+  }).join('')+'</tr>').join('')+
+  '</tbody></table></div><p class="screenshot-table-help">表格可左右滚动。可以修正每一格；空白字段保持识别失败，缺少名称或市值的行不会导入。</p><div class="screenshot-confirm-meta"><label>数据日期<input type="date" name="screenshot-as-of" value="'+esc(date)+'" required></label><label>币种<select name="screenshot-currency" required><option value="">请核对币种</option><option value="CNY"'+(extraction?.currency==='CNY'?' selected':'')+'>CNY / 人民币</option><option value="OTHER"'+(extraction?.currency&&extraction.currency!=='CNY'?' selected':'')+'>其他币种（不可导入）</option></select></label></div><p class="screenshot-confirm-note">请核对日期、币种和每项当前市值。这里只导入人民币当前市值（元）；成本、数量、当前价和占比不会代替市值，也不会反推缺失字段。比例请带 %，金额填元。导入会替换本对话原始持仓，未导入的行不参与分析。</p><label class="check-label screenshot-confirm-check"><input type="checkbox" name="screenshot-confirmed" required>我已对照截图核对，确认日期、人民币市值与导入范围；缺失信息仍保留为未知</label><div class="action-row"><button class="primary" type="submit"'+(!rows.length?' disabled':'')+'>确认并写入当前持仓</button><button class="quiet-button" type="button" data-clear-extraction>重新识别</button></div><div class="inline-notice" role="status"></div></form>';
+}
+function renderScreenshotExtraction(extraction){
+ const panel=$('holdings-extraction');if(!panel)return;panel.hidden=false;panel.innerHTML=screenshotExtractionHTML(extraction);
+ const form=$('holdings-extraction-form');
+ form?.addEventListener('input',()=>{for(const input of form.querySelectorAll('input[data-original]')){input.classList.toggle('is-edited',input.value.trim()!==input.dataset.original);input.parentElement.querySelector('.screenshot-missing').hidden=!!input.value.trim();}form.querySelector('[name="screenshot-confirmed"]').checked=false;});
+ // The confirmation checkbox must remain checked after the user ticks it.
+ form?.querySelector('[name="screenshot-confirmed"]')?.addEventListener('input',event=>event.stopPropagation());
+ form?.addEventListener('submit',event=>{event.preventDefault();confirmScreenshotExtraction(form).catch(error=>{const note=form.querySelector('.inline-notice');if(note)note.textContent='未完成：'+error.message+'。识别表格仍保留在本机。';});});
+ form?.addEventListener('click',event=>{if(event.target.closest('[data-clear-extraction]')&&!screenshotState.busy){screenshotState.extraction=null;panel.hidden=true;screenshotStatus('核对表已清除，可重新识别图片。');}});
+}
+export function filterOcrText(result){
+ const data=result?.data||{},blocks=Array.isArray(data.blocks)?data.blocks:[];
+ const lines=Array.isArray(data.lines)?data.lines:blocks.flatMap(block=>(block.paragraphs||[]).flatMap(paragraph=>paragraph.lines||[]));
+ if(!lines.length)return '';
+ return lines.map(line=>{const words=Array.isArray(line.words)?line.words:[],confidence=Number(line.confidence??(words.length?words.reduce((sum,word)=>sum+Number(word.confidence||0),0)/words.length:NaN));return Number.isFinite(confidence)&&confidence>=70?String(line.text||''):'';}).filter(Boolean).join('\n').trim();
+}
+async function imageDimensions(file){
+ if(typeof createImageBitmap==='function'){const bitmap=await createImageBitmap(file);const dimensions={width:bitmap.width,height:bitmap.height};bitmap.close?.();return dimensions;}
+ return await new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),image=new Image();image.onload=()=>{URL.revokeObjectURL(url);resolve({width:image.naturalWidth,height:image.naturalHeight});};image.onerror=()=>{URL.revokeObjectURL(url);reject(Error('图片尺寸读取失败'));};image.src=url;});
+}
+async function validateScreenshotFile(file){
+ if(!file)throw Error('请先选择持仓截图');if(!['image/png','image/jpeg','image/webp'].includes(file.type))throw Error('仅支持 PNG、JPEG 或 WebP 图片');if(file.size>5*1024*1024)throw Error('图片不能超过 5 MB');
+ const {width,height}=await imageDimensions(file);if(!width||!height)throw Error('图片尺寸读取失败');if(width*height>10_000_000)throw Error('图片像素不能超过 1,000 万');return {width,height};
+}
+function screenshotControls(){
+ for(const id of ['choose-holdings-image','run-holdings-ocr','clear-holdings-image']){const button=$(id);if(button)button.disabled=screenshotState.busy;}
+ const form=$('holdings-extraction-form');if(form)for(const input of form.querySelectorAll('input,select,button'))input.disabled=screenshotState.busy;
+}
+function clearScreenshotFile(){
+ screenshotState.job++;screenshotState.worker?.terminate?.().catch(()=>{});screenshotState.worker=null;
+ if(screenshotState.objectUrl)URL.revokeObjectURL(screenshotState.objectUrl);
+ Object.assign(screenshotState,{file:null,objectUrl:'',extraction:null,conversationId:null,viewRevision:null,baseVersion:null,busy:false});
+ $('holdings-image-file').value='';$('holdings-image').removeAttribute('src');$('holdings-image-preview').hidden=true;$('holdings-extraction').hidden=true;$('holdings-extraction').innerHTML='';$('holdings-ocr-progress').hidden=true;screenshotStatus('');screenshotControls();
+}
+function resetScreenshotForChat(){if(!$('holdings-screenshot'))return;clearScreenshotFile();setScreenshotOpen(false);}
+async function chooseScreenshotFile(file){
+ if(screenshotState.busy)return;const job=++screenshotState.job;
+ try{const dimensions=await validateScreenshotFile(file);if(job!==screenshotState.job)return;clearScreenshotFile();screenshotState.file=file;screenshotState.objectUrl=URL.createObjectURL(file);$('holdings-image').src=screenshotState.objectUrl;$('holdings-image-name').textContent=file.name+' · '+dimensions.width+'×'+dimensions.height;$('holdings-image-preview').hidden=false;screenshotStatus('图片已准备好，可开始本机 OCR。');}
+ catch(error){if(job!==screenshotState.job)return;clearScreenshotFile();screenshotStatus(error.message);}
+}
+async function runScreenshotOCR(){
+ if(screenshotState.busy)return;if(!screenshotState.file)throw Error('请先选择持仓截图');if(active()||submitting||selecting||reviewBusy)throw Error('请先停止或等待当前任务完成，再识别截图');if(!window.Tesseract?.createWorker)throw Error('本机 OCR 组件尚未加载，请刷新后重试');
+ if(!current)await newChat(true);
+ const job=++screenshotState.job,cid=current.id,revision=viewRevision,file=screenshotState.file;
+ if(!file)throw Error('新对话已准备好，请重新选择截图');
+ Object.assign(screenshotState,{busy:true,conversationId:cid,viewRevision:revision,baseVersion:current.state.version});
+ const progress=$('holdings-ocr-progress'),meter=$('holdings-ocr-meter'),label=$('holdings-ocr-progress-label');progress.hidden=false;meter.value=0;screenshotControls();screenshotStatus('正在本机读取图片……');let worker=null;
+ try{
+  worker=await window.Tesseract.createWorker('chi_sim+eng',1,{workerPath:'/ocr/worker.min.js',corePath:'/ocr/core',langPath:'/ocr/lang',workerBlobURL:false,logger:info=>{
+   if(job!==screenshotState.job)return;const value=Number(info?.progress);if(Number.isFinite(value))meter.value=Math.max(0,Math.min(1,value));const statusLabels={'loading tesseract core':'正在加载识别引擎','initializing tesseract':'正在准备识别','loading language traineddata':'正在加载中文和英文','initializing api':'正在初始化','recognizing text':'正在识别文字'};label.textContent=(statusLabels[info?.status]||'正在准备识别')+(Number.isFinite(value)?' · '+Math.round(value*100)+'%':'');
+  }});
+  if(job!==screenshotState.job){await worker.terminate();return;}screenshotState.worker=worker;
+  const result=await worker.recognize(file,{}, {text:true,blocks:true});if(job!==screenshotState.job)return;
+  const filtered=filterOcrText(result);if(!filtered)throw Error('没有得到置信度达到 70% 的可用文字，请选择更清晰的截图或手动录入');
+  screenshotStatus('本机识别完成，正在通过现有模型服务整理文字……');const response=await api('/holdings/extract',{text:filtered});
+  if(job!==screenshotState.job)return;if(revision!==viewRevision||current?.id!==cid)throw Error('当前对话已切换，请重新识别截图');
+  screenshotState.extraction=response.extraction||{rows:[],as_of:null,currency:null,warnings:['服务未返回可编辑结果']};renderScreenshotExtraction(screenshotState.extraction);screenshotStatus('已展示全部识别字段。缺少字段保留为识别失败，请对照截图逐项核对。');
+ }finally{
+  try{await worker?.terminate?.();}catch{}if(job===screenshotState.job){screenshotState.worker=null;screenshotState.busy=false;progress.hidden=true;screenshotControls();}
+ }
+}
+function screenshotDisplayTable(details){
+ if(!details?.rows?.length)return '';
+ return '<details class="details screenshot-saved-details"><summary>查看已确认截图的全部字段</summary><div class="table-wrap"><table class="screenshot-saved-table"><thead><tr>'+screenshotFields.map(field=>'<th>'+field.label+'</th>').join('')+'</tr></thead><tbody>'+details.rows.map(row=>'<tr>'+screenshotFields.map(field=>'<td>'+esc(screenshotFieldValue(row[field.key])||screenshotFailure)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div><p class="scope-note">用户确认的截图记录，非实时行情。未识别字段保持未知；行业、历史风险、财报和新闻仍需额外数据核验。</p></details>';
+}
+function screenshotConfirmedRows(rows){
+ return rows.map((row,index)=>Object.fromEntries(screenshotFields.map(field=>{
+  const original=row[field.key]||{},text=screenshotFieldValue(original);if(!text)return [field.key,{value:null,evidence:null}];if(text.length>80)throw Error('第'+(index+1)+'行'+field.label+'不能超过80字');
+  if(['name','code'].includes(field.key))return [field.key,{value:text,evidence:original.evidence||null}];
+  const normalized=text.normalize('NFKC').replace(/\s+/g,'').replaceAll(',','').replace('−','-').replace(/^[¥￥]/,'').replace(/[元股份]$/,'');
+  const percent=['pnl_percent','weight'].includes(field.key),negative=['pnl','pnl_percent'].includes(field.key),pattern=percent?/^[+-]?\d+(?:\.\d+)?%$/:/^[+-]?\d+(?:\.\d+)?$/;
+  if(!pattern.test(normalized)||(!negative&&Number(normalized.replace('%',''))<0)||!Number.isFinite(Number(normalized.replace('%','')))||Math.abs(Number(normalized.replace('%','')))>1e12)throw Error('第'+(index+1)+'行'+field.label+'格式不明确，请按原图核对'+(percent?'并填写百分号':'；不要以成本或数量代替市值'));
+  return [field.key,{value:normalized.replace(/^\+/,''),evidence:original.evidence||null}];
+ })));
+}
+function screenshotPlainAmount(value){
+ const text=String(value??'').trim().replace(/^[¥￥]\s*/,'');
+ try{return normalizeMoneyInput(text);}catch{return null;}
+}
+function readScreenshotForm(form){
+ const rows=[...form.querySelectorAll('tr[data-screenshot-row]')].map(row=>{const output={};for(const field of screenshotFields){const input=row.querySelector('[name="'+field.key+'"]'),value=input?.value.trim()||null,original=input?.dataset.original||'';output[field.key]={value,evidence:value&&value===original?(input.dataset.evidence||null):null};}return output;});
+ return {rows,as_of:form.querySelector('[name="screenshot-as-of"]').value,currency:form.querySelector('[name="screenshot-currency"]').value,warnings:Array.isArray(screenshotState.extraction?.warnings)?screenshotState.extraction.warnings:[],confirmed:form.querySelector('[name="screenshot-confirmed"]').checked};
+}
+export function screenshotReviewPayload(value,version){
+ if(!Number.isInteger(version)||version<0)throw Error('当前对话尚未准备好，请重新选择对话');if(!value.confirmed)throw Error('请先对照截图核对并勾选确认');if(value.currency!=='CNY')throw Error('当前只允许确认 CNY / 人民币持仓');if(!/^\d{4}-\d{2}-\d{2}$/.test(value.as_of)||Number.isNaN(Date.parse(value.as_of+'T00:00:00Z'))||new Date(value.as_of+'T00:00:00Z').toISOString().slice(0,10)!==value.as_of)throw Error('请确认有效的数据日期');
+ const rows=[],skipped=[],names=new Set(),confirmedRows=screenshotConfirmedRows(value.rows);let incomplete=false;
+ for(const row of confirmedRows){const name=screenshotFieldValue(row.name),amount=screenshotPlainAmount(row.market_value?.value);if(screenshotFields.some(field=>!screenshotFieldValue(row[field.key])))incomplete=true;if(!name||amount==null){skipped.push(name||'未命名行');continue;}if(names.has(name))throw Error('存在重复名称，请核对或为不同标的补上代码');if(name.length>80)throw Error('标的名称不能超过80字');names.add(name);rows.push({name,amount,kind:'unresolved'});}
+ if(!rows.length||rows.length>30)throw Error('请确认1至30行同时包含标的名称和当前市值（元）的持仓');
+ return {base_version:version,rows,metadata:{currency:'CNY',basis:'current_value',source:'USER_TABLE',as_of:value.as_of,demo:false},screenshot_details:{rows:confirmedRows,as_of:value.as_of,currency:value.currency,warnings:value.warnings,source:'USER_CONFIRMED_SCREENSHOT',confirmed:true,skipped_rows:skipped,incomplete}};
+}
+async function confirmScreenshotExtraction(form){
+ if(screenshotState.busy||reviewBusy)return;if(active()||submitting||selecting)throw Error('请先停止或等待当前任务完成');if(!current||current.id!==screenshotState.conversationId||viewRevision!==screenshotState.viewRevision)throw Error('当前对话已切换，请重新识别截图');if(current.state.version!==screenshotState.baseVersion)throw Error('识别期间持仓已改变，请重新识别或重新核对当前持仓');
+ const value=readScreenshotForm(form),payload=screenshotReviewPayload(value,current.state.version),cid=current.id,revision=viewRevision,job=screenshotState.job;
+ payload.mode=current.state.actual?.length?'correct':'new';screenshotState.busy=true;reviewBusy=true;screenshotControls();controls();
+ try{
+  const response=await api('/chats/'+cid+'/review',payload);
+  if(current?.id===cid&&viewRevision===revision){current=response.conversation;draft=null;render();const skipped=payload.screenshot_details.skipped_rows.length;notice('已将 '+payload.rows.length+' 行已确认市值写入当前持仓。'+(skipped?'另有 '+skipped+' 行缺少名称或市值，未纳入分析。':'')+(payload.screenshot_details.incomplete?'部分字段仍未知，当前分析范围不完整。':''));clearScreenshotFile();setScreenshotOpen(false);}
+  await refreshHistory();
+ }finally{reviewBusy=false;if(job===screenshotState.job)screenshotState.busy=false;screenshotControls();controls();}
+}
 function notice(text=''){$('notice').textContent=text;$('notice').hidden=!text;}
 function active(){return current?.turns.find(t=>t.status==='RUNNING');}
-function controls(){const running=!!active();$('send').hidden=running;$('send').disabled=submitting||selecting;$('stop').hidden=!running;}
+function controls(){const running=!!active();$('send').hidden=running;$('send').disabled=submitting||selecting||reviewBusy;$('stop').hidden=!running;}
 function stick(){if(nearBottom)$('scroll-area').scrollTop=$('scroll-area').scrollHeight;$('to-bottom').hidden=nearBottom;}
 function historyView(){$('history').innerHTML=history.map(c=>`<button data-chat="${esc(c.id)}" aria-current="${c.id===current?.id}" title="${esc(c.title)}">${esc(c.title)}</button>`).join('');}
 function table(t){if(!t.tool||!t.tool.output.rows.length)return '';const o=t.tool.output,old=historicalState(t,current.state.version);return `${!old.stale&&t.context?.previous_scenario_stale?'<p class="plan-update">原始持仓已更正，旧方案已失效。以下方案已按最新持仓重新计算并重新检查操作范围；请确认要保存的模拟方案。</p>':''}<p class="tool-label">${t.simulation?(old.stale?'历史模拟 · 基于当时的原始数据':'模拟方案 · 原始持仓未变'):(old.stale?'当时的原始持仓':'原始持仓 · 按录入金额计算')} · 合计 ¥${money(o.total_cents)}</p>${holdingsTable(o.rows)}${t.simulation&&t.context?.actual?.length?`<p class="original-note">${old.stale?'当时的原始持仓':'原始持仓'}：${(t.context?.actual||[]).map(r=>esc(r.name)+' '+money(r.amount_cents)+'元').join(' · ')}</p>`:''}<p class="scope-note">来源：${(t.review?.metadata?.source||t.context?.review?.metadata?.source)==='USER_TABLE'?'用户表格':'用户录入'}；数据日期 ${esc(dateLabel(t.review?.metadata?.as_of||t.context?.review?.metadata?.as_of))}；标的属性和实时行情未核验。</p>`;}
@@ -65,8 +203,8 @@ function turnHTML(t){const latest=t===current.turns.at(-1),s=current.state.scena
 function render(){const all=current?.turns||[],retried=new Set(all.map(t=>t.retry_of).filter(Boolean)),turns=all.filter(t=>!retried.has(t.id));$('welcome').hidden=turns.length>0||rowsOf(current).length>0;$('messages').innerHTML=turns.map(turnHTML).join('');historyView();renderReview();controls();stick();}
 async function refreshHistory(){const revision=++historyRevision,result=await api('/chats');if(revision!==historyRevision)return;history=result.conversations;historyView();}
 function closeSidebar(){document.body.classList.remove('show-history');$('shade').hidden=true;$('menu').setAttribute('aria-expanded','false');}
-async function openChat(id){const revision=++viewRevision;selecting=true;source?.close();controls();try{const selected=await api('/chats/'+id);if(revision!==viewRevision)return;current=selected;localStorage.setItem('fund-current-chat',id);nearBottom=true;render();closeSidebar();if(active())subscribe(active().id);}finally{if(revision===viewRevision){selecting=false;controls();}}}
-async function newChat(){const revision=++viewRevision;selecting=true;source?.close();controls();try{const selected=await api('/chats',{});if(revision!==viewRevision)return;current=selected;localStorage.setItem('fund-current-chat',current.id);$('question').value='';nearBottom=true;await refreshHistory();if(revision!==viewRevision)return;render();closeSidebar();$('question').focus();}finally{if(revision===viewRevision){selecting=false;controls();}}}
+async function openChat(id){resetScreenshotForChat();const revision=++viewRevision;selecting=true;source?.close();controls();try{const selected=await api('/chats/'+id);if(revision!==viewRevision)return;current=selected;localStorage.setItem('fund-current-chat',id);nearBottom=true;render();closeSidebar();if(active())subscribe(active().id);}finally{if(revision===viewRevision){selecting=false;controls();}}}
+async function newChat(preserveScreenshot=false){if(!preserveScreenshot)resetScreenshotForChat();const revision=++viewRevision;selecting=true;source?.close();controls();try{const selected=await api('/chats',{});if(revision!==viewRevision)return;current=selected;localStorage.setItem('fund-current-chat',current.id);$('question').value='';nearBottom=true;await refreshHistory();if(revision!==viewRevision)return;render();closeSidebar();$('question').focus();}finally{if(revision===viewRevision){selecting=false;controls();}}}
 function subscribe(tid){source?.close();const cid=current.id,revision=viewRevision,stream=new EventSource(`/api/local/chats/${cid}/turns/${tid}/events`);source=stream;
  const selected=()=>current?.id===cid&&viewRevision===revision&&source===stream;
  stream.onmessage=async event=>{if(!selected())return;const data=JSON.parse(event.data),t=current.turns.find(t=>t.id===tid);if(!t)return;if(data.type==='delta'){
@@ -97,7 +235,7 @@ function readEditor(container){return {rows:[...container.querySelectorAll('.edi
 function renderReview(){const panel=$('current-review'),r=current?.state?.review;if(draft&&draftConversation===current?.id&&panel.querySelector('#review-editor'))return;if(draftConversation!==current?.id)draft=null;
  if(!r&&!draft){panel.hidden=true;return;}panel.hidden=false;
  if(draft){panel.innerHTML=`<div class="review-heading"><div><p class="eyebrow">核对原始持仓</p><h2>把数据改对，再看结论</h2></div></div><form id="review-editor">${editorHTML(draft)}<div class="action-row"><button type="submit" class="primary">确认数据并重新核对</button><button type="button" class="quiet-button" data-cancel-edit>取消修改</button></div><div class="inline-notice" role="status"></div></form>`;return;}
- panel.innerHTML=`<div class="review-heading"><div><p class="eyebrow">当前对话 · 最新核对</p><h2>先核对金额，再看结构</h2></div><span class="date-pill">${esc(dateLabel(r.metadata?.as_of))}</span></div>${reviewSummary(r)}${current.state.comparison_unavailable?`<p class="scope-note">${esc(current.state.comparison_unavailable.message)}</p>`:''}${current.state.comparison?`<details class="current-comparison" open><summary>与已保存记录比较</summary>${current.state.comparison.stale?'<p class="scope-note">基准或当前数据已变化，请重新选择记录比较。</p>':comparisonHTML(current.state.comparison)}</details>`:''}<div class="action-row"><button class="primary" data-save-record>保存为一份新记录</button><button class="quiet-button" data-edit-review>修改金额或日期</button><button class="quiet-button" data-compare-current ${!snapshots.length?'disabled':''}>与已保存记录比较</button></div><div id="save-record-form"></div>${r.followups?.length?`<div class="followups"><p>继续聊这份持仓</p>${r.followups.slice(0,3).map(q=>`<button data-question="${esc(q)}">${esc(q)} ↗</button>`).join('')}</div>`:''}`;
+ panel.innerHTML=`<div class="review-heading"><div><p class="eyebrow">当前对话 · 最新核对</p><h2>先核对金额，再看结构</h2></div><span class="date-pill">${esc(dateLabel(r.metadata?.as_of))}</span></div>${reviewSummary(r)}${screenshotDisplayTable(current.state.screenshot_details)}${current.state.comparison_unavailable?`<p class="scope-note">${esc(current.state.comparison_unavailable.message)}</p>`:''}${current.state.comparison?`<details class="current-comparison" open><summary>与已保存记录比较</summary>${current.state.comparison.stale?'<p class="scope-note">基准或当前数据已变化，请重新选择记录比较。</p>':comparisonHTML(current.state.comparison)}</details>`:''}<div class="action-row"><button class="primary" data-save-record>保存为一份新记录</button><button class="quiet-button" data-edit-review>修改金额或日期</button><button class="quiet-button" data-compare-current ${!snapshots.length?'disabled':''}>与已保存记录比较</button></div><div id="save-record-form"></div>${r.followups?.length?`<div class="followups"><p>继续聊这份持仓</p>${r.followups.slice(0,3).map(q=>`<button data-question="${esc(q)}">${esc(q)} ↗</button>`).join('')}</div>`:''}`;
 }
 async function startEditor(){if(active())return notice('请先停止或等待当前回复完成，再修改原始持仓。');if(!current)await newChat();draft=makeDraft(rowsOf(current),current.state.metadata||current.state.review?.metadata);if(!draft.rows.length)draft.rows=[{name:'',amount:'',kind:'unresolved'}];draftConversation=current.id;draftVersion=current.state.version;renderReview();$('current-review').scrollIntoView({block:'start'});}
 async function refreshSnapshots(){const result=await api('/snapshots');snapshots=result.snapshots||[];renderSnapshots();}
@@ -151,6 +289,13 @@ async function refreshAccountHub(){const data=await api('/accounts');accountHubH
 function accountNotice(text=''){$('account-notice').textContent=text;$('account-notice').hidden=!text;}
 function accountPlanHTML(plan){return `<div class="plan-card"><div class="plan-card-heading"><span>建议先做</span><strong>${esc(plan.title)}</strong></div><p>${esc(plan.reason)}</p><p class="scope-note">这一步只做整理和预览，不连接真实账户，也不会执行交易。</p><div class="plan-inputs"><strong>需要补充</strong>${plan.suggested_inputs.map(item=>`<span>${esc(item)}</span>`).join('')}</div><button type="button" class="quiet-button" data-account-question="${esc(plan.question)}">把这件事交给对话继续</button></div>`;}
 async function boot(){
+$('open-holdings-screenshot').onclick=()=>{setScreenshotOpen(true);};
+$('close-holdings-screenshot').onclick=()=>{clearScreenshotFile();setScreenshotOpen(false);$('open-holdings-screenshot').focus();};
+$('choose-holdings-image').onclick=()=>$('holdings-image-file').click();
+$('holdings-image-file').addEventListener('change',event=>{const file=event.target.files?.[0];if(file)chooseScreenshotFile(file);});
+$('clear-holdings-image').onclick=()=>clearScreenshotFile();
+$('run-holdings-ocr').onclick=()=>runScreenshotOCR().catch(error=>screenshotStatus('识别未完成：'+error.message+'。不会自动填补缺失数据。'));
+window.addEventListener('beforeunload',()=>{screenshotState.worker?.terminate?.().catch(()=>{});if(screenshotState.objectUrl)URL.revokeObjectURL(screenshotState.objectUrl);});
 $('start-table').onclick=()=>startEditor().catch(e=>notice(e.message));
 $('account-demo').onclick=async()=>{try{$('account-demo').disabled=true;const result=await api('/accounts/demo',{idempotency_key:'account-hub-demo-v1',request_id:'demo-seed-v1'});accountHubHTML(result.hub);accountNotice(result.notice||'合成数据已载入。');}catch(error){accountNotice('账户数据未载入：'+error.message);}finally{$('account-demo').disabled=false;}};
 $('account-refresh').onclick=()=>refreshAccountHub().then(()=>accountNotice('账户汇总已刷新。')).catch(error=>accountNotice('刷新失败：'+error.message));
