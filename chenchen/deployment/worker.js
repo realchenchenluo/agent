@@ -139,6 +139,7 @@ function capabilityStatus(env) {
   const riskConfig = ownerBridge.ownerConfigurationStatus("risk", env);
   const approvalConfig = ownerBridge.ownerConfigurationStatus("approval", env);
   const riskUrlConfigured = Boolean(String(env.RISK_SERVICE_URL || "").trim());
+  const riskIdentity = ownerBridge.riskIdentityStatus(env);
   return {
     capability_version: "core-agent-capabilities.v1",
     service: "core-agent",
@@ -161,17 +162,20 @@ function capabilityStatus(env) {
       fixed_reviewer_configured: riskConfig.reviewer_configured,
       strict_reviewer_required: riskConfig.require_risk_reviewer,
       strict_trusted_actors: riskConfig.require_trusted_actors,
-      configuration_error: riskConfig.configuration_error
+      configuration_error: riskConfig.configuration_error,
+      ...riskIdentity
     },
     approval: {
       decision_endpoint: "/api/review/approval",
       signature_configured: approvalConfig.secret_configured,
+      service_signature_ready: approvalConfig.secret_configured && !approvalConfig.configuration_error,
       signature_secret_name: approvalConfig.secret_name,
       // A service signature proves the calling service, not the end user's login,
       // account ownership, task authorization, or personal approval.
       trusted_identity_ready: false,
+      end_user_identity_ready: false,
       trusted_identity_evidence: "APPROVAL_SERVICE_REQUIRED",
-      demo_actor_labels_allowed: !approvalConfig.secret_configured && !approvalConfig.require_trusted_actors,
+      demo_actor_labels_allowed: !approvalConfig.secret_configured && !approvalConfig.require_trusted_actors && !approvalConfig.configuration_error,
       configuration_error: approvalConfig.configuration_error
     },
     execution: {
