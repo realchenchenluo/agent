@@ -1,0 +1,41 @@
+{
+  "recorded_at": "2026-10-24T09:48:05.053Z",
+  "base_commit": "2735ade933d123281dd583174697e0560a735afe",
+  "applied_handoff_commit": "a798213624a9422b42df46dfe3d5933793fc6dab",
+  "verified_code_commit": "44fec74d2cfefdf10256ad87ae811a671f2c1890",
+  "branch": "codex/team-api-handoff-20261024",
+  "external_provider_configured": false,
+  "external_model_calls": 0,
+  "paid_model_calls": 0,
+  "new_staging_deployed": false,
+  "production_deployed": false,
+  "production_budget_raised": false,
+  "balance_verified": false,
+  "suggested_staging_total_cny": 1,
+  "suggested_staging_daily_cny": 0.5,
+  "paid_test_approval": "DECLINED_LOCAL_ONLY",
+  "user_decision": "Temporarily no paid testing; complete local verification only.",
+  "tests": {
+    "handoff": {
+      "total": 95,
+      "pass": 94,
+      "skip": 1,
+      "fail": 0
+    },
+    "chenchen_all": {
+      "total": 379,
+      "pass": 378,
+      "skip": 1,
+      "fail": 0
+    }
+  },
+  "source_sha256": {
+    "chenchen/integration/public-chat/provider-adapter.mjs": "5ce237d4929fa370102db042c69c73f4dc0a90523bcf1a16df80bc36b17244b9",
+    "chenchen/integration/public-chat/gateway-policy.mjs": "6cad0a146b8cd9de013406255c8edc7e2101613b034ce9ff80370d4274ff5934",
+    "chenchen/integration/public-chat/gate.mjs": "6da222e3068856ae63e437a9e826965839338892df607925763ad5a71817f2af",
+    "chenchen/integration/public-chat/local-runtime-verify.mjs": "ec0ff3de85ed0bbef4a89d773d27c30c1a45dd16e3ebb7ad3f7e2fc25116d5bd",
+    "chenchen/tests/provider-adapter.test.mjs": "e63a5a6797670a3ed5152690d6cc6137f08da6276c9e79783e555b12b0cd7970",
+    "chenchen/tests/llm-gateway.test.mjs": "1c80c30aaf3cdfa142f056a5353c6fc434e1e5743bb907e77b2e7c72c4453fa9",
+    "chenchen/tests/public-chat-gate.test.mjs": "426f57a46e3fc74cdd7291eaad1b93142d84e2ffb3e18f1cb0b8a5d13d3a1764"
+  }
+}

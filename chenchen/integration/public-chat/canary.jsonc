@@ -1,0 +1,28 @@
+{
+  "name": "personal-ai-fund-chat-canary",
+  "account_id": "9b41127a11a47c2538db70e5ddafd7f6",
+  "main": "canary.mjs",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {"directory": "./public", "binding": "ASSETS", "run_worker_first": true},
+  "vars": {
+    "PUBLIC_ORIGIN": "https://personal-ai-fund-chat-canary.ai-banking-agent.workers.dev",
+    "MODEL_ENABLED": "true",
+    "MODEL_NAME": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "DEMO_START_AT": "2026-10-23T16:33:15.659974+00:00",
+    "DEMO_END_AT": "2026-11-08T16:33:15.659974+00:00",
+    "DEMO_BUDGET_CENTS": "1000",
+    "DAILY_BUDGET_CENTS": "1000",
+    "RELEASE_ID": "TEST_DOUBLE_NOT_LIVE-canary-v1"
+  },
+  "services": [{"binding": "AMOUNT_RISK", "service": "personal-ai-fund-chat-risk"}],
+  "durable_objects": {"bindings": [
+    {"name": "CHAT_SESSIONS", "class_name": "CanarySession"},
+    {"name": "CHAT_GATE", "class_name": "CanaryGate"},
+    {"name": "CANARY_QUOTA", "class_name": "CanaryQuotaGate"}
+  ]},
+  "migrations": [{"tag": "canary-v1", "new_sqlite_classes": ["CanarySession", "CanaryGate", "CanaryQuotaGate"]}],
+  "observability": {"enabled": false}
+}
