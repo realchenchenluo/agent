@@ -1,0 +1,580 @@
+TAP version 13
+# Subtest: external routing requires approval, verified capabilities, official hosts and a bound worst-case cost
+ok 1 - external routing requires approval, verified capabilities, official hosts and a bound worst-case cost
+  ---
+  duration_ms: 5.0285
+  type: 'test'
+  ...
+# Subtest: hybrid policy exposes a finite conservative quote including the Workers AI attempt
+ok 2 - hybrid policy exposes a finite conservative quote including the Workers AI attempt
+  ---
+  duration_ms: 0.9359
+  type: 'test'
+  ...
+# Subtest: quota 429 falls back once within one reservation; admin stats distinguish calls, attempts, usage and conservative cost
+ok 3 - quota 429 falls back once within one reservation; admin stats distinguish calls, attempts, usage and conservative cost
+  ---
+  duration_ms: 48.3504
+  type: 'test'
+  ...
+# Subtest: fallback answer receives deterministic holding facts and passes numeric validation
+ok 4 - fallback answer receives deterministic holding facts and passes numeric validation
+  ---
+  duration_ms: 14.0065
+  type: 'test'
+  ...
+# Subtest: external streaming returns usage and never claims a receipt without terminal marker
+ok 5 - external streaming returns usage and never claims a receipt without terminal marker
+  ---
+  duration_ms: 8.4548
+  type: 'test'
+  ...
+# Subtest: a daily budget rejection happens before any external network request
+ok 6 - a daily budget rejection happens before any external network request
+  ---
+  duration_ms: 6.4743
+  type: 'test'
+  ...
+# Subtest: per-model daily call caps are enforced by the durable gate before an upstream attempt
+ok 7 - per-model daily call caps are enforced by the durable gate before an upstream attempt
+  ---
+  duration_ms: 3.938
+  type: 'test'
+  ...
+# Subtest: opt-in hybrid uses Workers AI first and one external backup for platform neuron exhaustion
+ok 8 - opt-in hybrid uses Workers AI first and one external backup for platform neuron exhaustion
+  ---
+  duration_ms: 9.1949
+  type: 'test'
+  ...
+# Subtest: hybrid never switches after partial Workers AI stream
+ok 9 - hybrid never switches after partial Workers AI stream
+  ---
+  duration_ms: 9.3676
+  type: 'test'
+  ...
+# Subtest: hybrid selects B when A has reached its independent daily call cap
+ok 10 - hybrid selects B when A has reached its independent daily call cap
+  ---
+  duration_ms: 11.7518
+  type: 'test'
+  ...
+# Subtest: hybrid reserves the authorized backup path rather than an unused expensive backup
+ok 11 - hybrid reserves the authorized backup path rather than an unused expensive backup
+  ---
+  duration_ms: 2.2742
+  type: 'test'
+  ...
+# Subtest: hybrid skips a backup whose combined worst-case path breaches the per-call ceiling
+ok 12 - hybrid skips a backup whose combined worst-case path breaches the per-call ceiling
+  ---
+  duration_ms: 2.3985
+  type: 'test'
+  ...
+# Subtest: hybrid pre-reserves B when A is in failure cooldown
+ok 13 - hybrid pre-reserves B when A is in failure cooldown
+  ---
+  duration_ms: 9.3165
+  type: 'test'
+  ...
+# Subtest: audit callback failure still writes a conservative receipt before any provider call
+ok 14 - audit callback failure still writes a conservative receipt before any provider call
+  ---
+  duration_ms: 14.7322
+  type: 'test'
+  ...
+# Subtest: provider config rejects absent verification and unsafe URLs
+ok 15 - provider config rejects absent verification and unsafe URLs
+  ---
+  duration_ms: 3.3126
+  type: 'test'
+  ...
+# Subtest: status classes distinguish auth, quota, rate and upstream failures
+ok 16 - status classes distinguish auth, quota, rate and upstream failures
+  ---
+  duration_ms: 0.2728
+  type: 'test'
+  ...
+# Subtest: a pre-output provider error falls back once without replaying agent work
+ok 17 - a pre-output provider error falls back once without replaying agent work
+  ---
+  duration_ms: 36.5378
+  type: 'test'
+  ...
+# Subtest: a partial stream never joins a second provider answer
+ok 18 - a partial stream never joins a second provider answer
+  ---
+  duration_ms: 3.7576
+  type: 'test'
+  ...
+# Subtest: an incomplete success payload and a timeout are errors, not model answers
+ok 19 - an incomplete success payload and a timeout are errors, not model answers
+  ---
+  duration_ms: 36.4636
+  type: 'test'
+  ...
+# Subtest: a bounded same-provider retry consumes both attempts without replaying a second provider
+ok 20 - a bounded same-provider retry consumes both attempts without replaying a second provider
+  ---
+  duration_ms: 2.5275
+  type: 'test'
+  ...
+# Subtest: authentication failure is reported without trying another paid model
+ok 21 - authentication failure is reported without trying another paid model
+  ---
+  duration_ms: 1.3727
+  type: 'test'
+  ...
+# Subtest: quota exhaustion stays explicit when no backup is configured
+ok 22 - quota exhaustion stays explicit when no backup is configured
+  ---
+  duration_ms: 1.4921
+  type: 'test'
+  ...
+# Subtest: two failed providers stop after two attempts and return a real error
+ok 23 - two failed providers stop after two attempts and return a real error
+  ---
+  duration_ms: 1.9403
+  type: 'test'
+  ...
+# Subtest: unverified native tool calls are rejected instead of silently discarded
+ok 24 - unverified native tool calls are rejected instead of silently discarded
+  ---
+  duration_ms: 2.2629
+  type: 'test'
+  ...
+# Subtest: verified per-model JSON mode and temperature settings shape only the server request
+ok 25 - verified per-model JSON mode and temperature settings shape only the server request
+  ---
+  duration_ms: 1.163
+  type: 'test'
+  ...
+# Subtest: a timeout after the first stream delta stops without a retry or fallback
+ok 26 - a timeout after the first stream delta stops without a retry or fallback
+  ---
+  duration_ms: 37.4
+  type: 'test'
+  ...
+# Subtest: provider redirects are rejected without contacting a backup
+ok 27 - provider redirects are rejected without contacting a backup
+  ---
+  duration_ms: 1.784
+  type: 'test'
+  ...
+# Subtest: an upstream that never acknowledges stream cancellation cannot hold the timeout open
+ok 28 - an upstream that never acknowledges stream cancellation cannot hold the timeout open
+  ---
+  duration_ms: 28.0282
+  type: 'test'
+  ...
+# Subtest: ten concurrent independent sessions are admitted, eleventh blocked; no storage races
+ok 29 - ten concurrent independent sessions are admitted, eleventh blocked; no storage races
+  ---
+  duration_ms: 69.769
+  type: 'test'
+  ...
+# Subtest: concurrent budget reservations include all in-flight requests and never overshoot
+ok 30 - concurrent budget reservations include all in-flight requests and never overshoot
+  ---
+  duration_ms: 17.2432
+  type: 'test'
+  ...
+# Subtest: 40.0203 fen legacy balance admits a bounded call and settles its actual usage without resetting history
+ok 31 - 40.0203 fen legacy balance admits a bounded call and settles its actual usage without resetting history
+  ---
+  duration_ms: 8.0125
+  type: 'test'
+  ...
+# Subtest: bounded reservations remain atomic across concurrent users and original-day settlement
+ok 32 - bounded reservations remain atomic across concurrent users and original-day settlement
+  ---
+  duration_ms: 10.0097
+  type: 'test'
+  ...
+# Subtest: missing or anomalous usage never refunds a dynamic reservation as precise cost
+ok 33 - missing or anomalous usage never refunds a dynamic reservation as precise cost
+  ---
+  duration_ms: 23.4705
+  type: 'test'
+  ...
+# Subtest: consistent usage totals and aliases allow one verified settlement, never a second refund
+ok 34 - consistent usage totals and aliases allow one verified settlement, never a second refund
+  ---
+  duration_ms: 5.0978
+  type: 'test'
+  ...
+# Subtest: identical request is charged once and cannot authorize a second provider call
+ok 35 - identical request is charged once and cannot authorize a second provider call
+  ---
+  duration_ms: 4.3506
+  type: 'test'
+  ...
+# Subtest: one owner active, two allowlisted phases maximum, and explicit release
+ok 36 - one owner active, two allowlisted phases maximum, and explicit release
+  ---
+  duration_ms: 8.556
+  type: 'test'
+  ...
+# Subtest: owner and hashed IP minute limits survive fast completions
+ok 37 - owner and hashed IP minute limits survive fast completions
+  ---
+  duration_ms: 34.763
+  type: 'test'
+  ...
+# Subtest: expired leases restore concurrency without refunding uncertain provider calls
+ok 38 - expired leases restore concurrency without refunding uncertain provider calls
+  ---
+  duration_ms: 3.4601
+  type: 'test'
+  ...
+# Subtest: durable ledger survives instance replacement; config cannot reset period or raise caps
+ok 39 - durable ledger survives instance replacement; config cannot reset period or raise caps
+  ---
+  duration_ms: 7.0479
+  type: 'test'
+  ...
+# Subtest: daily limit resets at Beijing midnight while total remains charged
+ok 40 - daily limit resets at Beijing midnight while total remains charged
+  ---
+  duration_ms: 3.938
+  type: 'test'
+  ...
+# Subtest: before start and at end paid calls stop while status remains readable
+ok 41 - before start and at end paid calls stop while status remains readable
+  ---
+  duration_ms: 4.4884
+  type: 'test'
+  ...
+# Subtest: missing, excessive, unzoned or too-short deployment config fails closed
+ok 42 - missing, excessive, unzoned or too-short deployment config fails closed
+  ---
+  duration_ms: 2.774
+  type: 'test'
+  ...
+# Subtest: verified usage settles in integer micro-CNY and duplicate receipt never double refunds
+ok 43 - verified usage settles in integer micro-CNY and duplicate receipt never double refunds
+  ---
+  duration_ms: 5.9159
+  type: 'test'
+  ...
+# Subtest: unknown, aborted, failed, missing-usage and multi-attempt outcomes retain entire reserve
+ok 44 - unknown, aborted, failed, missing-usage and multi-attempt outcomes retain entire reserve
+  ---
+  duration_ms: 35.0897
+  type: 'test'
+  ...
+# Subtest: late next-day usage receipt settles original reservation day only
+ok 45 - late next-day usage receipt settles original reservation day only
+  ---
+  duration_ms: 2.4503
+  type: 'test'
+  ...
+# Subtest: identity, malformed receipt and missing reservation fail closed; sensitive extra fields discarded
+ok 46 - identity, malformed receipt and missing reservation fail closed; sensitive extra fields discarded
+  ---
+  duration_ms: 5.2386
+  type: 'test'
+  ...
+# Subtest: gate transport validates JSON, limits body, and never accepts plaintext IP
+ok 47 - gate transport validates JSON, limits body, and never accepts plaintext IP
+  ---
+  duration_ms: 1.8245
+  type: 'test'
+  ...
+# Subtest: API admission limits per IP without altering or requiring an AI ledger
+ok 48 - API admission limits per IP without altering or requiring an AI ledger
+  ---
+  duration_ms: 68.2002
+  type: 'test'
+  ...
+# Subtest: session and new-chat limits are persisted and independent of history access
+ok 49 - session and new-chat limits are persisted and independent of history access
+  ---
+  duration_ms: 9.7243
+  type: 'test'
+  ...
+# Subtest: global API admission is atomic, cardinality bounded and old IP counters pruned
+ok 50 - global API admission is atomic, cardinality bounded and old IP counters pruned
+  ---
+  duration_ms: 2855.2143
+  type: 'test'
+  ...
+# Subtest: admission leaves existing paid-call ledger unchanged through expiry and exhaustion
+ok 51 - admission leaves existing paid-call ledger unchanged through expiry and exhaustion
+  ---
+  duration_ms: 3.4728
+  type: 'test'
+  ...
+# Subtest: admin recent receipts are capped at twenty and exclude repeated receipt submissions
+ok 52 - admin recent receipts are capped at twenty and exclude repeated receipt submissions
+  ---
+  duration_ms: 59.867
+  type: 'test'
+  ...
+# Subtest: diagnostic error codes retain only bounded uppercase tokens, never raw errors
+ok 53 - diagnostic error codes retain only bounded uppercase tokens, never raw errors
+  ---
+  duration_ms: 8.0785
+  type: 'test'
+  ...
+# Subtest: cloud SSE parser accepts LF/CRLF split at every byte including UTF8, comment heartbeat and final unterminated DONE
+ok 54 - cloud SSE parser accepts LF/CRLF split at every byte including UTF8, comment heartbeat and final unterminated DONE
+  ---
+  duration_ms: 52.3532
+  type: 'test'
+  ...
+# Subtest: stream without terminal marker remains failure with sanitized diagnostic and reserved partial usage
+ok 55 - stream without terminal marker remains failure with sanitized diagnostic and reserved partial usage
+  ---
+  duration_ms: 6.1795
+  type: 'test'
+  ...
+# Subtest: provider error payload is not included in receipt diagnostics and does not trigger retry
+ok 56 - provider error payload is not included in receipt diagnostics and does not trigger retry
+  ---
+  duration_ms: 5.9011
+  type: 'test'
+  ...
+# Subtest: malformed SSE JSON gets stable safe error code
+ok 57 - malformed SSE JSON gets stable safe error code
+  ---
+  duration_ms: 3.3199
+  type: 'test'
+  ...
+# Subtest: finite numeric provider deltas preserve literal output at the observed percentage cut point
+ok 58 - finite numeric provider deltas preserve literal output at the observed percentage cut point
+  ---
+  duration_ms: 4.6017
+  type: 'test'
+  ...
+# Subtest: numeric zero is preserved; objects booleans and nonfinite deltas fail closed
+ok 59 - numeric zero is preserved; objects booleans and nonfinite deltas fail closed
+  ---
+  duration_ms: 11.357
+  type: 'test'
+  ...
+# Subtest: cloud five-turn semantics reuse calculations and preserve corrected actual data; real transport replaced explicitly
+ok 60 - cloud five-turn semantics reuse calculations and preserve corrected actual data; real transport replaced explicitly
+  ---
+  duration_ms: 291.7281
+  type: 'test'
+  ...
+# Subtest: signed rolling visitor cookies, CSRF, backend ownership, persistence across object restart
+ok 61 - signed rolling visitor cookies, CSRF, backend ownership, persistence across object restart
+  ---
+  duration_ms: 55.2209
+  type: 'test'
+  ...
+# Subtest: idempotent duplicate does not infer twice; stopping and prepared retry preserve actual version
+ok 62 - idempotent duplicate does not infer twice; stopping and prepared retry preserve actual version
+  ---
+  duration_ms: 58.5189
+  type: 'test'
+  ...
+# Subtest: independent Risk HMAC validation fails closed and amount policy matches local cases
+ok 63 - independent Risk HMAC validation fails closed and amount policy matches local cases
+  ---
+  duration_ms: 29.826
+  type: 'test'
+  ...
+# Subtest: provider errors never retry automatically; budget exhaustion leaves existing data readable
+ok 64 - provider errors never retry automatically; budget exhaustion leaves existing data readable
+  ---
+  duration_ms: 42.1988
+  type: 'test'
+  ...
+# Subtest: SSE reconnect replays same turn without any extra model calls; private admin paths are not public
+ok 65 - SSE reconnect replays same turn without any extra model calls; private admin paths are not public
+  ---
+  duration_ms: 29.8346
+  type: 'test'
+  ...
+# Subtest: ten independent active visitors use explicit provider doubles; eleventh is refused before inference
+ok 66 - ten independent active visitors use explicit provider doubles; eleventh is refused before inference
+  ---
+  duration_ms: 203.9552
+  type: 'test'
+  ...
+# Subtest: Risk BLOCK never commits data and confirmation stays simulation only
+ok 67 - Risk BLOCK never commits data and confirmation stays simulation only
+  ---
+  duration_ms: 116.7685
+  type: 'test'
+  ...
+# Subtest: cloud amount policy is behaviorally identical to the original Python amount branch
+ok 68 - cloud amount policy is behaviorally identical to the original Python amount branch # SKIP Private team Risk fixture is not part of this handoff package
+  ---
+  duration_ms: 0.3565
+  type: 'test'
+  ...
+# Subtest: model timeout ends the turn with a clear error, retains unknown-call reserve and makes no automatic retry
+ok 69 - model timeout ends the turn with a clear error, retains unknown-call reserve and makes no automatic retry
+  ---
+  duration_ms: 51.5874
+  type: 'test'
+  ...
+# Subtest: truncated provider stream cannot become success or trigger retry; reconnect exposes saved failure
+ok 70 - truncated provider stream cannot become success or trigger retry; reconnect exposes saved failure
+  ---
+  duration_ms: 16.3727
+  type: 'test'
+  ...
+# Subtest: admin cost status needs a server bearer token; visitor-supplied owner headers cannot cross partitions
+ok 71 - admin cost status needs a server bearer token; visitor-supplied owner headers cannot cross partitions
+  ---
+  duration_ms: 9.9061
+  type: 'test'
+  ...
+# Subtest: disconnecting a client stream does not resubmit or lose an ongoing turn
+ok 72 - disconnecting a client stream does not resubmit or lose an ongoing turn
+  ---
+  duration_ms: 17.6354
+  type: 'test'
+  ...
+# Subtest: failed durable writes terminate live SSE visibly instead of leaving an infinite heartbeat
+ok 73 - failed durable writes terminate live SSE visibly instead of leaving an infinite heartbeat
+  ---
+  duration_ms: 10.2261
+  type: 'test'
+  ...
+# Subtest: unresponsive budget service is bounded and never permits inference
+ok 74 - unresponsive budget service is bounded and never permits inference
+  ---
+  duration_ms: 39.7803
+  type: 'test'
+  ...
+# Subtest: whole-turn deadline is separate from user stop and emits TURN_TIMEOUT without further provider calls
+ok 75 - whole-turn deadline is separate from user stop and emits TURN_TIMEOUT without further provider calls
+  ---
+  duration_ms: 45.8646
+  type: 'test'
+  ...
+# Subtest: raw provider diagnostics never appear in public errors or saved conversation
+ok 76 - raw provider diagnostics never appear in public errors or saved conversation
+  ---
+  duration_ms: 10.7123
+  type: 'test'
+  ...
+# Subtest: Workers AI neuron error 3036 is distinct from the internal daily budget gate
+ok 77 - Workers AI neuron error 3036 is distinct from the internal daily budget gate
+  ---
+  duration_ms: 12.815
+  type: 'test'
+  ...
+# Subtest: owner SSE connection limit releases slots on disconnect and expires idle stream lifetime
+ok 78 - owner SSE connection limit releases slots on disconnect and expires idle stream lifetime
+  ---
+  duration_ms: 86.8494
+  type: 'test'
+  ...
+# Subtest: admission limits blank chat creation while preserving existing reads without model use
+ok 79 - admission limits blank chat creation while preserving existing reads without model use
+  ---
+  duration_ms: 9.1014
+  type: 'test'
+  ...
+# Subtest: A 60000/20000/20000 reuses Core tool with correct total, weights, limited evidence and unavailable history
+ok 80 - A 60000/20000/20000 reuses Core tool with correct total, weights, limited evidence and unavailable history
+  ---
+  duration_ms: 9.7185
+  type: 'test'
+  ...
+# Subtest: untrusted imported notes cannot alter deterministic holdings or claim execution
+ok 81 - untrusted imported notes cannot alter deterministic holdings or claim execution
+  ---
+  duration_ms: 0.8107
+  type: 'test'
+  ...
+# Subtest: changed A 30000/20000/20000 recalculates denominator and percentage using existing tool
+ok 82 - changed A 30000/20000/20000 recalculates denominator and percentage using existing tool
+  ---
+  duration_ms: 0.6165
+  type: 'test'
+  ...
+# Subtest: decimal strings are parsed exactly into cents including explicit units
+ok 83 - decimal strings are parsed exactly into cents including explicit units
+  ---
+  duration_ms: 1.3773
+  type: 'test'
+  ...
+# Subtest: normalization accepts explicit current-value decimal rows and rejects inconsistent representations
+ok 84 - normalization accepts explicit current-value decimal rows and rejects inconsistent representations
+  ---
+  duration_ms: 0.4531
+  type: 'test'
+  ...
+# Subtest: cost, quantity, mixed currencies and mixed dates fail closed
+ok 85 - cost, quantity, mixed currencies and mixed dates fail closed
+  ---
+  duration_ms: 0.7311
+  type: 'test'
+  ...
+# Subtest: canonical duplicates including fullwidth letters/space/case are not silently added twice
+ok 86 - canonical duplicates including fullwidth letters/space/case are not silently added twice
+  ---
+  duration_ms: 0.3537
+  type: 'test'
+  ...
+# Subtest: metadata source/demo/date are explicit and invalid calendar dates cannot be saved
+ok 87 - metadata source/demo/date are explicit and invalid calendar dates cannot be saved
+  ---
+  duration_ms: 0.8468
+  type: 'test'
+  ...
+# Subtest: missing cash is unknown, not a verified zero asset; zero totals never divide by zero
+ok 88 - missing cash is unknown, not a verified zero asset; zero totals never divide by zero
+  ---
+  duration_ms: 10.0762
+  type: 'test'
+  ...
+# Subtest: confirmed snapshot requires confirmation, date, immutable review hash and timestamp
+ok 89 - confirmed snapshot requires confirmation, date, immutable review hash and timestamp
+  ---
+  duration_ms: 1.9361
+  type: 'test'
+  ...
+# Subtest: snapshot comparison reports observed values without attributing profit, loss or trades
+ok 90 - snapshot comparison reports observed values without attributing profit, loss or trades
+  ---
+  duration_ms: 1.308
+  type: 'test'
+  ...
+# Subtest: comparison additions/removals remain explicit and never infer a rename or ticker
+ok 91 - comparison additions/removals remain explicit and never infer a rename or ticker
+  ---
+  duration_ms: 1.6817
+  type: 'test'
+  ...
+# Subtest: saved baseline versus current undated draft is explicit, not secretly confirmed or saved
+ok 92 - saved baseline versus current undated draft is explicit, not secretly confirmed or saved
+  ---
+  duration_ms: 1.2942
+  type: 'test'
+  ...
+# Subtest: mixed demo identity, reversed dates and tampered snapshot totals fail closed
+ok 93 - mixed demo identity, reversed dates and tampered snapshot totals fail closed
+  ---
+  duration_ms: 2.6135
+  type: 'test'
+  ...
+# Subtest: content hashes are stable across time and sensitive to source, date, amount and revision
+ok 94 - content hashes are stable across time and sensitive to source, date, amount and revision
+  ---
+  duration_ms: 0.7909
+  type: 'test'
+  ...
+# Subtest: followups are at most three user questions grounded in available amounts and missing date
+ok 95 - followups are at most three user questions grounded in available amounts and missing date
+  ---
+  duration_ms: 0.5828
+  type: 'test'
+  ...
+1..95
+# tests 95
+# suites 0
+# pass 94
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 3438.0364

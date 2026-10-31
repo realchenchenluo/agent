@@ -1,0 +1,59 @@
+{
+  "name": "personal-ai-fund-chat",
+  "account_id": "9b41127a11a47c2538db70e5ddafd7f6",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "vars": {
+    "PUBLIC_ORIGIN": "https://personal-ai-fund-chat.ai-banking-agent.workers.dev",
+    "MODEL_ENABLED": "true",
+    "MODEL_NAME": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "DEMO_START_AT": "2026-10-23T16:33:15.659974+00:00",
+    "DEMO_END_AT": "2026-11-08T16:33:15.659974+00:00",
+    "DEMO_BUDGET_CENTS": "100",
+    "DAILY_BUDGET_CENTS": "50",
+    "RELEASE_ID": "chat-mobile-stability-20261024-v6.2"
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "services": [
+    {
+      "binding": "AMOUNT_RISK",
+      "service": "personal-ai-fund-chat-risk"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CHAT_SESSIONS",
+        "class_name": "ChatSession"
+      },
+      {
+        "name": "CHAT_GATE",
+        "class_name": "ChatGate"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "public-chat-v1",
+      "new_sqlite_classes": [
+        "ChatSession",
+        "ChatGate"
+      ]
+    }
+  ],
+  "observability": {
+    "enabled": false
+  }
+}

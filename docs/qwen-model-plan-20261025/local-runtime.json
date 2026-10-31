@@ -1,0 +1,67 @@
+{
+  "mode": "LOCAL_WORKERD_TEST_DOUBLE_NOT_LIVE",
+  "started_at": "2026-10-24T16:16:55.466Z",
+  "real_model_calls": 0,
+  "paid_api_calls": 0,
+  "results": {
+    "chinese_plan_business_tools_risk": {
+      "status": "PASS",
+      "model": "TEST_DOUBLE",
+      "actual_cash_cents": 1000000,
+      "risk_verified": true,
+      "execution_allowed": false,
+      "committed_version": 1,
+      "duplicate_same_turn": true,
+      "receipts": [
+        {
+          "phase": "plan",
+          "provider_response_id": "TEST_DOUBLE_NOT_LIVE-8e2e80c2-8b65-41b9-80b7-4c2d9b819af7",
+          "usage": {
+            "prompt_tokens": 1000,
+            "completion_tokens": 100
+          }
+        },
+        {
+          "phase": "answer",
+          "provider_response_id": "TEST_DOUBLE_NOT_LIVE-55eca2de-44a2-436b-810e-51c45e51c7d6",
+          "usage": {
+            "prompt_tokens": 1000,
+            "completion_tokens": 100
+          }
+        }
+      ]
+    },
+    "visitor_isolation": {
+      "foreign_status": 404
+    },
+    "sse_replay": {
+      "status": "PASS",
+      "content_type": "text/event-stream",
+      "completed_turn_replayed": true
+    },
+    "rate_limit": {
+      "status": "ERROR",
+      "code": "MODEL_PROVIDER_FAILURE",
+      "real_model_calls": 0
+    },
+    "truncated": {
+      "status": "ERROR",
+      "code": "MODEL_STREAM_INTERRUPTED",
+      "real_model_calls": 0
+    },
+    "interrupted": {
+      "status": "ERROR",
+      "code": "MODEL_PROVIDER_FAILURE",
+      "real_model_calls": 0
+    },
+    "audit_and_budget": {
+      "status": "PASS",
+      "active_count": 0,
+      "receipt_count": 8,
+      "used_micro_cny": 136801,
+      "test_ledger_only": true
+    }
+  },
+  "passed": true,
+  "completed_at": "2026-10-24T16:16:59.726Z"
+}

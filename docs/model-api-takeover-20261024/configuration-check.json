@@ -1,0 +1,23 @@
+{
+  "checked_date": "2026-10-24",
+  "scope": "READ_ONLY_DEPLOYMENT_METADATA_NO_MODEL_INFERENCE",
+  "worker": "personal-ai-fund-manager-core-agent",
+  "deployment_created": "2026-10-19T04:28:41.915665Z",
+  "version_id": "209a21a4-7245-4a96-bb3a-56a064e61d85",
+  "traffic_percentage": 100,
+  "model_provider": "workers_ai",
+  "model_name": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+  "ai_binding": "AI",
+  "version_secret_text_binding_count": 0,
+  "external_provider": "UNKNOWN_NOT_CONFIGURED_IN_THIS_VERSION",
+  "external_base_url": null,
+  "external_model_id": null,
+  "external_secret_name_verified": false,
+  "provider_balance_verified": false,
+  "model_inference_calls": 0,
+  "paid_test_approval": "DECLINED_LOCAL_ONLY",
+  "is_handoff_chat_worker": false,
+  "production_modified": false,
+  "secrets_modified": false,
+  "budget_modified": false
+}

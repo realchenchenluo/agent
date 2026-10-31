@@ -1,0 +1,20 @@
+{
+  "checked_date": "2026-10-24",
+  "scope": "EXISTING_PUBLIC_STAGING_NON_MODEL_SMOKE_ONLY",
+  "url": "https://personal-ai-fund-chat-staging.ai-banking-agent.workers.dev",
+  "release": "staging-dynamic-budget-20261024-llm-v1",
+  "this_branch_deployed": false,
+  "health": "ok",
+  "create": 201,
+  "review": 200,
+  "data": "SYNTHETIC_HOLDINGS_ONLY",
+  "total_yuan": 100000,
+  "weights": [60, 20, 20],
+  "risk": "REVIEW",
+  "reread": 200,
+  "other_visitor": 404,
+  "admin_without_token": 403,
+  "model_invoked": false,
+  "provider_balance_verified": false,
+  "external_api_verified": false
+}
