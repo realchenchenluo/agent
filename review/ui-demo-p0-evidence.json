@@ -1,0 +1,341 @@
+{
+  "evidence_version": "ui-demo-p0-evidence.v1",
+  "date": "2026-11-01",
+  "timezone": "Asia/Shanghai",
+  "collected_at": "2026-10-31T17:17:18.695Z",
+  "source_of_truth": "https://github.com/realchenchenluo/agent",
+  "baseline_main_sha": "ced1ccad50319ba69385d7cbbe9c12114c840062",
+  "branch": "codex/ui-demo-p0-20261101",
+  "worktree": "F:/ui-demo-p0-20261101",
+  "fork": "https://github.com/lixjanus526-art/agent",
+  "permissions": {
+    "team_pull": true,
+    "team_push": false,
+    "fork_push": true
+  },
+  "code_commit_sha": "6e48af3a66790649c0c5b213a095a7e477b703ab",
+  "draft_pr": "https://github.com/realchenchenluo/agent/pull/7",
+  "delivery_transport": {
+    "initial_git_upload": "HTTP 408 and low-speed timeouts; not counted as successful synchronization",
+    "completed_method": "GitHub Git Database API with original blob/tree/commit SHA checks and temporary incremental Git transport for original video bytes",
+    "original_video_unchanged": true,
+    "temporary_cache_refs_deleted": true,
+    "final_verification": "External final-sync.json records local, Git remote, API remote and Draft PR head equality; final git push is required"
+  },
+  "final_sha": {
+    "ref": "refs/heads/codex/ui-demo-p0-20261101",
+    "repository": "lixjanus526-art/agent",
+    "resolution": "https://api.github.com/repos/lixjanus526-art/agent/git/ref/heads/codex/ui-demo-p0-20261101",
+    "delivery_receipt": "F:/人工智能AI 比赛/output/ui-demo-p0-audit-20261101/final-sync.json",
+    "explanation": "A commit cannot embed its own hash. code_commit_sha pins runtime changes; the final documentation head is recorded in the external delivery receipt and verified against the remote and Draft PR head."
+  },
+  "result": {
+    "ui_candidate": "LOCAL_PASS",
+    "full_business_demo": "NO-GO",
+    "formal_joint_acceptance": false,
+    "deployed": false,
+    "production_changed": false,
+    "real_model_calls": 0,
+    "paid_model_calls": 0,
+    "real_financial_operations": 0,
+    "mobile_hardware": "UNVERIFIED",
+    "mainland_network": "UNVERIFIED"
+  },
+  "entry": {
+    "demo": "/investment",
+    "auxiliary": "/risk-workbench",
+    "online_baseline": "https://lixjanus526-art.github.io/finance-lab-ui-preview/workspace.html",
+    "online_status": 200,
+    "online_preview_sha": "ebd3a190f727d8060f12a9224b3e157084f7b43e",
+    "changed_preview": false
+  },
+  "changes": [
+    {
+      "files": [
+        "chenchen/versions/task-state.mjs",
+        "chenchen/versions/task-client.mjs",
+        "chenchen/versions/task-view.mjs",
+        "chenchen/versions/task-view.css"
+      ],
+      "reason": "Shared read-only task provenance, receipt validation, errors, cancellation, locking and unknown outcome recovery"
+    },
+    {
+      "files": [
+        "chenchen/versions/investment.html",
+        "chenchen/versions/investment.js",
+        "chenchen/versions/risk-workbench.html",
+        "chenchen/versions/risk-workbench.js"
+      ],
+      "reason": "Reuse existing UI; remove browser-supplied Risk/approval identities and privileged actions; retain explicit disabled explanations"
+    },
+    {
+      "files": [
+        "chenchen/server.js"
+      ],
+      "reason": "Only add four static UI assets to existing allowlist; no API changes"
+    },
+    {
+      "files": [
+        "chenchen/scripts/ui-demo-p0.test.mjs",
+        "chenchen/scripts/ui-demo-p0-browser.cjs",
+        "chenchen/scripts/ui-demo-p0-demo.cjs",
+        "chenchen/scripts/ui-demo-p0-record.cjs"
+      ],
+      "reason": "Reproducible unit, browser, local API and video checks"
+    },
+    {
+      "files": [
+        "review/ui-demo-p0-20261101.md",
+        "review/ui-demo-p0-evidence.json",
+        "review/ui-demo-p0-artifacts/",
+        "review/ui-demo-p0-standalone-assets.patch",
+        "docs/contract-proposals/2026-11-01-ui-demo-p0.md"
+      ],
+      "reason": "Auditable evidence, Owner dependencies, mobile procedure and unapplied release packaging patch"
+    }
+  ],
+  "tests": [
+    {
+      "scope": "baseline main",
+      "command": "node --test --test-reporter=tap",
+      "passed": 284,
+      "failed": 0,
+      "log": "review/ui-demo-p0-artifacts/logs/baseline-tests.tap"
+    },
+    {
+      "scope": "UI candidate",
+      "command": "npm run check",
+      "result": "PASS",
+      "log": "review/ui-demo-p0-artifacts/logs/check.log"
+    },
+    {
+      "scope": "UI candidate",
+      "command": "npm test -- --test-reporter=tap",
+      "passed": 322,
+      "failed": 0,
+      "new_frontend_mock_tests": 38,
+      "log": "review/ui-demo-p0-artifacts/logs/full-tests.tap"
+    },
+    {
+      "scope": "UI candidate",
+      "command": "node scripts/ui-demo-p0-browser.cjs",
+      "passed": 42,
+      "failed": 0,
+      "page_errors": [],
+      "log": "review/ui-demo-p0-artifacts/browser-results.json"
+    },
+    {
+      "scope": "UI candidate",
+      "command": "git diff --check",
+      "result": "PASS",
+      "log": "review/ui-demo-p0-artifacts/logs/final-check.log"
+    },
+    {
+      "scope": "unapplied static packaging patch",
+      "command": "git apply --check review/ui-demo-p0-standalone-assets.patch",
+      "result": "PASS_NOT_APPLIED"
+    },
+    {
+      "scope": "PR5 immutable offline snapshot, repository root",
+      "sha": "4f98bcfbb45e3d8522484f5b446e498abd7b1ed1",
+      "command": "node --test --test-reporter=tap",
+      "passed": 938,
+      "skipped": 1,
+      "failed": 0,
+      "log": "review/ui-demo-p0-artifacts/logs/pr5-offline-tests.tap"
+    },
+    {
+      "scope": "PR6 immutable Core snapshot",
+      "sha": "e8f01cc5a77077f87fbabb891c0e51de21b9b6b6",
+      "command": "node --test --test-reporter=tap (cwd chenchen)",
+      "passed": 458,
+      "skipped": 1,
+      "failed": 0,
+      "log": "review/ui-demo-p0-artifacts/logs/pr6-core-tests.tap"
+    },
+    {
+      "scope": "PR6 Risk/interface/network/joint offline",
+      "command": "node --test --test-reporter=tap modules/safety-risk-eval/interface-adapters/test/*.test.cjs modules/safety-risk-eval/joint-acceptance/test/*.test.cjs modules/safety-risk-eval/unified-rating/test/*.test.cjs modules/safety-risk-eval/network-resilience/test/*.test.*",
+      "passed": 501,
+      "failed": 0,
+      "log": "review/ui-demo-p0-artifacts/logs/pr6-risk-tests.tap"
+    },
+    {
+      "scope": "PR6 clean source cloud build",
+      "command": "node build.mjs",
+      "result": "PASS_NOT_DEPLOYED",
+      "log": "review/ui-demo-p0-artifacts/logs/pr6-build.log"
+    },
+    {
+      "scope": "PR6 cloud unit",
+      "command": "node --test --test-reporter=tap test/*.test.mjs",
+      "passed": 24,
+      "failed": 0,
+      "log": "review/ui-demo-p0-artifacts/logs/pr6-cloud-tests.tap"
+    },
+    {
+      "scope": "PR6 loopback current Worker signed HTTP",
+      "command": "runCurrentCandidateHttp()",
+      "passed": 18,
+      "failed": 0,
+      "formal_joint_acceptance": false,
+      "model": "LOCAL_HTTP_MODEL_TEST_DOUBLE_NOT_LIVE",
+      "approval": "SIGNED_SERVICE_TEST_DOUBLE_NOT_AUTHENTICATED_END_USER",
+      "log": "review/ui-demo-p0-artifacts/pr6-current-http.json"
+    }
+  ],
+  "test_notes": [
+    "Scopes overlap and must not be summed.",
+    "Node v24.22.1; temporary npm 11.6.2 was used for the actual package.json commands.",
+    "Initial missing fixtures/dependencies were restored from immutable candidates without source changes. npm ci used existing lockfiles; Ajv 8.20.0 and esbuild 0.28.2.",
+    "One browser timing assertion failed when a short delay allowed completion; deterministic held requests were then used, and final checks passed."
+  ],
+  "browsers": [
+    {
+      "name": "Chrome",
+      "version": "156.0.8078.74",
+      "mode": "headless desktop",
+      "result": "AVAILABLE"
+    },
+    {
+      "name": "Edge",
+      "version": "156.0.4314.50",
+      "mode": "headless desktop",
+      "result": "AVAILABLE"
+    }
+  ],
+  "viewports": [
+    375,
+    768,
+    1440
+  ],
+  "environment": "Windows / loopback / headless desktop; no mobile hardware",
+  "browser_network": "External browser requests blocked",
+  "mock_boundary": "MOCK tests synthesize responses and provider/approval identities; they do not prove real Risk, user identity, model inference or Staging integration.",
+  "local_real_api": {
+    "artifact": "review/ui-demo-p0-artifacts/main-demo.json",
+    "result": "PASS_EXPECTED_BLOCK",
+    "health": "200 HANDOFF_REQUIRED / real code tools / synthetic portfolio",
+    "funding": "200 funding-plan-demo.v1 / 10000 CNY - 4000 CNY protected = 6000 CNY available",
+    "review": "503 MODEL_FAILED / isolated process without credentials",
+    "allocation_minor_after_failure": 0,
+    "full_flow": "NO-GO"
+  },
+  "public_readonly": {
+    "route": "https://personal-ai-fund-manager-core-agent.realchenchenluo.workers.dev/api/review/capabilities",
+    "http_status": 200,
+    "artifact": "review/ui-demo-p0-artifacts/public-capabilities.json",
+    "model_inference_run": false,
+    "risk_dispatch_ready": false,
+    "trusted_approval_identity_ready": false,
+    "execution_allowed": false,
+    "gateway_connected": false,
+    "joint_acceptance": false,
+    "health_probe": "SSL error observed; no reachability acceptance"
+  },
+  "candidate_state": {
+    "pr5": {
+      "base": "main",
+      "draft": true,
+      "head": "4f98bcfbb45e3d8522484f5b446e498abd7b1ed1",
+      "merged_at": null,
+      "state": "open"
+    },
+    "pr6": {
+      "base": "codex/core-risk-p0-integration-20261030",
+      "draft": true,
+      "head": "e8f01cc5a77077f87fbabb891c0e51de21b9b6b6",
+      "merged_at": null,
+      "state": "open"
+    },
+    "pr6_ci": {
+      "run_id": 41196739585,
+      "conclusion": "action_required",
+      "accepted": false
+    },
+    "main_ci": "No runs returned for exact baseline SHA; not a passing CI claim"
+  },
+  "voice": {
+    "pr": "https://github.com/realchenchenluo/agent/pull/1",
+    "head": "5ac8c12daa2b35b6567c48b35ce042b3314d54d2",
+    "changed": false,
+    "mount_ids_preserved": true,
+    "merge_overlap": [
+      "risk-workbench.js",
+      "risk-workbench.html",
+      "server static allowlist"
+    ],
+    "new_cloud_asr": false,
+    "device_asr": "UNVERIFIED"
+  },
+  "mobile": [
+    {
+      "browser": "iOS Safari",
+      "result": "UNVERIFIED"
+    },
+    {
+      "browser": "Android Chrome",
+      "result": "UNVERIFIED"
+    }
+  ],
+  "video": {
+    "result": "RECORDED",
+    "file": "review/ui-demo-p0-artifacts/video/main-local-no-go.webm",
+    "script": "chenchen/scripts/ui-demo-p0-record.cjs",
+    "scope": "Desktop headless local real API prefix and explicit NO-GO, not full business integration"
+  },
+  "owner_blockers": [
+    {
+      "owner": "林粹",
+      "requires": [
+        "Node/Worker route parity",
+        "request-based unknown outcome recovery",
+        "authenticated end-user/account/task binding",
+        "Tools and shared data provenance",
+        "persistent query and cancel semantics"
+      ]
+    },
+    {
+      "owner": "Vesper",
+      "requires": [
+        "trusted fixed reviewer and signatures",
+        "formal callback acceptance",
+        "contract bindings and abnormal/duplicate results",
+        "supported Core-to-Risk direction"
+      ]
+    },
+    {
+      "owner": "七七",
+      "requires": [
+        "fixed shared synthetic ledger",
+        "version/source/date/units",
+        "protected purposes and concurrency",
+        "server-authoritative task binding"
+      ]
+    },
+    {
+      "owner": "Sean",
+      "requires": [
+        "reviewed integration SHA",
+        "CI execution approval",
+        "staging URL and deployed-version-to-SHA mapping",
+        "joint acceptance",
+        "review of standalone static asset packaging patch before release"
+      ]
+    }
+  ],
+  "unresolved": [
+    "full natural-language funding flow",
+    "authenticated end-user approval",
+    "formal Risk callback",
+    "shared Finance ledger",
+    "persistent multi-user authorization",
+    "same-version Staging",
+    "mobile hardware acceptance",
+    "mainland reachability",
+    "standalone Pages packaging remains an unapplied release patch"
+  ],
+  "evidence_manifest": "review/ui-demo-p0-artifacts/manifest.json",
+  "report": "review/ui-demo-p0-20261101.md",
+  "contract_proposal": "docs/contract-proposals/2026-11-01-ui-demo-p0.md"
+}

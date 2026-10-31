@@ -1,0 +1,171 @@
+{
+  "algorithm": "SHA256",
+  "scope": "Evidence files only; manifest excludes itself",
+  "artifacts": [
+    {
+      "path": "review/ui-demo-p0-artifacts/chrome-investment-375.png",
+      "bytes": 451736,
+      "sha256": "6a2bff941156dab1c892a88ee29d16a5278fa36c0f933bcdc5cc993a9c63e411"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/chrome-investment-768.png",
+      "bytes": 478869,
+      "sha256": "2523729693005f6885f8364312b1565f89a1f6dea7fa82e405eb579135c682c2"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/chrome-investment-1440.png",
+      "bytes": 529379,
+      "sha256": "850fc8765e7bd5f591a332898ae7d1ac3ae24a2e2979f4772c8508b607f5d652"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/chrome-mock-risk-375.png",
+      "bytes": 289216,
+      "sha256": "ba2cce6487849f9175b48f6425ae1fcc3bfbf85a0e60f27ac0730cf918091372"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/chrome-mock-risk-768.png",
+      "bytes": 349201,
+      "sha256": "0d0d07f3c9dd927c7b40fb15db00558dd727dc15448eb63f051434a06c1e2af1"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/chrome-mock-risk-1440.png",
+      "bytes": 392863,
+      "sha256": "e68da6ec75f8c61b8c7357f06956a374604b01cd46537756854f73319d2625f4"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/edge-investment-375.png",
+      "bytes": 454345,
+      "sha256": "5fe77f872fccc6c3d10039adb2caab63bf2fd679543460fa1027b227a2150c69"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/edge-investment-768.png",
+      "bytes": 479365,
+      "sha256": "a706201e56e8392cce3e0cf09b7f4133237d31f8758c5737b4b4448629135ae6"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/edge-investment-1440.png",
+      "bytes": 529820,
+      "sha256": "0b68383f6d26d2b51df85ad8d62d15d824db36ddc11298bb616e36a1448598e6"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/edge-mock-risk-375.png",
+      "bytes": 289216,
+      "sha256": "ba2cce6487849f9175b48f6425ae1fcc3bfbf85a0e60f27ac0730cf918091372"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/edge-mock-risk-768.png",
+      "bytes": 348576,
+      "sha256": "92cf18da66301e42a350e82392b62b1c672f161a0e473a846c56dba8559b9e4a"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/edge-mock-risk-1440.png",
+      "bytes": 392863,
+      "sha256": "e68da6ec75f8c61b8c7357f06956a374604b01cd46537756854f73319d2625f4"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/browser-results.json",
+      "bytes": 5223,
+      "sha256": "2a5b5a4d88b9823e1bc72d64cd077d0411362938fb3d4d1ad594303ee12c5678"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/main-local-api.json",
+      "bytes": 143359,
+      "sha256": "dee1a4da22a20a44e2af3ab3f57ec380ea6457b786a14717909907f5674c5790"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/main-demo.json",
+      "bytes": 105795,
+      "sha256": "fdae8cdfcb8ae3adc43937a74fe2c824f90c243d3868a75808ddb12967a5cd1d"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/video/main-local-no-go.webm",
+      "bytes": 1016212,
+      "sha256": "56b806936f1eb74b78df4c31e4a3eb5d9ef1a3ba2c080e5d55f6405d7aebbea1"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/baseline-tests.tap",
+      "bytes": 64397,
+      "sha256": "6f5d9e1383af9027d98e7384be0ae187985f03066cb6c0ccb567b078e57c8e59"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/check.log",
+      "bytes": 98,
+      "sha256": "f5f44da69b6675737f7aaa939b567f47d11527d700f9f063b46cef78c7f86b62"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/full-tests.tap",
+      "bytes": 71295,
+      "sha256": "9c20eb19cf836f0ccb31f40403d18c101e3a3d5a59e364f4b21daec53423c448"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/browser.log",
+      "bytes": 38,
+      "sha256": "cba9cab9569af616de0de3e0bcd304b98fe4b9eb80bd3d2ee648c10667bca2ef"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/record.log",
+      "bytes": 192,
+      "sha256": "e31bb0f0a402b8bda31a4c42a30bf737466db66d8b670ca7c841b6bd8c82f11b"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/pr5-offline-tests.tap",
+      "bytes": 202800,
+      "sha256": "25c30650f35fe0c6717aaee689038f8c1428a60e619290eaa48c2b6a8c5c29e9"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/pr6-core-tests.tap",
+      "bytes": 105651,
+      "sha256": "a9f1d64ee93808665fb1a20d76b7e85aaa9d95ccbf3463aebc935d7a7b38ede0"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/pr6-risk-tests.tap",
+      "bytes": 102121,
+      "sha256": "e807d27837575ead2888a2cda114606620e9fe1cc83bee0ff1ffeb35b068e1b7"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/pr6-cloud-tests.tap",
+      "bytes": 5287,
+      "sha256": "7c76521f49799801a5892073e0891a9f4c73f077d9073c548330bb130164c2c6"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/pr6-build.log",
+      "bytes": 285,
+      "sha256": "c35e9c88f827ae5a65a1a00a08a70e6c7d368ba44b274dfa19d5ddc9ef538c22"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/logs/final-check.log",
+      "bytes": 237,
+      "sha256": "47a5f861ffb701fb12b57d8cdca63bac380f7c216502615e9dad894b8b794257"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/pr6-current-http.json",
+      "bytes": 464713,
+      "sha256": "b29eb4f8e8e5b44b0ae8162573849d14e6efeda7df4e7b07a80d815a1e0c0c14"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/public-capabilities.json",
+      "bytes": 887,
+      "sha256": "0c35ebbc5d2a5cf6d91fd8261545d78927b162650db50ad2a770ff779a8e340b"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/preview-head.json",
+      "bytes": 170,
+      "sha256": "9f5d395bcd54cbca29b135cd45568689bfdb6d54bc9a953f2bbd8feec2b62d58"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/pr5-state.json",
+      "bytes": 111,
+      "sha256": "97800363a7f51ec68e7e05ce19937043d2e48647eafba5b29403558dcb7a17b8"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/pr6-state.json",
+      "bytes": 146,
+      "sha256": "27540f01e62a22a36d8edf4d53393404b6479d2d32ea62969e7f848ff1f82dfa"
+    },
+    {
+      "path": "review/ui-demo-p0-artifacts/main-ci.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

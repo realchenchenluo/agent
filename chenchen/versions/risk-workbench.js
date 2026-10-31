@@ -1,8 +1,16 @@
-import { $, esc, api, healthCheckRequest } from "./common.js";
+import { $, esc, healthCheckRequest } from "./common.js";
 
+import { TaskClient, requestJson } from "./task-client.mjs";
+import { taskView } from "./task-state.mjs";
+import { mountTaskView } from "./task-view.mjs";
+const taskClient = new TaskClient();
+const api = (path, body) => taskClient.request(path, body);
+
+let workflowInputVersion = 0;
 const profile = { investment_horizon_days: 365, max_drawdown: 0.1, liquidity_need: "medium" };
 const staticDemo = location.hostname.endsWith("github.io");
 const publicCoreAgentUrl = "https://personal-ai-fund-manager-core-agent.realchenchenluo.workers.dev";
+const observer = mountTaskView({ client: taskClient, resolveUrl: workflowUrl });
 const controlLabels = {
   no_execution: "不允许执行：execution_allowed 固定为 false。",
   no_quant_recalculation: "不重算 Quant：市场和风险上下文只作为证据交接。",
@@ -15,34 +23,11 @@ function workflowUrl(path) {
 }
 
 async function workflowRequest(path, body) {
-  const options = { method: body === undefined ? "GET" : "POST", headers: { "Content-Type": "application/json" } };
-  if (body !== undefined) options.body = JSON.stringify(body);
-  const response = await fetch(workflowUrl(path), options);
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const error = new Error(data.error?.message || "模型工作流请求失败");
-    error.payload = data;
-    throw error;
-  }
-  return data;
+  return taskClient.request(workflowUrl(path), body);
 }
-
 async function requestHandoff(request) {
-  const response = await fetch(publicCoreAgentUrl + "/api/risk-workbench/handoff", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ request })
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const trace = data.trace || {};
-    const identifiers = [trace.request_id, trace.task_id, trace.audit_id].filter(Boolean);
-    const suffix = identifiers.length ? "（追踪：" + identifiers.join(" / ") + "）" : "";
-    throw new Error((data.error?.message || "公网 Core Agent 请求失败") + suffix);
-  }
-  return data;
+  return workflowRequest("/api/risk-workbench/handoff", { request });
 }
-
 function portfolioInput(snapshot) {
   return {
     portfolio_id: snapshot.portfolio_id,
@@ -53,6 +38,7 @@ function portfolioInput(snapshot) {
 }
 
 function render(result) {
+  observer.show(result.agent_response);
   const bridge = result.risk_workbench;
   const source = bridge.source;
   const evidence = bridge.evidence;
@@ -85,6 +71,7 @@ function render(result) {
 }
 
 $("#run-bridge").addEventListener("click", async () => {
+  if (taskClient.busy) return;
   const button = $("#run-bridge");
   button.disabled = true;
   button.textContent = "正在运行 Core Agent…";
@@ -104,7 +91,7 @@ $("#run-bridge").addEventListener("click", async () => {
     $("#bridge-message").textContent = error.message;
   } finally {
     button.disabled = false;
-    button.textContent = "再次运行联调 Demo →";
+    button.textContent = "再次运行联调 Demo";
   }
 });
 
@@ -123,7 +110,7 @@ function renderTaskHistory(records = []) {
   const list = $("#task-history-list");
   if (!records.length) { box.hidden = true; return; }
   box.hidden = false;
-  list.innerHTML = records.map(record => '<div class="task-history-row"><span><strong>' + esc(taskStatus(record.status)) + '</strong><small>' + esc(record.task_id) + '</small></span><button type="button" class="secondary" data-restore-task="' + esc(record.task_id) + '">查看</button></div>').join("");
+  list.innerHTML = records.map(record => '<div class="task-history-row"><span><strong>' + esc(record.status === "SIMULATED" && !taskView(record).receiptValid ? "结果未知 · 无有效回执" : taskStatus(record.status)) + '</strong><small>' + esc(record.task_id) + '</small></span><button type="button" class="secondary" data-restore-task="' + esc(record.task_id) + '">查看</button></div>').join("");
 }
 
 async function loadTrackedTasks() {
@@ -139,10 +126,10 @@ function renderFunding() {
   $("#new-funding").hidden = !fundingPlan;
   $("#funding-history").hidden = !fundingPlan?.allocations.length;
   $("#funding-metrics").innerHTML = fundingPlan ? [
-    ["生活费预留", fundingPlan.protected_minor], ["已模拟占用", fundingPlan.allocated_minor], ["还能安排", fundingPlan.available_minor]
+    ["生活费预留", fundingPlan.protected_minor], ["服务端账本占用", fundingPlan.allocated_minor], ["还能安排", fundingPlan.available_minor]
   ].map(([label, amount]) => '<article><small>'+esc(label)+'</small><strong>'+esc(money(amount))+'</strong></article>').join("") : "";
   $("#funding-allocations").innerHTML = (fundingPlan?.allocations || []).map(item =>
-    '<p class="small"><a target="_blank" rel="noopener" href="'+esc(workflowUrl('/api/review/task/'+encodeURIComponent(item.task_id)))+'">'+esc(money(item.amount_minor))+' · 查看任务记录 ↗</a></p>').join("");
+    '<p class="small"><a target="_blank" rel="noopener" href="'+esc(workflowUrl('/api/review/task/'+encodeURIComponent(item.task_id)))+'">'+esc(money(item.amount_minor))+' · 查看任务记录 </a></p>').join("");
   if (workflowRecord) renderWorkflow(workflowRecord);
 }
 
@@ -242,6 +229,8 @@ function workflowStatusLabel(status) {
 }
 
 function renderWorkflow(record) {
+  const view = taskView(record);
+  observer.show(record);
   workflowRecord = record;
   trackTask(record.task_id);
   void loadTrackedTasks();
@@ -249,44 +238,32 @@ function renderWorkflow(record) {
   const check = record.funding_check;
   const changed = Boolean(fundingPlan && record.proposed_action?.funding?.plan_id === fundingPlan.plan_id && record.proposed_action.funding.revision !== fundingPlan.revision && record.status !== "SIMULATED");
   const fundingBlocked = check?.status === "BLOCKED" || changed;
-  $("#workflow-status").textContent = fundingBlocked ? "资金检查未通过" : workflowStatusLabel(record.status);
+  $("#workflow-status").textContent = fundingBlocked ? "资金检查未通过" : (record.status === "SIMULATED" && !view.receiptValid ? "结果未知 · 缺少有效回执" : workflowStatusLabel(record.status));
   $("#funding-verdict").hidden = !check;
   if (check) {
-    const title = changed || check.code === "FUNDING_PLAN_CHANGED" ? "资金安排变了，需要重新确认" : check.status === "BLOCKED" ? "这笔计划会挤占预留的钱" : check.status === "ALLOCATED" ? "已完成模拟，额度已记账" : "当前额度足够，仍需复核";
-    const detail = changed || check.code === "FUNDING_PLAN_CHANGED" ? "请按最新安排发起新任务，旧审批不会继续使用。" : check.status === "BLOCKED" ? "本次 " + money(check.requested_minor || 0) + "，可安排 " + money(check.available_minor || 0) + "。请调整本次金额，或核对资金安排后重新复核。" : check.status === "ALLOCATED" ? "本次占用 " + money(check.requested_minor) + "，模拟后剩余 " + money(check.available_after_minor) + "。" : "本次 " + money(check.requested_minor) + "，可安排 " + money(check.available_minor) + "。模拟前还会再次检查。";
+    const title = changed || check.code === "FUNDING_PLAN_CHANGED" ? "资金安排变了，需要重新确认" : check.status === "BLOCKED" ? "这笔计划会挤占预留的钱" : check.status === "ALLOCATED" ? (view.receiptValid ? "SIMULATED 回执与账本已关联" : "账本有占用记录，回执仍待核对") : "当前额度足够，仍需复核";
+    const detail = changed || check.code === "FUNDING_PLAN_CHANGED" ? "请按最新安排发起新任务，旧审批不会继续使用。" : check.status === "BLOCKED" ? "本次 " + money(check.requested_minor || 0) + "，可安排 " + money(check.available_minor || 0) + "。请调整本次金额，或核对资金安排后重新复核。" : check.status === "ALLOCATED" ? "服务端记录占用 " + money(check.requested_minor) + "，账本记录剩余 " + money(check.available_after_minor) + "。" : "本次 " + money(check.requested_minor) + "，可安排 " + money(check.available_minor) + "。模拟前还会再次检查。";
     $("#funding-verdict").classList.toggle("is-blocked", fundingBlocked);
     $("#funding-verdict").innerHTML = '<h3>'+esc(title)+'</h3><p>'+esc(detail)+'</p>';
   }
   const proposal = record.proposed_action;
   $("#workflow-metrics").innerHTML = [
-    ["模型分析", record.model?.status === "FAILED" ? "失败" : "已返回"],
+    ["模型分析", view.model],
     ["风控复核", ({ APPROVE: "演示通过", REJECT: "已拒绝", REQUEST_MORE_INFO: "待补材料" })[record.risk_decision?.decision] || "等待复核"],
     ["人工确认", ({ APPROVED: "演示通过", REJECTED: "已拒绝" })[record.approval?.status] || "等待确认"],
-    ["模拟执行", fundingBlocked ? "已阻断" : ({ SIMULATED: "已完成", READY: "等待模拟" })[record.execution?.status] || "未放行"]
+    ["模拟执行", fundingBlocked ? "已阻断" : (view.receiptValid ? "SIMULATED · 服务端回执" : "NOT_EXECUTED · 无有效回执")]
   ].map(([label, value]) => '<div class="workflow-metric"><small>'+esc(label)+'</small><strong>'+esc(value)+'</strong></div>').join("");
   $("#workflow-proposal-title").textContent = "查看模型解释 · " + (proposal ? workflowLabel(proposal.proposed_action) : "未形成建议");
   $("#workflow-proposal-reason").textContent = proposal?.action_reason || record.error?.message || "等待模型结果";
   $("#workflow-proposal-source").textContent = record.model?.source ? "来源：" + record.model.source + "；拟议动作不等于授权。" : "模型调用失败；Risk 和执行端均已阻断。";
   $("#workflow-handoff-link").href = workflowUrl("/api/review/task/" + encodeURIComponent(record.task_id) + "/risk-handoff");
-  const actions = [];
-  if (record.status === "PENDING_RISK" && !record.risk_decision) {
-    actions.push(['risk-approve', '演示 Risk 通过', '']);
-    actions.push(['risk-reject', '演示 Risk 拒绝', 'danger']);
-    actions.push(['risk-more', '要求补充信息', '']);
-  } else if (record.status === "PENDING_APPROVAL") {
-    actions.push(['approval-approve', '审批通过', '']);
-    actions.push(['approval-reject', '审批拒绝', 'danger']);
-  } else if (record.status === "READY_FOR_SIMULATION" && record.execution.simulation_allowed && !fundingBlocked) {
-    actions.push(['simulate', '执行模拟', '']);
-  }
-  if (!["SIMULATED", "REJECTED", "MODEL_FAILED", "FUNDING_BLOCKED", "CANCELLED"].includes(record.status)) actions.push(['cancel', '取消这项任务', 'danger']);
-  $("#workflow-actions").innerHTML = actions.length
-    ? actions.map(([action, label, tone]) => '<button type="button" data-workflow-action="'+action+'" class="'+tone+'">'+label+' →</button>').join("")
-    : '<span class="small muted">' + (record.risk_decision?.decision === "REQUEST_MORE_INFO" ? '请在上方补充材料，再发起新任务；原任务保持阻断。' : '当前阶段没有可继续的动作；完整记录已保留。') + '</span>';
+  $("#workflow-actions").innerHTML = '<button type="button" disabled aria-describedby="workflow-gate">Risk 回写</button><button type="button" disabled aria-describedby="workflow-gate">本人审批</button><button type="button" disabled aria-describedby="workflow-gate">模拟执行</button><p id="workflow-gate" class="small">NO-GO：可信回调、本人身份及完整方案确认尚未共同验收。PENDING_APPROVAL 与 READY_FOR_SIMULATION 均不授予此页面执行权限；REVIEW_ONLY 保持只读。</p>';
   $("#workflow-json").textContent = JSON.stringify(record, null, 2);
 }
 
 $("#run-workflow").addEventListener("click", async () => {
+  if (taskClient.busy) return;
+  const inputVersion = workflowInputVersion;
   const button = $("#run-workflow");
   button.disabled = true;
   button.textContent = "正在调用模型…";
@@ -297,8 +274,10 @@ $("#run-workflow").addEventListener("click", async () => {
     workflowRecord = null;
     $("#workflow-result").hidden = true;
     $("#workflow-status").textContent = "正在分析";
+    const requestId = "req-workbench-" + crypto.randomUUID();
     const result = await workflowRequest("/api/review", {
-      request_id: "req-workbench-" + (globalThis.crypto?.randomUUID?.() || Date.now()),
+      request_id: requestId, idempotency_key: requestId, schema_version: "model-review.v1",
+      data_mode: "SYNTHETIC_REPLAY", execution_mode: "PAPER", capability: "REVIEW_ONLY", memory_consent: false,
       kind: "bill",
       source: "risk-workbench-demo",
       text: $("#workflow-text").value,
@@ -309,45 +288,14 @@ $("#run-workflow").addEventListener("click", async () => {
     });
     $("#workflow-message").textContent = "模型响应已记录，当前停在统一 Risk；请按顺序复核。";
     renderWorkflow(result);
+    if (inputVersion !== workflowInputVersion) observer.invalidate();
   } catch (error) {
     $("#workflow-status").textContent = "调用失败";
     $("#workflow-message").textContent = error.message + (error.payload?.trace?.task_id ? "（任务：" + error.payload.trace.task_id + "）" : "");
     if (error.payload?.workflow) renderWorkflow(error.payload.workflow);
   } finally {
     button.disabled = false;
-    button.textContent = "再次发起模型复核 →";
-  }
-});
-
-$("#workflow-actions").addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-workflow-action]");
-  if (!button || !workflowRecord) return;
-  button.disabled = true;
-  const action = button.dataset.workflowAction;
-  const base = { task_id: workflowRecord.task_id, proposal_sha256: workflowRecord.proposed_action.proposal_sha256 };
-  try {
-    let next;
-    if (action.startsWith("risk-")) {
-      const callback = await workflowRequest("/api/review/risk-callback", {
-        ...base, callback_version: "risk-callback.v1",
-        handoff_id: workflowRecord.risk_handoff.handoff_id, request_id: workflowRecord.request_id,
-        run_id: workflowRecord.run_id, audit_id: workflowRecord.audit.audit_id,
-        reviewer: "demo-risk-owner", decision: action === "risk-approve" ? "APPROVE" : action === "risk-reject" ? "REJECT" : "REQUEST_MORE_INFO",
-        reason: "演示环境人工模拟的 Risk 决策，尚非远程 Risk 系统回写"
-      });
-      next = callback.workflow;
-    }
-    else if (action.startsWith("approval-")) next = await workflowRequest("/api/review/approval", { ...base, approver: "demo-approver", decision: action === "approval-approve" ? "APPROVE" : "REJECT", reason: "演示环境记录的人工审批" });
-    else if (action === "cancel") next = await workflowRequest("/api/review/cancel", { ...base, canceler: "demo-user", reason: "演示用户主动停止后续处理" });
-    else next = await workflowRequest("/api/review/simulate", base);
-    $("#workflow-message").textContent = "状态已更新；执行端仍只允许模拟，不连接真实系统。";
-    renderWorkflow(next);
-    try { await refreshFunding(); } catch { $("#funding-message").textContent = "任务已记录，但最新额度暂时读不到，请刷新重试。"; }
-  } catch (error) {
-    $("#workflow-message").textContent = error.message;
-    if (error.payload?.workflow) renderWorkflow(error.payload.workflow);
-  } finally {
-    button.disabled = false;
+    button.textContent = "再次发起模型复核";
   }
 });
 
@@ -374,3 +322,18 @@ $("#task-history-list").addEventListener("click", async event => {
 });
 
 void loadTrackedTasks();
+for (const selector of ["#workflow-text", "#workflow-amount", "#workflow-action", "#funding-cash", "#funding-rent"]) {
+  $(selector).addEventListener("input", () => { workflowInputVersion++; observer.invalidate(); });
+}
+async function probeCapabilities() {
+  $("#run-workflow").disabled = true;
+  try {
+    const capabilities = await requestJson(workflowUrl("/api/review/capabilities"));
+    if (capabilities.capability_version !== "core-agent-capabilities.v1" || capabilities.model?.configured !== true) throw new Error("模型能力未声明可用");
+    $("#run-workflow").disabled = false;
+    $("#workflow-message").textContent = "仅可发起 REVIEW_ONLY 分析；configured 不代表模型调用成功。Risk、审批、执行仍关闭。";
+  } catch (error) {
+    $("#workflow-message").textContent = "模型入口禁用：同源能力接口不可用或未配置。" + error.message + " 可从上方查询既有任务。";
+  }
+}
+void probeCapabilities();

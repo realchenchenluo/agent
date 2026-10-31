@@ -1,0 +1,229 @@
+{
+  "environment": "Windows / loopback / headless desktop; no mobile hardware",
+  "network": "External browser requests blocked",
+  "results": [
+    {
+      "name": "Chrome",
+      "version": "156.0.8078.74",
+      "mode": "headless desktop",
+      "result": "AVAILABLE"
+    },
+    {
+      "name": "Chrome main health flow",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome investment layout 375",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome investment layout 768",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome investment layout 1440",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome refresh restores by GET only",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome risk gates and local capability absence",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK review UI cannot approve or simulate",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK task switching, approval and missing receipt",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK long text risk layout 375",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK long text risk layout 768",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK long text risk layout 1440",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK HTTP 401",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK HTTP 403",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK HTTP 409",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK HTTP 423",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK HTTP 503",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK malformed and cross-task responses",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome MOCK out of order lookup",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome keyboard and input invalidation",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome duplicate click and multiple tabs",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Chrome cancel, refresh and back keep unknown result",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge",
+      "version": "156.0.4314.50",
+      "mode": "headless desktop",
+      "result": "AVAILABLE"
+    },
+    {
+      "name": "Edge main health flow",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge investment layout 375",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge investment layout 768",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge investment layout 1440",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge refresh restores by GET only",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge risk gates and local capability absence",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK review UI cannot approve or simulate",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK task switching, approval and missing receipt",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK long text risk layout 375",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK long text risk layout 768",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK long text risk layout 1440",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK HTTP 401",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK HTTP 403",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK HTTP 409",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK HTTP 423",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK HTTP 503",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK malformed and cross-task responses",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge MOCK out of order lookup",
+      "layer": "MOCK",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge keyboard and input invalidation",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge duplicate click and multiple tabs",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    },
+    {
+      "name": "Edge cancel, refresh and back keep unknown result",
+      "layer": "LOCAL_REAL_API",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

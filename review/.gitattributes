@@ -1,0 +1,4 @@
+# Preserve exact evidence bytes for the SHA256 manifest.
+ui-demo-p0-artifacts/** -text whitespace=cr-at-eol
+# Raw TAP case names intentionally include whitespace-only invalid inputs.
+ui-demo-p0-artifacts/logs/*.tap -whitespace
