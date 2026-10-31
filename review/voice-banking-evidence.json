@@ -1,0 +1,179 @@
+{
+  "date": "2026-10-29",
+  "baseline": "1d2052f4fe6dbd4ed7d2236ca5398242be2e5fa6",
+  "status": "LOCAL_BROWSER_PROTOTYPE",
+  "tests": {
+    "pass": 298,
+    "fail": 0
+  },
+  "browsers": {
+    "chrome": {
+      "browser": "156.0.8078.49",
+      "results": [
+        {
+          "width": 375,
+          "passed": true,
+          "asr": "test-double",
+          "tts": "test-double",
+          "checks": [
+            "consent",
+            "transcript-edit",
+            "no-auto-submit",
+            "stop",
+            "cancel",
+            "denied",
+            "funding-gate",
+            "pagehide",
+            "tts-visible-only",
+            "real-local-api-503",
+            "same-text-api",
+            "no-overflow",
+            "no-page-errors"
+          ]
+        },
+        {
+          "width": 768,
+          "passed": true,
+          "asr": "test-double",
+          "tts": "test-double",
+          "checks": [
+            "consent",
+            "transcript-edit",
+            "no-auto-submit",
+            "stop",
+            "cancel",
+            "denied",
+            "funding-gate",
+            "pagehide",
+            "tts-visible-only",
+            "real-local-api-503",
+            "same-text-api",
+            "no-overflow",
+            "no-page-errors"
+          ]
+        },
+        {
+          "width": 1440,
+          "passed": true,
+          "asr": "test-double",
+          "tts": "test-double",
+          "checks": [
+            "consent",
+            "transcript-edit",
+            "no-auto-submit",
+            "stop",
+            "cancel",
+            "denied",
+            "funding-gate",
+            "pagehide",
+            "tts-visible-only",
+            "real-local-api-503",
+            "same-text-api",
+            "no-overflow",
+            "no-page-errors"
+          ]
+        },
+        {
+          "unsupportedFallback": true
+        }
+      ]
+    },
+    "edge": {
+      "browser": "156.0.4314.50",
+      "results": [
+        {
+          "width": 375,
+          "passed": true,
+          "asr": "test-double",
+          "tts": "test-double",
+          "checks": [
+            "consent",
+            "transcript-edit",
+            "no-auto-submit",
+            "stop",
+            "cancel",
+            "denied",
+            "funding-gate",
+            "pagehide",
+            "tts-visible-only",
+            "real-local-api-503",
+            "same-text-api",
+            "no-overflow",
+            "no-page-errors"
+          ]
+        },
+        {
+          "width": 768,
+          "passed": true,
+          "asr": "test-double",
+          "tts": "test-double",
+          "checks": [
+            "consent",
+            "transcript-edit",
+            "no-auto-submit",
+            "stop",
+            "cancel",
+            "denied",
+            "funding-gate",
+            "pagehide",
+            "tts-visible-only",
+            "real-local-api-503",
+            "same-text-api",
+            "no-overflow",
+            "no-page-errors"
+          ]
+        },
+        {
+          "width": 1440,
+          "passed": true,
+          "asr": "test-double",
+          "tts": "test-double",
+          "checks": [
+            "consent",
+            "transcript-edit",
+            "no-auto-submit",
+            "stop",
+            "cancel",
+            "denied",
+            "funding-gate",
+            "pagehide",
+            "tts-visible-only",
+            "real-local-api-503",
+            "same-text-api",
+            "no-overflow",
+            "no-page-errors"
+          ]
+        },
+        {
+          "unsupportedFallback": true
+        }
+      ]
+    }
+  },
+  "live": {
+    "endpoint": "https://personal-ai-fund-manager-core-agent.realchenchenluo.workers.dev/api/review",
+    "http": 200,
+    "source": "model",
+    "call_succeeded": true,
+    "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "task_id": "review-task-00a6e09a-66fd-410c-8582-5063ca39c2f7",
+    "run_id": "review-5bd37d45-0afe-4742-9778-1a6243f85eac",
+    "status": "PENDING_RISK",
+    "execution": {
+      "execution_id": null,
+      "task_id": "review-task-00a6e09a-66fd-410c-8582-5063ca39c2f7",
+      "status": "BLOCKED",
+      "simulation_allowed": false,
+      "execution_allowed": false,
+      "receipt": null
+    }
+  },
+  "not_tested": [
+    "real microphone",
+    "real speech output",
+    "Android/iOS physical devices",
+    "production RBAC",
+    "cloud ASR",
+    "staging"
+  ]
+}

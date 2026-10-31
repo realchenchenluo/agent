@@ -1,0 +1,10 @@
+.voice-banking { grid-column: 1 / -1; margin-block: 12px; padding: 12px; border: 1px solid #bccbc8; border-radius: 12px; font-size: 14px; }
+.voice-banking p { overflow-wrap: anywhere; }
+.voice-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block: 10px; }
+.voice-banking button, .voice-banking select, .voice-reply-controls button { min-height: 44px; max-width: 100%; }
+.voice-banking button { display: inline-flex; align-items: center; gap: 6px; }
+.voice-banking button:disabled { opacity: .55; cursor: not-allowed; }
+.voice-banking .voice-consent { display: flex; flex-direction: row; gap: 8px; align-items: flex-start; }
+.voice-consent input { width: auto; margin-top: 4px; }
+.voice-banking[data-state="recording"] { border-color: #a34638; }
+.voice-banking :focus-visible { outline: 2px solid #21665b; outline-offset: 3px; }

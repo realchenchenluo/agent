@@ -1,3 +1,4 @@
+import { mountVoice, validateTranscript } from "./voice-banking.mjs";
 import { $, esc, api, healthCheckRequest } from "./common.js";
 
 const profile = { investment_horizon_days: 365, max_drawdown: 0.1, liquidity_need: "medium" };
@@ -15,7 +16,7 @@ function workflowUrl(path) {
 }
 
 async function workflowRequest(path, body) {
-  const options = { method: body === undefined ? "GET" : "POST", headers: { "Content-Type": "application/json" } };
+  const options = { signal: AbortSignal.timeout(60000), method: body === undefined ? "GET" : "POST", headers: { "Content-Type": "application/json" } };
   if (body !== undefined) options.body = JSON.stringify(body);
   const response = await fetch(workflowUrl(path), options);
   const data = await response.json().catch(() => ({}));
@@ -286,7 +287,10 @@ function renderWorkflow(record) {
   $("#workflow-json").textContent = JSON.stringify(record, null, 2);
 }
 
+const voice = mountVoice({ input: $("#workflow-text"), host: $("#workflow-text").closest(".workflow-inputs"), reply: () => $("#workflow-proposal-reason") });
+
 $("#run-workflow").addEventListener("click", async () => {
+  voice.cancel();
   const button = $("#run-workflow");
   button.disabled = true;
   button.textContent = "正在调用模型…";
@@ -301,17 +305,18 @@ $("#run-workflow").addEventListener("click", async () => {
       request_id: "req-workbench-" + (globalThis.crypto?.randomUUID?.() || Date.now()),
       kind: "bill",
       source: "risk-workbench-demo",
-      text: $("#workflow-text").value,
+      text: validateTranscript($("#workflow-text").value),
       requested_action: $("#workflow-action").value,
       action_parameters: { amount: Number(amountInput.value), currency: "CNY", synthetic: true,
         funding_plan_id: fundingPlan.plan_id, funding_plan_revision: fundingPlan.revision },
       context: { synthetic: true, user_goal: "看清钱的用途并确认不会影响后续安排" }
     });
+    if (result.model?.source !== "model" || result.model?.model_response?.call_succeeded !== true) throw new Error("未获得真实模型结果，当前接口未联通或返回了规则降级；请核对运行记录。");
     $("#workflow-message").textContent = "模型响应已记录，当前停在统一 Risk；请按顺序复核。";
     renderWorkflow(result);
   } catch (error) {
     $("#workflow-status").textContent = "调用失败";
-    $("#workflow-message").textContent = error.message + (error.payload?.trace?.task_id ? "（任务：" + error.payload.trace.task_id + "）" : "");
+    $("#workflow-message").textContent = (error.name === "TimeoutError" ? "请求超时，结果状态未知；请先查询任务记录，再决定是否重新发起。" : error.message) + (error.payload?.trace?.task_id ? "（任务：" + error.payload.trace.task_id + "）" : "");
     if (error.payload?.workflow) renderWorkflow(error.payload.workflow);
   } finally {
     button.disabled = false;
