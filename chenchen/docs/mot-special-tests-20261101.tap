@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: synthetic import, duplicate replay, verified multi-account balances and internal transfer
+ok 1 - synthetic import, duplicate replay, verified multi-account balances and internal transfer
+  ---
+  duration_ms: 30.8747
+  type: 'test'
+  ...
+# Subtest: conflicting external transaction and stale account snapshots fail closed
+ok 2 - conflicting external transaction and stale account snapshots fail closed
+  ---
+  duration_ms: 10.038
+  type: 'test'
+  ...
+# Subtest: checks detect settlement mismatch and known payment shortfall without duplicate tasks
+ok 3 - checks detect settlement mismatch and known payment shortfall without duplicate tasks
+  ---
+  duration_ms: 21.2616
+  type: 'test'
+  ...
+# Subtest: pool configuration supports one or three verified accounts and resolves cleared shortfall
+ok 4 - pool configuration supports one or three verified accounts and resolves cleared shortfall
+  ---
+  duration_ms: 26.7389
+  type: 'test'
+  ...
+# Subtest: distinct POS identifiers with matching amount and minute raise suspicious duplicate
+ok 5 - distinct POS identifiers with matching amount and minute raise suspicious duplicate
+  ---
+  duration_ms: 14.7557
+  type: 'test'
+  ...
+# Subtest: scheduled tick persists one task per anomaly and recovers after restart
+ok 6 - scheduled tick persists one task per anomaly and recovers after restart
+  ---
+  duration_ms: 20.7576
+  type: 'test'
+  ...
+# Subtest: unknown balances, unknown Risk and unverified approval block reservation simulation
+ok 7 - unknown balances, unknown Risk and unverified approval block reservation simulation
+  ---
+  duration_ms: 23.5217
+  type: 'test'
+  ...
+# Subtest: lost Core/Risk acknowledgement remains UNKNOWN and the same proposal is not dispatched twice
+ok 8 - lost Core/Risk acknowledgement remains UNKNOWN and the same proposal is not dispatched twice
+  ---
+  duration_ms: 15.5984
+  type: 'test'
+  ...
+# Subtest: test-only verified adapter permits human approval and one paper reservation under concurrency
+ok 9 - test-only verified adapter permits human approval and one paper reservation under concurrency
+  ---
+  duration_ms: 25.8898
+  type: 'test'
+  ...
+# Subtest: changed ledger invalidates prior approval and failed persistence cannot return success
+ok 10 - changed ledger invalidates prior approval and failed persistence cannot return success
+  ---
+  duration_ms: 19.2021
+  type: 'test'
+  ...
+# Subtest: memory stores confirmed rules but never acts as account-balance authority
+ok 11 - memory stores confirmed rules but never acts as account-balance authority
+  ---
+  duration_ms: 10.2018
+  type: 'test'
+  ...
+# Subtest: HTTP contract isolates two owners and rejects unauthenticated, cross-origin and missing roles
+ok 12 - HTTP contract isolates two owners and rejects unauthenticated, cross-origin and missing roles
+  ---
+  duration_ms: 156.7141
+  type: 'test'
+  ...
+# Subtest: HTTP task, inbox, audit, denied approval and replay expose durable evidence
+ok 13 - HTTP task, inbox, audit, denied approval and replay expose durable evidence
+  ---
+  duration_ms: 32.5169
+  type: 'test'
+  ...
+# Subtest: Worker uses existing ReviewService Durable Object, owner isolation and restart recovery
+ok 14 - Worker uses existing ReviewService Durable Object, owner isolation and restart recovery
+  ---
+  duration_ms: 45.5113
+  type: 'test'
+  ...
+# Subtest: Worker scheduled trigger has a separate secret and never duplicates an Inbox task
+ok 15 - Worker scheduled trigger has a separate secret and never duplicates an Inbox task
+  ---
+  duration_ms: 5.2295
+  type: 'test'
+  ...
+# Subtest: Worker storage failure returns unavailable and does not fabricate a task
+ok 16 - Worker storage failure returns unavailable and does not fabricate a task
+  ---
+  duration_ms: 1.5674
+  type: 'test'
+  ...
+# Subtest: MOT staging entry rejects unrelated public review routes
+ok 17 - MOT staging entry rejects unrelated public review routes
+  ---
+  duration_ms: 0.5341
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 321.72

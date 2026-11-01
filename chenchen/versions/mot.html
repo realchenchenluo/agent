@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MOT 多门店资金 · 店主财务助手</title>
+  <link rel="stylesheet" href="/versions/style.css"><link rel="stylesheet" href="/versions/product-overrides.css">
+  <link rel="stylesheet" href="/versions/mot.css">
+</head>
+<body class="merchant-product mot-product">
+<header class="product-header"><a class="brand" href="/merchant"><span class="brand-mark">02</span><span class="brand-copy">店主财务助手<small>YOUR DAILY MONEY DESK</small></span></a><nav class="product-nav"><span class="product-label">多门店资金 MOT</span><a class="back-link" href="/merchant">现金与账单</a><a class="back-link" href="/">投资理财</a></nav></header>
+<main class="compact-main mot-main">
+  <section class="hero compact-hero"><div><p class="eyebrow">店主财务助手 / 持续运行</p><h1>两家店的钱，一处核对。</h1><p class="muted hero-lede">已核对余额、待结算、资金缺口和任务证据分别呈现。</p></div><span class="product-stamp" id="mot-health">正在连接 MOT</span></section>
+  <div class="mot-banner" id="mot-error" role="alert" hidden></div>
+  <section class="cash-hero"><div class="cash-status"><span class="cash-label">已核对账户总额</span><div class="cash-value" id="mot-total">读取中</div><p class="cash-sub" id="mot-asof">等待后端余额快照</p></div><div class="cash-callout"><span class="cash-label">资金池净可用额</span><strong id="mot-available">读取中</strong><p id="mot-scope">待结算收入不计入可用资金；内部转账不重复增加总资产。</p></div></section>
+  <section class="metrics compact-metrics mot-metrics" id="mot-metrics" aria-label="多门店指标"></section>
+  <div class="mot-actions"><button id="mot-seed" type="button" hidden>加载本机合成样本</button><button id="mot-check" type="button" class="secondary" disabled>手动检查</button><button id="mot-refresh" type="button" class="secondary">刷新状态</button><span class="small muted" id="mot-last-run">尚无检查记录</span></div>
+  <div class="mot-grid">
+    <section class="panel"><p class="section-kicker">门店与账户</p><h2>资金总览</h2><div id="mot-stores" class="mot-list"></div><div id="mot-accounts" class="mot-list"></div></section>
+    <section class="panel"><p class="section-kicker">持续运行</p><h2>异常与 Inbox</h2><div id="mot-alerts" class="mot-list"></div></section>
+  </div>
+  <div class="mot-grid">
+    <section class="panel"><p class="section-kicker">任务状态</p><h2>待处理任务</h2><div id="mot-tasks" class="mot-list"></div></section>
+    <section class="panel"><p class="section-kicker">可追踪证据</p><h2>自动运行与审计时间线</h2><div id="mot-runs" class="mot-list"></div><details><summary>展开审计事件</summary><div id="mot-audit" class="mot-list"></div></details></section>
+  </div>
+  <section class="panel"><p class="section-kicker">流水事实</p><h2>收银机与账户流水</h2><div id="mot-transactions" class="mot-table-wrap"></div></section>
+  <p class="small muted">SIMULATION_ONLY · 此页面只显示 MOT 后端返回的合成数据。资金提议需可信 Core、Risk 和本人审批；当前接口未接通时会明确阻断。不会向外部发送提醒或发生真实转账。</p>
+</main>
+<footer class="footer">店主财务助手 · MOT 多门店资金 · 规则计算，模型解释，人工批准</footer>
+<script type="module" src="/versions/mot.js"></script>
+</body></html>
