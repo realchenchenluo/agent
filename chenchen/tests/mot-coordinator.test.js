@@ -193,3 +193,20 @@ test("paper payment approval expires and unavailable Risk never debits", async t
   assert.equal((await verified.read(owner, state => state.accounts[0].balance_minor)), 800_000);
   assert.equal((await verified.read(owner, state => state.transactions.filter(tx => tx.source_system === "PAPER_SIMULATION"))).length, 0);
 });
+
+test("treasury chat marks stale non-pool totals unknown without hiding a fresh pool balance", async t => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "mot-stale-total-"));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const at = "2026-11-01T09:00:00.000Z", owner = "stale-total-owner";
+  const engine = new MotEngine(new FileRepository(directory), { now: () => at });
+  const data = fixture(at);
+  data.accounts[1].as_of = "2026-10-30T09:00:00.000Z";
+  await engine.ingest(owner, data, "stale-total-fixture");
+  const reply = await answer({ text: "帮我看两家店现在有多少钱，资金池里有多少，还有多少没到账。",
+    conversationId: "stale-total-conversation", agentId: "mot", owner, runtime: engine,
+    merchant: null, requestId: "stale-total-request" });
+  assert.equal(reply.status, "UNKNOWN");
+  assert.equal(reply.tool_results[0].overview.total_verified_minor, null);
+  assert.equal(reply.tool_results[0].overview.pool_balance_minor, 800_000);
+  assert.match(reply.text, /账户总额 待核对/);
+});

@@ -76,7 +76,7 @@ async function answer({ text, conversationId, agentId, owner, runtime, merchant,
     const step = (agent, status, source, asOf, evidence) => steps.push({ task_id: randomUUID(), parent_task_id: taskId,
       run_id: runId, agent_id: agent, status, source, as_of: asOf, evidence });
     const ctx = await motContext(runtime, owner);
-    step("mot", ctx.overview.balance_fresh ? "READY" : "UNKNOWN", "MOT_LEDGER", ctx.as_of,
+    step("mot", ctx.overview.balance_fresh && ctx.overview.total_balance_fresh ? "READY" : "UNKNOWN", "MOT_LEDGER", ctx.as_of,
       { ledger_revision: ctx.overview.revision, account_ids: ctx.accounts.map(row => row.account_id) });
     const validation = financial.validatePortfolio(financial.getDemoPortfolio());
     const snapshot = validation.output.snapshot;
@@ -171,7 +171,7 @@ async function answer({ text, conversationId, agentId, owner, runtime, merchant,
         [{ kind: "tasks", tasks: active.slice(-10), inbox: ctx.inbox.slice(-10), runs: ctx.runs.slice(-5) }],
         [{ action: "open_context", label: "查看任务与证据", target: "tasks" }], latest?.task_id || null, auditRef);
     }
-    return message(conversationId, "mot", "tool_result", ctx.overview.balance_fresh ? "READY" : "UNKNOWN", "MOT_LEDGER", ctx.as_of,
+    return message(conversationId, "mot", "tool_result", ctx.overview.balance_fresh && ctx.overview.total_balance_fresh ? "READY" : "UNKNOWN", "MOT_LEDGER", ctx.as_of,
       ctx.overview.stores ? `已核对账户总额 ${minor(ctx.overview.total_verified_minor)}，资金池可用 ${minor(ctx.overview.available_minor)}，待结算 ${minor(ctx.overview.pending_settlement_minor)}。待结算不计入可用资金。` : "尚无门店资金数据。",
       [{ kind: "treasury", overview: ctx.overview, stores: ctx.stores, accounts: ctx.accounts, transactions: ctx.transactions.slice(-12) }],
       [{ action: "open_context", label: "查看流水证据", target: "treasury" }]);

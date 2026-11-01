@@ -89,7 +89,7 @@ function validateFixture(data) {
         (tx.store_id !== null && !stores.has(tx.store_id)) ||
         (tx.terminal_id !== null && (!terminals.has(tx.terminal_id) ||
           data.terminals.find(t => t.terminal_id === tx.terminal_id).store_id !== tx.store_id)) ||
-        !money(tx.amount_minor) || tx.currency !== "CNY" ||
+        !money(tx.amount_minor) || tx.amount_minor === 0 || tx.currency !== "CNY" ||
         !["RECEIPT", "PAYMENT", "REFUND", "INTERNAL_TRANSFER", "SETTLEMENT"].includes(tx.transaction_type) ||
         !["PENDING", "SETTLED", "CANCELLED"].includes(tx.status) || !iso(tx.occurred_at) ||
         (tx.settled_at !== null && !iso(tx.settled_at)) || !iso(tx.as_of) ||
@@ -118,14 +118,17 @@ function overview(state, at) {
   const poolTotal = sum(pool.map(a => a.balance_minor));
   const held = sum(state.reservations.filter(r => r.status === "ACTIVE").map(r => r.amount_minor));
   // Source and Worker clocks may differ slightly; larger future timestamps remain unknown.
-  const fresh = pool.length > 0 && pool.every(a => {
+  const isFresh = a => {
     const age = Date.parse(at) - Date.parse(a.as_of);
     return age <= 24 * 3600_000 && age >= -5 * 60_000;
-  });
+  };
+  const fresh = pool.length > 0 && pool.every(isFresh);
+  const totalFresh = verified.length === state.accounts.length && verified.length > 0 && verified.every(isFresh);
   return { schema_version: VERSION, owner_id: state.owner_id, revision: state.revision,
-    as_of: pool.length ? pool.map(a => a.as_of).sort()[0] : null, evaluated_at: at,
+    as_of: verified.length ? verified.map(a => a.as_of).sort()[0] : null,
+    pool_as_of: pool.length ? pool.map(a => a.as_of).sort()[0] : null, evaluated_at: at,
     stores: state.stores.length, terminals: state.terminals.length, accounts: state.accounts.length,
-    total_verified_minor: verified.length === state.accounts.length && verified.length ? total : null,
+    total_verified_minor: totalFresh ? total : null, total_balance_fresh: totalFresh,
     pool_account_ids: pool.map(a => a.account_id), pool_balance_minor: fresh ? poolTotal : null,
     reserved_minor: held, available_minor: fresh ? Math.max(0, poolTotal - held) : null,
     pending_settlement_minor: sum(state.transactions.filter(t => t.transaction_type === "RECEIPT" && t.status === "PENDING").map(t => t.amount_minor)),

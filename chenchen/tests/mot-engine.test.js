@@ -45,6 +45,19 @@ test("conflicting external transaction and stale account snapshots fail closed",
   assert.equal((await ctx.engine.read(ctx.owner, s => s.transactions)).length, 8);
 });
 
+test("zero, negative and missing transaction amounts are rejected before ledger mutation", async t => {
+  const ctx = await setup(); t.after(ctx.cleanup);
+  for (const value of [0, -1, undefined]) {
+    const data = fixture(AT);
+    if (value === undefined) delete data.transactions[0].amount_minor;
+    else data.transactions[0].amount_minor = value;
+    await assert.rejects(ctx.engine.ingest(ctx.owner, data, `invalid-amount-${String(value)}`), { code: "INVALID_TRANSACTION" });
+  }
+  const state = await ctx.engine.read(ctx.owner);
+  assert.equal(state.transactions.length, 0);
+  assert.equal(state.accounts.length, 0);
+});
+
 test("small source clock skew is tolerated while a later future snapshot stays unknown", async t => {
   const near = await setup(); t.after(near.cleanup);
   const oneMinuteAhead = new Date(Date.parse(AT) + 60_000).toISOString();
@@ -54,6 +67,20 @@ test("small source clock skew is tolerated while a later future snapshot stays u
   const tenMinutesAhead = new Date(Date.parse(AT) + 600_000).toISOString();
   await far.engine.ingest(far.owner, fixture(tenMinutesAhead), "far-clock", "event");
   assert.equal((await far.engine.read(far.owner, s => require("../mot/engine").overview(s, AT))).balance_fresh, false);
+});
+
+test("stale non-pool account cannot be reported as a current total while fresh pool remains readable", async t => {
+  const ctx = await setup(); t.after(ctx.cleanup);
+  const data = fixture(AT);
+  data.accounts[1].as_of = new Date(Date.parse(AT) - 48 * 3600_000).toISOString();
+  await ctx.engine.ingest(ctx.owner, data, "stale-west-account");
+  const view = await ctx.engine.read(ctx.owner, state => require("../mot/engine").overview(state, AT));
+  assert.equal(view.total_verified_minor, null);
+  assert.equal(view.total_balance_fresh, false);
+  assert.equal(view.pool_balance_minor, 800_000);
+  assert.equal(view.available_minor, 800_000);
+  assert.equal(view.pool_as_of, AT);
+  assert.equal(view.as_of, data.accounts[1].as_of);
 });
 
 test("checks detect settlement mismatch and known payment shortfall without duplicate tasks", async t => {
