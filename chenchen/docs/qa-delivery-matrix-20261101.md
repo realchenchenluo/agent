@@ -39,14 +39,14 @@
 | STORY-3 | 固定房租待付 13500 | “帮我支付 13,500 元房租。” | 池内仅 8000，缺 5500，禁止执行 | `BLOCKED`、shortfall=550000 分 | 无 | TAP: 同上；2026-11-01 首轮曾只回通用余额，已由主线修复 | PASS_LOCAL |
 | STORY-4 | 上述有限流水 | “今天赚了多少钱？” | 不把余额/收款当利润 | `UNKNOWN`，说明缺完整收入、成本、费用、退款 | 无 | TAP: 同上 | PASS_LOCAL |
 | EXEC-01 | 隔离副本，合成收款人及测试专用验证适配器 | 提议、Risk、本人批准、模拟支付 1200 并重放 | 池内 6800、总额 13800、待结算 550；只扣一次 | Node HTTP 真路由返回一张回执、一笔 PAPER 流水、一条审计；重复请求不再扣 | 隔离账本 -120000 分 | TAP: `isolated synthetic approval completes one paper payment...`、`isolated HTTP payment uses real MOT routes...` | PASS_LOCAL |
-| EXT-01 | 公网 Staging；当前登录共用固定 owner | 重放三个故事与正向付款 | 同版本、可复现且互不污染的响应 | 本轮独立复核未对 Staging 发写请求；单一 `APP_STAGING_OWNER_ID` 使不同浏览器会话共享演示账本 | 未测试 | 待主线公网验收报告；`deployment/mot-staging-entry.js` | NOT_TESTED |
+| EXT-01 | 公网 Staging；独立 token owner B | 重放三个故事与正向付款 | 同版本、可复现且互不污染的响应 | 主线在 owner B 完成 12 次 HTTP 请求，三个故事返回 READY/PARTIAL/BLOCKED；正向付款因 Core/Risk 不可用返回 409。浏览器口令仍固定到 owner A，多位评委共享其演示账本 | B 仅新增任务/会话，无扣账 | [qa-delivery-staging-20261101.json](./qa-delivery-staging-20261101.json)；`deployment/mot-staging-entry.js` | BLOCKED |
 | EXT-02 | 公网 Staging | 真正 Core/Risk 审批及正向 1200 元模拟支付 | 可验证审批、回执与扣账 | Worker 构造 MotEngine 时没有 `coreRisk`；health 明示 UNAVAILABLE，正向公网链路不可演示 | 无 | `deployment/mot-worker.js` | BLOCKED |
 | EXT-03 | 官方赛题说明 | 将三个门店故事映射到至少三个官方核心场景 | 每个场景有独立端到端证据 | 官网列出 01 智能转账、02 账单分析、03 理财操作、04 卡片管理、05 订阅/代扣、06 跨场景联动，要求至少三个。门店余额、对账、被阻断房租付款不是三个不同官方场景；现有固定持仓和受阻转账也未形成 01/03 完整闭环 | 无 | [赛事官网](https://fintechathon.g-ican.com/) 公开赛题说明（搜索索引全文，官网 SPA 直开需 JS）；内部 PRD 只作团队基线 | BLOCKED |
 | EXT-04 | MOT Staging 当前路由 | 真实模型解释调用与费用 | 记录次数、费用、预算 | 本轮 MOT 调用为确定性路由，真实模型调用 0；账户级已用费用和剩余额度未取得 | 无 | `app/router.js`；Staging entry 仅放行 app/mot API | BLOCKED |
-| UI-01 | 桌面/手机浏览器 | 360/390/768/1440、抽屉与软键盘 | 无遮挡、可点击 | 本轮独立复核未执行完整尺寸与软键盘矩阵 | 无 | 待主线浏览器记录 | NOT_TESTED |
+| UI-01 | 桌面/手机浏览器 | 360/390/768/1440、抽屉与软键盘 | 无遮挡、可点击 | 主线在 Staging 浏览器四个模拟视口验证无水平溢出、输入框及抽屉在可视区；软键盘和 Android/iOS 真机未测 | 无 | [桌面](./screenshots/staging-approval-desktop.png)、[手机聊天](./screenshots/staging-mobile-chat.png)、[手机抽屉](./screenshots/staging-mobile-drawer.png) | NOT_TESTED |
 | UI-02 | 麦克风/实时通话服务 | 听写、权限拒绝、断线、返回文字 | 与 MOT 同上下文 | 本轮未启用麦克风；实时通话服务未接通 | 无 | `versions/app.js` 的 `call-mot` 仅显示不可用 | BLOCKED |
 | NET-01 | 中国大陆真实网络 | 打开公网 Staging 并执行问答 | 实际可用 | 本轮无大陆网络实测 | 无 | 需大陆网络的请求/浏览器证据 | NOT_TESTED |
 
 ## 独立结论
 
-本机 30 个目标测试全部通过，三个门店故事在修复后可作为**合成数据只读/阻断演示**。正向 1200 元模拟付款已经通过隔离 Node HTTP 链路，但公网 Staging 的真实 Core/Risk 仍未接通，不能把这项本机通过当作公网通过。应用内实时语音和官方三场景覆盖也无端到端证据。此矩阵不将测试专用 Risk 适配器、固定持仓快照或 Worker 模拟运行时算作真实公网能力。
+本机 30 个目标测试全部通过；全量 `npm test` 为 320/320。矩阵 40 项中，32 项 PASS_LOCAL、6 项 BLOCKED、2 项 NOT_TESTED。三个门店故事在修复后可作为**合成数据只读/阻断演示**。正向 1200 元模拟付款已经通过隔离 Node HTTP 链路，但公网 Staging 的真实 Core/Risk 仍未接通，不能把这项本机通过当作公网通过。应用内实时语音和官方三场景覆盖也无端到端证据。此矩阵不将测试专用 Risk 适配器、固定持仓快照或 Worker 模拟运行时算作真实公网能力。

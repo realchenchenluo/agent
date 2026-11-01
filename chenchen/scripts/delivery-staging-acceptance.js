@@ -68,6 +68,16 @@ async function main() {
   assert.equal(decision.execution_allowed, false);
   evidence.stories.rent = { status: rent.status, source: rent.source, text: rent.text,
     decision, message_id: rent.message_id };
+  const combined = await ask("检查两家门店资金，并告诉我有没有需要关注的持仓风险");
+  const run = combined.tool_results.find(row => row.kind === "run")?.run;
+  assert.equal(combined.status, "PARTIAL");
+  assert.deepEqual(run.steps.map(row => [row.agent_id, row.status]),
+    [["mot", "READY"], ["investment", "DEMO_DATA"], ["risk", "UNAVAILABLE"]]);
+  const restored = await call("/api/app/bootstrap");
+  assert.equal(restored.status, 200);
+  assert.equal(restored.data.task_runs.find(row => row.run_id === run.run_id)?.task_id, run.task_id);
+  evidence.coordination = { run_id: run.run_id, task_id: run.task_id, steps: run.steps,
+    stop_reason: run.stop_reason, restored: true };
   const proposal = await call("/api/mot/payments/propose", { amount_minor: 120_000,
     account_id: "bank-main", payee_id: "synthetic-landlord", currency: "CNY", request_key: randomUUID() });
   assert.equal(proposal.status, 201);
