@@ -2,13 +2,13 @@ const $ = id => document.getElementById(id);
 const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 const money = minor => minor == null ? "待核对" : `¥${(minor / 100).toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const time = value => value ? new Date(value).toLocaleString("zh-CN", { hour12: false }) : "未知";
-const names = { mot: "MOT · Treasury Agent", merchant: "店主财务助手", investment: "持仓分析", risk: "风险审核" };
-const state = { agent: "mot", conversation: null, conversations: [], agents: [], mot: null, tab: "treasury", selectedTask: null, pendingKey: null, latestResult: null, merchantSummary: null, merchantDetail: null, merchantInsights: null, merchantDelay: 0 };
+const names = { mot: "MOT · 财务总助手", merchant: "店主财务专员", investment: "持仓分析专员", risk: "风险审核专员" };
+const state = { agent: "mot", conversation: null, conversations: [], taskRuns: [], agents: [], mot: null, tab: "treasury", selectedTask: null, selectedTeam: null, pendingKey: null, pendingController: null, latestResult: null, merchantSummary: null, merchantDetail: null, merchantInsights: null, merchantDelay: 0 };
 
-async function api(path, body) {
+async function api(path, body, signal) {
   const response = await fetch(path, { method: body === undefined ? "GET" : "POST", credentials: "same-origin",
     headers: body === undefined ? {} : { "Content-Type": "application/json" },
-    body: body === undefined ? undefined : JSON.stringify(body) });
+    body: body === undefined ? undefined : JSON.stringify(body), signal });
   let data;
   try { data = await response.json(); } catch { throw new Error(`HTTP ${response.status}：后端未返回 JSON`); }
   if (!response.ok) throw new Error(data.error?.code || `HTTP ${response.status}`);
@@ -17,20 +17,20 @@ async function api(path, body) {
 function error(value) { $("global-error").textContent = value; $("global-error").hidden = !value; }
 function url(agent = state.agent, conversation = state.conversation?.conversation_id) {
   const next = new URL("/app", location.origin);
-  next.searchParams.set("agent", agent);
   if (conversation) next.searchParams.set("conversation", conversation);
   history.pushState({}, "", next);
 }
 function closeOverlays() { $("sidebar").classList.remove("open"); $("context-panel").classList.remove("open"); $("mobile-shade").classList.remove("show"); }
 function renderNav() {
-  $("agents").innerHTML = state.agents.map(agent => `<button type="button" class="${state.agent === agent.agent_id ? "active" : ""}" data-agent="${esc(agent.agent_id)}"><span class="agent-icon">${agent.agent_id === "mot" ? "◉" : "○"}</span><strong>${esc(agent.name)}</strong><small>${esc(agent.agent_id === "mot" ? `${agent.status} · ${agent.unresolved_count} 项待处理` : agent.status)}</small></button>`).join("");
+  $("agents").innerHTML = state.agents.filter(agent => agent.agent_id !== "mot").map(agent => `<button type="button" data-team="${esc(agent.agent_id)}"><span class="agent-icon">○</span><strong>${esc(names[agent.agent_id])}</strong><small>${esc(agent.connection_status)} · ${esc(agent.data_mode)}</small></button>`).join("");
   const term = $("history-search").value.trim().toLowerCase();
-  $("history").innerHTML = state.conversations.filter(item => `${item.title} ${item.agent_id}`.toLowerCase().includes(term)).map(row => `<button type="button" data-conversation="${esc(row.conversation_id)}" class="${state.conversation?.conversation_id === row.conversation_id ? "active" : ""}">${esc(row.title)}</button>`).join("") || `<p class="muted" style="padding:0 12px">尚无对话</p>`;
-  $("agent-title").textContent = names[state.agent] || "AI Banking";
+  $("history").innerHTML = state.conversations.filter(item => item.agent_id === "mot" && item.title.toLowerCase().includes(term)).map(row => `<button type="button" data-conversation="${esc(row.conversation_id)}" class="${state.conversation?.conversation_id === row.conversation_id ? "active" : ""}">${esc(row.title)}</button>`).join("") || `<p class="muted" style="padding:0 12px">尚无 MOT 对话</p>`;
+  $("agent-title").textContent = names.mot;
   const mot = state.agents.find(item => item.agent_id === "mot");
-  $("agent-subtitle").textContent = state.agent === "mot" ? `监测 ${mot?.status || "未知"} · 最近检查 ${time(mot?.last_check_at)}` : state.agent === "risk" ? "审批状态以服务端记录为准" : "所有数据来自现有后端工具";
-  $("context-title").textContent = names[state.agent] || "Agent 详情";
-  $("prompt").placeholder = `向${state.agent === "mot" ? " MOT" : " " + (names[state.agent] || "Agent")}提问或安排任务…`;
+  $("agent-subtitle").textContent = `监测 ${mot?.status || "未知"} · ${state.mode === "LOCAL_DEMO" ? "本机合成数据" : "受控 Staging 合成数据"} · 最近检查 ${time(mot?.last_check_at)}`;
+  $("mot-nav-status").textContent = `${mot?.status || "未知"} · ${mot?.unresolved_count ?? "未知"} 项待处理`;
+  $("context-title").textContent = state.selectedTeam ? names[state.selectedTeam] : "资金与任务";
+  $("prompt").placeholder = "向 MOT 提问，或用 @持仓分析 指定协作方向…";
   $("identity").textContent = state.mode === "LOCAL_DEMO" ? "本机合成演示 · 同一身份" : "已授权会话";
 }
 function card(result) {
@@ -44,6 +44,8 @@ function card(result) {
   if (kind === "investment") { const item = result.snapshot; return `<div class="result-card"><div class="card-top">演示持仓 · ${esc(item.as_of)}</div><div class="card-stats"><div><small>组合市值</small><strong>${money(Math.round(item.total_value * 100))}</strong></div><div><small>现金</small><strong>${money(Math.round(item.cash * 100))}</strong></div><div><small>持仓数</small><strong>${item.positions.length}</strong></div></div></div>`; }
   if (kind === "risk") return `<div class="result-card"><div class="card-top">Core / Risk</div><span class="card-status">${esc(result.status)}</span><p class="danger-text">当前无法确认本人审批或模拟执行。</p></div>`;
   if (kind === "transfer_proposal") { const task = result.task; return `<div class="result-card"><div class="card-top"><span>资金调拨提案 · ${esc(task.task_id)}</span><span class="card-status">${esc(task.state)}</span></div><div class="card-stats"><div><small>金额</small><strong>${money(task.proposal.amount_minor)}</strong></div><div><small>来源</small><strong>${esc(task.proposal.from_account_id)}</strong></div><div><small>目标</small><strong>${esc(task.proposal.to_account_id)}</strong></div></div><p class="danger-text">Core/Risk 未接通；未执行转账或 PAPER 模拟。</p></div>`; }
+  if (kind === "run") return `<div class="result-card"><div class="card-top"><span>MOT 协作任务 · ${esc(result.run.task_id)}</span><span class="card-status">${esc(result.run.status)}</span></div><ol class="run-steps">${result.run.steps.map(step => `<li><strong>${esc(names[step.agent_id] || step.agent_id)}</strong> · ${esc(step.status)}<small>${esc(step.source)} · ${time(step.as_of)} · ${esc(step.task_id)}</small></li>`).join("")}</ol><p class="danger-text">停止原因：${esc(result.run.stop_reason)}</p></div>`;
+  if (kind === "monitor") return `<div class="result-card"><div class="card-top"><span>持续监测 · ${esc(result.monitor.monitor_id)}</span><span class="card-status ready">${esc(result.monitor.status)}</span></div><p>资金池可用低于 ${money(result.monitor.threshold_minor)} 时写入 Inbox。每 15 分钟由服务器检查。</p><div class="meta">下次计划 ${time(result.monitor.next_run_at)}</div></div>`;
   return "";
 }
 function renderMerchantContext(item) {
@@ -55,7 +57,7 @@ function renderMerchantContext(item) {
 function renderConversation() {
   const rows = state.conversation?.messages || [];
   state.latestResult = [...rows].reverse().flatMap(row => row.tool_results || [])[0] || null;
-  $("conversation").innerHTML = rows.length ? rows.map(row => row.message_type === "user" ? `<div class="message user"><div class="bubble">${esc(row.text)}</div></div>` : `<div class="message assistant"><div class="speaker"><span class="mini-icon">◎</span>${esc(names[row.agent_id] || "AI Banking")}</div><p>${esc(row.text)}</p>${(row.tool_results || []).map(card).join("")}${(row.actions || []).map(action => `<button type="button" class="action-link" data-open-context="${esc(action.target)}">${esc(action.label)}</button>`).join("")}<div class="meta">${esc(row.status)} · ${esc(row.source)} · ${time(row.as_of)}${row.audit_ref ? ` · 审计 ${esc(row.audit_ref)}` : ""}</div></div>`).join("") : `<div class="welcome"><span class="welcome-mark">◎</span><h1>${state.agent === "mot" ? "两家店的钱，随时可查。" : "今天想先看什么？"}</h1><p>在同一个聊天窗口查看资金、账单、持仓和任务。数字、状态与证据来自后端。</p><div><button type="button" class="secondary-action" data-suggestion="检查两家门店资金情况">检查门店资金</button><button type="button" class="secondary-action" data-suggestion="查看当前监测任务">查看监测任务</button></div></div>`;
+  $("conversation").innerHTML = rows.length ? rows.map(row => row.message_type === "user" ? `<div class="message user"><div class="bubble">${esc(row.text)}</div></div>` : `<div class="message assistant"><div class="speaker"><span class="mini-icon">◎</span>${esc(names.mot)}</div><p>${esc(row.text)}</p>${(row.tool_results || []).map(card).join("")}${(row.actions || []).map(action => `<button type="button" class="action-link" data-open-context="${esc(action.target)}">${esc(action.label)}</button>`).join("")}<div class="meta">${esc(row.status)} · ${esc(row.source)} · ${time(row.as_of)}${row.audit_ref ? ` · 审计 ${esc(row.audit_ref)}` : ""}</div></div>`).join("") : state.mot?.tasks?.length || state.mot?.runs?.length ? `<div class="welcome recent"><span class="welcome-mark">◎</span><h1>MOT 正在看着这两家店</h1><p>最近检查 ${time(state.mot.last_check_at)} · ${state.mot.unresolved_count} 项待处理 · ${state.mot.monitors?.filter(row => row.status === "ACTIVE").length || 0} 条持续监测。</p><button type="button" class="secondary-action" data-open-context="tasks">查看任务和运行证据</button></div>` : `<div class="welcome"><span class="welcome-mark">◎</span><h1>把财务目标交给 MOT</h1><p>同一个对话里查看门店资金、持仓演示数据和监测任务。MOT 会标清专员来源与未接通的能力。</p><div><button type="button" class="secondary-action" data-suggestion="检查两家门店资金，并告诉我有没有需要关注的持仓风险">检查资金和持仓风险</button><button type="button" class="secondary-action" data-suggestion="查看当前监测任务">查看当前任务</button><button type="button" class="secondary-action" data-suggestion="监测资金池可用余额低于 3000 元，站内提醒我">设置持续监测</button></div></div>`;
   $("conversation-scroll").scrollTop = $("conversation-scroll").scrollHeight;
   renderContext();
 }
@@ -64,13 +66,20 @@ function taskEvidence(task) {
 }
 function renderContext() {
   const body = $("context-body");
+  if (state.selectedTeam) {
+    $("context-tabs").hidden = true;
+    const agent = state.agents.find(row => row.agent_id === state.selectedTeam);
+    body.innerHTML = `<section class="context-section"><h3>协作节点</h3><div class="context-item"><strong>${esc(names[state.selectedTeam])}</strong><small>连接：${esc(agent?.connection_status || "UNAVAILABLE")} · 数据：${esc(agent?.data_mode || "NONE")}</small><p>${state.selectedTeam === "investment" ? "仅使用固定演示持仓快照，不代表用户真实持仓，也不执行交易。" : state.selectedTeam === "merchant" ? "本机可读演示账本；云端商户账本未接通。" : "可信 Core / Risk 审批接口未接通；不能批准资金动作。"}</p><button type="button" class="secondary-action" data-mention="${esc(state.selectedTeam)}">在 MOT 对话中提及</button></div></section>`;
+    return;
+  }
   if (state.agent === "mot" || state.agent === "risk") {
     const ctx = state.mot;
     if (!ctx) { body.innerHTML = `<p class="muted">MOT 状态不可用。请重试读取后端。</p>`; return; }
     $("context-tabs").hidden = false;
     $("context-tabs").querySelectorAll("button").forEach(button => button.classList.toggle("active", button.dataset.tab === state.tab));
     if (state.tab === "treasury") body.innerHTML = `<section class="context-section"><h3>运行状态</h3><div class="context-item"><strong>${esc(ctx.status)} · ${ctx.unresolved_count} 项未解决</strong><small>上次检查 ${time(ctx.last_check_at)}${ctx.next_check_at ? ` · 下次计划 ${time(ctx.next_check_at)}` : ""}</small><small>Core/Risk ${esc(ctx.core_risk)} · 资金操作禁用</small></div></section><section class="context-section"><h3>账户与资金池</h3>${ctx.accounts.map(row => `<div class="context-item"><strong>${esc(row.name)} · ${money(row.balance_minor)}</strong><small>${esc(row.account_id)} · ${row.pool ? "资金池" : "非资金池"} · 快照 ${time(row.as_of)}</small></div>`).join("") || `<p class="muted">尚无已核对账户。</p>`}</section><section class="context-section"><h3>近期流水</h3>${ctx.transactions.slice(-12).reverse().map(row => `<div class="context-item"><strong>${esc(row.transaction_type)} · ${money(row.amount_minor)}</strong><small>${esc(row.source_system)}:${esc(row.external_transaction_id)} · ${esc(row.status)}</small><small>${esc(row.store_id || "—")} / ${esc(row.terminal_id || "—")} · ${time(row.occurred_at)}</small></div>`).join("") || `<p class="muted">暂无流水。</p>`}</section>`;
-    else if (state.tab === "tasks") body.innerHTML = `<section class="context-section"><h3>Inbox · ${ctx.inbox.length} 条</h3>${ctx.inbox.slice(-10).reverse().map(row => `<div class="context-item"><strong>${esc(row.status)}</strong><small>任务 ${esc(row.task_id)} · ${time(row.updated_at)}</small></div>`).join("") || `<p class="muted">暂无提醒。</p>`}</section><section class="context-section"><h3>任务时间线</h3>${ctx.tasks.slice().reverse().map(taskEvidence).join("") || `<p class="muted">暂无任务。</p>`}</section>`;
+    else if (state.tab === "tasks") body.innerHTML = `<section class="context-section"><h3>MOT 协作任务</h3>${state.taskRuns.map(run => `<div class="context-item"><strong>${esc(run.status)} · ${esc(run.task_id)}</strong><small>会话 ${esc(run.conversation_id)} · ${time(run.updated_at)}</small>${run.steps.map(step => `<small>${esc(names[step.agent_id])} · ${esc(step.status)} · ${esc(step.source)}</small>`).join("")}<small>停止原因 ${esc(run.stop_reason || "无")}</small></div>`).join("") || `<p class="muted">尚无协作任务。</p>`}</section><section class="context-section"><h3>持续监测</h3>${ctx.monitors?.slice().reverse().map(row => `<div class="context-item"><strong>资金池低于 ${money(row.threshold_minor)} <span class="pill">${esc(row.status)}</span></strong><small>每 ${esc(row.frequency_minutes)} 分钟 · ${esc(row.channel)} · ${esc(row.timezone)}</small><small>最近 ${time(row.last_run_at)} · 下次 ${time(row.next_run_at)}</small>${row.status !== "CANCELLED" ? `<button type="button" class="secondary-action" data-monitor="${esc(row.monitor_id)}" data-monitor-action="${row.status === "ACTIVE" ? "PAUSE" : "RESUME"}">${row.status === "ACTIVE" ? "暂停" : "恢复"}</button><button type="button" class="secondary-action" data-monitor="${esc(row.monitor_id)}" data-monitor-action="CANCEL">取消</button><label class="muted">新阈值（元）<input type="number" min="0.01" step="0.01" id="threshold-${esc(row.monitor_id)}" value="${row.threshold_minor / 100}"></label><button type="button" class="secondary-action" data-monitor="${esc(row.monitor_id)}" data-monitor-action="UPDATE">修改阈值</button>` : ""}</div>`).join("") || `<p class="muted">尚无监测规则。在对话中说“监测资金池可用余额低于 3000 元”。</p>`}</section><section class="context-section"><h3>Inbox · ${ctx.inbox.length} 条</h3>${ctx.inbox.slice(-10).reverse().map(row => `<div class="context-item"><strong>${esc(row.status)}</strong><small>任务 ${esc(row.task_id)} · ${time(row.updated_at)}</small></div>`).join("") || `<p class="muted">暂无提醒。</p>`}</section><section class="context-section"><h3>任务时间线</h3>${ctx.tasks.slice().reverse().map(taskEvidence).join("") || `<p class="muted">暂无任务。</p>`}</section>`;
+    else if (state.tab === "settings") body.innerHTML = `<section class="context-section"><h3>连接与权限</h3><div class="context-item"><strong>MOT · ${esc(ctx.status)}</strong><small>身份 ${esc(state.mode)} · 数据模式 ${state.mode === "LOCAL_DEMO" ? "本机合成" : "受控 Staging 合成"}</small><small>最近检查 ${time(ctx.last_check_at)} · Core/Risk ${esc(ctx.core_risk)}</small><small>实时语音通话：UNAVAILABLE · 电话外呼：DISABLED</small><p>语音听写依赖浏览器识别能力，转写结果只会填入输入框。当前没有授权的实时语音通话服务。</p></div></section>`;
     else body.innerHTML = `<section class="context-section"><h3>自动运行</h3>${ctx.runs.slice().reverse().map(row => `<div class="context-item"><strong>${esc(row.result.trigger)} · ${esc(row.result.findings)} 项发现</strong><small>${time(row.result.at)} · ${esc(row.result.check_id)}</small></div>`).join("") || `<p class="muted">尚无运行记录。</p>`}</section><section class="context-section"><h3>审计事件</h3>${ctx.audit.slice(-30).reverse().map(row => `<div class="context-item"><strong>${esc(row.event_type)}</strong><small>${time(row.at)} · ${esc(row.task_id || "全局")} · ${esc(row.audit_id)}</small></div>`).join("") || `<p class="muted">暂无审计事件。</p>`}</section>`;
     if (state.tab === "treasury") body.insertAdjacentHTML("afterbegin", `<button type="button" class="secondary-action" data-mot-check>手动检查</button>`);
   } else {
@@ -87,60 +96,78 @@ async function refreshMot() {
     const ctx = await api("/api/app/context/mot"); state.mot = ctx;
     const agent = state.agents.find(item => item.agent_id === "mot");
     if (agent) Object.assign(agent, ...["status", "last_check_at", "next_check_at", "unresolved_count", "pending_approval_count", "last_result", "core_risk"].map(key => ({ [key]: ctx[key] })));
-    renderNav(); renderContext();
+    renderNav(); if (!state.conversation?.messages?.length) renderConversation(); else renderContext();
   } catch (cause) { error(`MOT 数据读取失败：${cause.message}`); }
 }
 async function bootstrap() {
   const data = await api("/api/app/bootstrap");
-  state.mode = data.mode; state.agents = data.agents; state.conversations = data.conversations;
+  state.mode = data.mode; state.agents = data.agents; state.conversations = data.conversations; state.taskRuns = data.task_runs || [];
   const params = new URLSearchParams(location.search);
-  const selected = params.get("agent");
-  state.agent = names[selected] ? selected : "mot";
+  state.agent = "mot";
   const id = params.get("conversation");
   if (id) await openConversation(id, false); else { state.conversation = null; renderNav(); renderConversation(); }
   await refreshMot();
+  if (!state.conversation) renderConversation();
 }
 async function openConversation(id, changeUrl = true) {
   const row = await api(`/api/app/conversations/${encodeURIComponent(id)}`);
-  state.conversation = row; state.agent = row.agent_id;
-  if (changeUrl) url(row.agent_id, id);
+  if (row.agent_id !== "mot") throw new Error("旧版专员对话请在原入口查看；新任务统一由 MOT 协调");
+  state.conversation = row; state.agent = "mot";
+  if (changeUrl) url("mot", id);
   error(""); renderNav(); renderConversation(); closeOverlays();
 }
 async function selectAgent(agent) {
-  if (!names[agent]) return;
-  state.agent = agent; state.conversation = null; state.latestResult = null; state.tab = agent === "risk" ? "tasks" : "treasury";
-  url(agent, null); renderNav(); renderConversation(); closeOverlays();
+  state.agent = "mot"; state.conversation = null; state.latestResult = null; state.selectedTeam = null; state.tab = "treasury";
+  url("mot", null); renderNav(); renderConversation(); closeOverlays();
 }
 async function sendText(text) {
   if (!text.trim()) return;
-  error(""); $("send").disabled = true;
+  error(""); $("send").disabled = true; $("stop-message").hidden = false;
   const key = state.pendingKey || crypto.randomUUID(); state.pendingKey = key;
   try {
     if (!state.conversation) {
-      const created = await api("/api/app/conversations", { agent_id: state.agent, request_id: crypto.randomUUID() });
-      state.conversation = created; url(state.agent, created.conversation_id);
+      const created = await api("/api/app/conversations", { agent_id: "mot", request_id: crypto.randomUUID() });
+      state.conversation = created; url("mot", created.conversation_id);
     }
-    await api(`/api/app/conversations/${encodeURIComponent(state.conversation.conversation_id)}/messages`, { text, request_id: key });
+    state.pendingController = new AbortController();
+    await api(`/api/app/conversations/${encodeURIComponent(state.conversation.conversation_id)}/messages`, { text, request_id: key }, state.pendingController.signal);
     state.pendingKey = null; $("prompt").value = "";
-    const data = await api("/api/app/bootstrap"); state.conversations = data.conversations;
+    const data = await api("/api/app/bootstrap"); state.conversations = data.conversations; state.taskRuns = data.task_runs || [];
     await openConversation(state.conversation.conversation_id, false);
     await refreshMot();
-  } catch (cause) { error(`消息结果未确认：${cause.message}。先刷新会话；若未记录，可用相同内容重试。`); }
-  finally { $("send").disabled = false; $("prompt").focus(); }
+  } catch (cause) { error(cause.name === "AbortError" ? "已停止等待。服务端可能仍在处理；请刷新会话核对，勿另发相同资金请求。" : `消息结果未确认：${cause.message}。先刷新会话；若未记录，可用相同内容重试。`); }
+  finally { state.pendingController = null; $("stop-message").hidden = true; $("send").disabled = false; $("prompt").focus(); }
 }
 
 $("composer").addEventListener("submit", event => { event.preventDefault(); sendText($("prompt").value); });
 $("prompt").addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); $("composer").requestSubmit(); } });
-$("new-chat").onclick = () => selectAgent(state.agent);
+$("new-chat").onclick = () => selectAgent("mot");
+$("mot-home").onclick = () => selectAgent("mot");
+$("task-center").onclick = () => { state.selectedTeam = null; state.tab = "tasks"; renderContext(); $("context-panel").classList.add("open"); closeSidebarOnly(); };
+$("approval-center").onclick = () => { state.selectedTeam = null; state.tab = "tasks"; renderContext(); $("context-panel").classList.add("open"); closeSidebarOnly(); };
+$("settings-open").onclick = () => { state.selectedTeam = null; state.tab = "settings"; renderContext(); $("context-panel").classList.add("open"); closeSidebarOnly(); };
+function closeSidebarOnly() { $("sidebar").classList.remove("open"); $("mobile-shade").classList.add("show"); }
 $("history-search").oninput = renderNav;
-$("agents").onclick = event => { const button = event.target.closest("[data-agent]"); if (button) selectAgent(button.dataset.agent); };
+$("agents").onclick = event => { const button = event.target.closest("[data-team]"); if (button) { state.selectedTeam = button.dataset.team; renderNav(); renderContext(); $("context-panel").classList.add("open"); closeSidebarOnly(); } };
 $("history").onclick = event => { const button = event.target.closest("[data-conversation]"); if (button) openConversation(button.dataset.conversation).catch(cause => error(cause.message)); };
 $("conversation").onclick = event => {
   const suggestion = event.target.closest("[data-suggestion]"); if (suggestion) { $("prompt").value = suggestion.dataset.suggestion; $("prompt").focus(); }
-  const action = event.target.closest("[data-open-context]"); if (action) { state.tab = action.dataset.openContext === "tasks" ? "tasks" : "treasury"; renderContext(); $("context-panel").classList.add("open"); $("mobile-shade").classList.add("show"); }
+  const action = event.target.closest("[data-open-context]"); if (action) { state.selectedTeam = null; state.tab = action.dataset.openContext === "tasks" ? "tasks" : "treasury"; renderContext(); $("context-panel").classList.add("open"); $("mobile-shade").classList.add("show"); }
 };
-$("context-tabs").onclick = event => { const button = event.target.closest("[data-tab]"); if (button) { state.tab = button.dataset.tab; renderContext(); } };
+$("context-tabs").onclick = event => { const button = event.target.closest("[data-tab]"); if (button) { state.selectedTeam = null; state.tab = button.dataset.tab; renderContext(); } };
 $("context-body").onclick = async event => {
+  const mention = event.target.closest("[data-mention]");
+  if (mention) { $("prompt").value = `@${names[mention.dataset.mention]} `; closeOverlays(); $("prompt").focus(); return; }
+  const monitorAction = event.target.closest("[data-monitor-action]");
+  if (monitorAction) {
+    const threshold = Number($(`threshold-${monitorAction.dataset.monitor}`)?.value);
+    const thresholdMinor = Math.round(threshold * 100);
+    try { await api(`/api/mot/monitors/${encodeURIComponent(monitorAction.dataset.monitor)}`, {
+      action: monitorAction.dataset.monitorAction, request_key: `app-${crypto.randomUUID()}`,
+      ...(monitorAction.dataset.monitorAction === "UPDATE" ? { threshold_minor: thresholdMinor } : {}) }); await refreshMot(); }
+    catch (cause) { error(`监测更新未确认：${cause.message}。请刷新后核对。`); }
+    return;
+  }
   const check = event.target.closest("[data-mot-check]");
   if (check) {
     check.disabled = true;
@@ -192,6 +219,32 @@ $("close-sidebar").onclick = closeOverlays;
 $("open-context").onclick = () => { $("context-panel").classList.add("open"); $("mobile-shade").classList.add("show"); };
 $("close-context").onclick = closeOverlays;
 $("mobile-shade").onclick = closeOverlays;
+let recognizer = null;
+$("dictate").onclick = () => {
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Recognition) { $("voice-status").textContent = "此浏览器不支持语音听写，请直接输入文字。"; return; }
+  try {
+    recognizer = new Recognition(); recognizer.lang = "zh-CN"; recognizer.continuous = true; recognizer.interimResults = true;
+    const original = $("prompt").value;
+    recognizer.onresult = event => {
+      let final = "", interim = "";
+      for (let index = event.resultIndex; index < event.results.length; index++) {
+        const text = event.results[index][0]?.transcript || "";
+        if (event.results[index].isFinal) final += text; else interim += text;
+      }
+      if (final) { $("prompt").value = [$("prompt").value, final].filter(Boolean).join(" "); }
+      $("voice-status").textContent = interim ? `识别中：${interim} · 完成后请核对再发送` : "转写已填入输入框，请修改和核对后再发送。";
+    };
+    recognizer.onerror = event => { $("voice-status").textContent = `听写未完成：${event.error}。可以直接输入文字。`; };
+    recognizer.onend = () => { $("dictate").hidden = false; $("stop-dictate").hidden = true; recognizer = null; };
+    recognizer.start(); $("dictate").hidden = true; $("stop-dictate").hidden = false;
+    $("voice-status").textContent = "正在听写；结果只填入输入框，不会自动发送。";
+  } catch { $("voice-status").textContent = "无法启动听写，请使用文字输入。"; }
+};
+$("stop-dictate").onclick = () => recognizer?.stop();
+$("stop-message").onclick = () => state.pendingController?.abort();
+$("attach").onclick = () => { $("voice-status").textContent = "通用附件分析服务未接通。当前可在文字中描述内容；请勿把附件当作已读取。"; };
+$("call-mot").onclick = () => { state.selectedTeam = null; state.tab = "settings"; renderContext(); $("context-panel").classList.add("open"); $("mobile-shade").classList.add("show"); $("voice-status").textContent = "实时通话服务未接通。可使用语音听写，把转写核对后发给同一 MOT 对话。"; };
 addEventListener("popstate", () => bootstrap().catch(cause => error(`页面恢复失败：${cause.message}`)));
 bootstrap().catch(cause => error(`应用未能连接后端：${cause.message}`));
 setInterval(refreshMot, 60_000);

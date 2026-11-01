@@ -40,3 +40,11 @@ Staging 配置仅更新 `personal-ai-fund-manager-mot-staging`。新口令与 Co
 ## 未完成的生产接线
 
 公网主聊天的源码/部署版本与本候选尚未统一。云端 Merchant 账本仍 `UNAVAILABLE`；Investment 云端为固定演示样本；Core/Risk 的商户本人审批仍 `UNAVAILABLE`。Staging 演示口令映射到一个合成 owner，尚无面向真实用户的登录、角色和跨服务身份联邦。旧 UI PR #7 的任务视图与本分支应逐项合并测试，不能自动覆盖。
+
+## MOT 协调入口增量（2026-11-01）
+
+`/app` 当前只提供 MOT 新对话。三个专员在“协作团队”里展示连接和数据模式，点击仅显示能力说明；`@` 提及只是确定性路由偏好。同句查询门店资金和持仓时，`app/router.js` 读取 MOT 账本及固定持仓快照，生成一个 `run_id`、一个父 `task_id` 和三个带来源、时间、状态的子步骤。Risk 未接通则任务为 `PARTIAL`，并记录 `RISK_ADAPTER_UNAVAILABLE`。运行结果持久化在 owner 的 app 会话内，`GET /api/app/bootstrap` 的 `task_runs` 可恢复任务中心。它是完成后的执行摘要，当前没有流式步骤更新，也没有通用 LLM 自主规划。
+
+阈值监测使用 MOT 原有账本、Inbox、审计和 15 分钟调度器。旧 `mot.v1` 状态读取时补充空 `monitors` 数组，数据不丢失；`GET /api/mot/monitors`、`POST /api/mot/monitors`、`POST /api/mot/monitors/:id` 分别读取、创建、执行 `PAUSE`/`RESUME`/`UPDATE`/`CANCEL`。现只支持已核对资金池的可用余额阈值，频率固定 15 分钟、渠道固定 `INBOX_ONLY`、时区 `Asia/Shanghai`。创建和修改需要 operator 权限及幂等 key。手动、事件和定时检查走同一 `MotEngine.check`；同一异常复用开放任务，恢复后关闭 Inbox。Cloudflare 仍用既有 Cron → Durable Object 链路，本机用 `MotScheduler`，浏览器的 60 秒刷新只更新显示。
+
+浏览器语音听写使用可用时的 `SpeechRecognition`，点击麦克风后才启动，只把转写填入可编辑输入框，不自动发送。当前没有授权的实时语音通话服务或电话网关，所以“与 MOT 通话”显示明确的不可用状态。生产站、真实账户、可信 Risk 和本人审批仍保持阻断。

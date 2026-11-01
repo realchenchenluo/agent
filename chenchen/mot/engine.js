@@ -13,7 +13,7 @@ const error = (code, statusCode = 422) => Object.assign(new Error(code), { code,
 function empty(ownerId) {
   return { schema_version: VERSION, owner_id: ownerId, revision: 0, stores: [], terminals: [], accounts: [],
     transactions: [], reservations: [], tasks: [], inbox: [], notification_events: [], audit: [],
-    memory: [], checks: [], ingests: [], pool_configs: [], observed_transaction_keys: [],
+    memory: [], checks: [], ingests: [], pool_configs: [], monitors: [], observed_transaction_keys: [],
     last_check_at: null, last_check_error: null };
 }
 
@@ -26,6 +26,9 @@ function validateState(state, ownerId) {
       state.tasks.some(task => task.owner_id !== ownerId || !STATES.has(task.state)) ||
       state.reservations.some(row => row.owner_id !== ownerId || !money(row.amount_minor)))
     throw error("PERSISTENCE_CORRUPT", 503);
+  // Older mot.v1 records predate persistent monitors.
+  if (state.monitors === undefined) state.monitors = [];
+  if (!Array.isArray(state.monitors) || state.monitors.some(row => row.owner_id !== ownerId)) throw error("PERSISTENCE_CORRUPT", 503);
   return state;
 }
 
@@ -234,6 +237,22 @@ class MotEngine {
       const at = this.now();
       const active = new Set();
       const detected = findings(state, at);
+      const evaluatedMonitorIds = new Set();
+      for (const monitor of state.monitors || []) {
+        if (monitor.status !== "ACTIVE" || (trigger === "scheduled" && Date.parse(monitor.next_run_at) > Date.parse(at))) continue;
+        evaluatedMonitorIds.add(monitor.monitor_id);
+        const view = overview(state, at);
+        const current = monitor.scope === "POOL" ? view.available_minor : null;
+        if (current === null) detected.push({ key: `MONITOR_UNKNOWN:${monitor.monitor_id}`, kind: "MONITOR_UNKNOWN", severity: "HIGH",
+          evidence: { monitor_id: monitor.monitor_id, reason: "BALANCE_NOT_VERIFIED", as_of: view.as_of } });
+        else if (current < monitor.threshold_minor) detected.push({ key: `MONITOR_BELOW_THRESHOLD:${monitor.monitor_id}`,
+          kind: "MONITOR_BELOW_THRESHOLD", severity: "HIGH", evidence: { monitor_id: monitor.monitor_id,
+            scope: monitor.scope, current_minor: current, threshold_minor: monitor.threshold_minor, as_of: view.as_of } });
+        monitor.last_run_at = at;
+        monitor.next_run_at = this.scheduler?.nextRunAt ||
+          new Date(Math.ceil((Date.parse(at) + 1) / 900_000) * 900_000).toISOString();
+        monitor.updated_at = at;
+      }
       const observed = new Set(state.observed_transaction_keys);
       const fresh = state.transactions.filter(t => !observed.has(`${t.source_system}:${t.external_transaction_id}`));
       const newReceipts = fresh.filter(t => t.transaction_type === "RECEIPT").length;
@@ -259,6 +278,11 @@ class MotEngine {
         }
       }
       for (const task of state.tasks) {
+        if (task.finding_key?.startsWith("MONITOR_") && !active.has(task.finding_key)) {
+          const monitorId = task.finding_key.split(":")[1];
+          const monitor = state.monitors.find(row => row.monitor_id === monitorId);
+          if (monitor?.status === "ACTIVE" && !evaluatedMonitorIds.has(monitorId)) continue;
+        }
         if (!active.has(task.finding_key) && task.finding_key && task.state === "NEEDS_ATTENTION") {
           transition(task, "RESOLVED", at, { reason: "finding_cleared" });
           for (const item of state.inbox.filter(i => i.task_id === task.task_id)) { item.status = "RESOLVED"; item.updated_at = at; }
@@ -280,6 +304,53 @@ class MotEngine {
     const task = await this.read(ownerId, state => state.tasks.find(t => t.task_id === taskId) || null);
     if (!task) throw error("TASK_NOT_FOUND", 404);
     return task;
+  }
+
+  async createMonitor(ownerId, input) {
+    const { scope, threshold_minor, frequency_minutes, channel, timezone, request_key } = input || {};
+    if (scope !== "POOL" || !money(threshold_minor) || threshold_minor <= 0 || frequency_minutes !== 15 ||
+        channel !== "INBOX_ONLY" || timezone !== "Asia/Shanghai" || !validId(request_key)) throw error("INVALID_MONITOR");
+    return this.repository.transact(ownerId, state => {
+      state.monitors ||= [];
+      const prior = state.monitors.find(row => row.request_key === request_key);
+      if (prior) {
+        if (prior.threshold_minor !== threshold_minor || prior.scope !== scope) throw error("IDEMPOTENCY_CONFLICT", 409);
+        return clone(prior);
+      }
+      const at = this.now();
+      const record = { monitor_id: id("mot-monitor-"), owner_id: ownerId, scope, threshold_minor,
+        frequency_minutes, channel, timezone, status: "ACTIVE", request_key, created_at: at, updated_at: at,
+        next_run_at: this.scheduler?.nextRunAt || new Date(Math.ceil(Date.parse(at) / 900_000) * 900_000).toISOString(), last_run_at: null };
+      state.monitors.push(record); state.revision++;
+      audit(state, at, "monitor.created", null, { monitor_id: record.monitor_id, threshold_minor, scope });
+      return clone(record);
+    });
+  }
+
+  async changeMonitor(ownerId, monitorId, { action, threshold_minor, request_key } = {}) {
+    if (!validId(monitorId) || !validId(request_key) || !["PAUSE", "RESUME", "CANCEL", "UPDATE"].includes(action) ||
+        (action === "UPDATE" && (!money(threshold_minor) || threshold_minor <= 0))) throw error("INVALID_MONITOR_CHANGE");
+    return this.repository.transact(ownerId, state => {
+      state.monitors ||= [];
+      const monitor = state.monitors.find(row => row.monitor_id === monitorId);
+      if (!monitor) throw error("MONITOR_NOT_FOUND", 404);
+      const prior = state.audit.find(row => row.event_type === "monitor.changed" && row.evidence.request_key === request_key);
+      if (prior) {
+        if (prior.evidence.monitor_id !== monitorId || prior.evidence.action !== action ||
+            prior.evidence.threshold_minor !== (action === "UPDATE" ? threshold_minor : null)) throw error("IDEMPOTENCY_CONFLICT", 409);
+        return clone(monitor);
+      }
+      if (monitor.status === "CANCELLED") throw error("MONITOR_CANCELLED", 409);
+      const at = this.now();
+      if (action === "PAUSE") monitor.status = "PAUSED";
+      const nextScheduled = this.scheduler?.nextRunAt || new Date(Math.ceil(Date.parse(at) / 900_000) * 900_000).toISOString();
+      if (action === "RESUME") { monitor.status = "ACTIVE"; monitor.next_run_at = nextScheduled; }
+      if (action === "CANCEL") monitor.status = "CANCELLED";
+      if (action === "UPDATE") { monitor.threshold_minor = threshold_minor; monitor.next_run_at = nextScheduled; }
+      monitor.updated_at = at; state.revision++;
+      audit(state, at, "monitor.changed", null, { monitor_id: monitorId, action, threshold_minor: action === "UPDATE" ? threshold_minor : null, request_key });
+      return clone(monitor);
+    });
   }
 
   async memory(ownerId, { type, key, value, consent, request_key }) {

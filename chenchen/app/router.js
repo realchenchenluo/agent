@@ -23,7 +23,7 @@ async function motContext(runtime, owner) {
       unresolved_count: open.length, pending_approval_count: open.filter(task => task.state === "PENDING_APPROVAL").length,
       last_result: lastRun, overview: view, stores: state.stores, accounts: state.accounts,
       transactions: state.transactions.slice(-100), inbox: state.inbox.slice(-100), tasks: state.tasks.slice(-100),
-      runs: state.checks.slice(-20), audit: state.audit.slice(-100),
+      runs: state.checks.slice(-20), monitors: (state.monitors || []).slice(-100), audit: state.audit.slice(-100),
       core_risk: runtime.coreRisk ? "ADAPTER_CONFIGURED" : "UNAVAILABLE" };
   });
 }
@@ -31,8 +31,47 @@ async function motContext(runtime, owner) {
 async function answer({ text, conversationId, agentId, owner, runtime, merchant, requestId }) {
   const now = new Date().toISOString();
   const query = text.trim();
-  if (agentId === "mot" || /门店|收银|资金池|资金缺口|到账|调钱|划转|转账|转给|MOT/i.test(query)) {
+  const wantsTreasury = /门店|收银|资金池|资金缺口|到账|MOT|现金/.test(query);
+  const wantsInvestment = /持仓|投资|组合|基金|股票|@持仓分析/.test(query);
+  if (agentId === "mot" && wantsTreasury && wantsInvestment && !/调钱|划转|转账|付款/.test(query)) {
+    const runId = randomUUID(), taskId = randomUUID();
+    const steps = [];
+    const step = (agent, status, source, asOf, evidence) => steps.push({ task_id: randomUUID(), parent_task_id: taskId,
+      run_id: runId, agent_id: agent, status, source, as_of: asOf, evidence });
     const ctx = await motContext(runtime, owner);
+    step("mot", ctx.overview.balance_fresh ? "READY" : "UNKNOWN", "MOT_LEDGER", ctx.as_of,
+      { ledger_revision: ctx.overview.revision, account_ids: ctx.accounts.map(row => row.account_id) });
+    const validation = financial.validatePortfolio(financial.getDemoPortfolio());
+    const snapshot = validation.output.snapshot;
+    const diagnosis = financial.diagnosePortfolio(snapshot);
+    step("investment", "DEMO_DATA", "INVESTMENT_DEMO_SNAPSHOT", snapshot.as_of,
+      { snapshot_id: snapshot.snapshot_id || null, position_count: snapshot.positions.length });
+    step("risk", "UNAVAILABLE", "CORE_RISK_GATE", now, { core_risk: ctx.core_risk });
+    const run = { run_id: runId, task_id: taskId, conversation_id: conversationId, status: "PARTIAL",
+      created_at: now, updated_at: now, steps, stop_reason: "RISK_ADAPTER_UNAVAILABLE",
+      ledger_revision: ctx.overview.revision };
+    return message(conversationId, "mot", "task_result", "PARTIAL", "MOT_COORDINATOR", now,
+      `两家门店的已核对账户总额 ${minor(ctx.overview.total_verified_minor)}，资金池可用 ${minor(ctx.overview.available_minor)}；${ctx.unresolved_count} 项未解决监测任务。持仓分析只能使用固定演示组合（基准日 ${snapshot.as_of}），不能代表你的真实持仓风险。Risk 服务 ${ctx.core_risk}，因此没有形成可信风险审批结论。`,
+      [{ kind: "run", run }, { kind: "treasury", overview: ctx.overview, stores: ctx.stores, accounts: ctx.accounts, transactions: ctx.transactions.slice(-12) },
+        { kind: "investment", snapshot, diagnosis: diagnosis.output }],
+      [{ action: "open_context", label: "查看任务与证据", target: "tasks" }], taskId);
+  }
+  if ((agentId === "mot" && !wantsInvestment && !/账单|采购|经营|成本|商户|店主|@风险审核/.test(query)) ||
+      /门店|收银|资金池|资金缺口|到账|调钱|划转|转账|转给|MOT/i.test(query)) {
+    const ctx = await motContext(runtime, owner);
+    if (/监测|监控|提醒/.test(query) && /低于|小于|少于/.test(query)) {
+      const amount = query.match(/(\d+(?:\.\d{1,2})?)\s*元/);
+      const threshold = amount ? Math.round(Number(amount[1]) * 100) : 0;
+      if (!/资金池/.test(query) || !Number.isSafeInteger(threshold) || threshold <= 0 || !requestId)
+        return message(conversationId, "mot", "status", "NEEDS_INPUT", "MOT_MONITOR", ctx.as_of,
+          "请明确资金池可用余额的阈值（元）。门店现金和银行账户不能自动对应；目前可持续监测的是已核对资金池。提醒仅写入站内 Inbox。",
+          [{ kind: "risk", status: "NEEDS_INPUT", execution_allowed: false }]);
+      const monitor = await runtime.createMonitor(owner, { scope: "POOL", threshold_minor: threshold,
+        frequency_minutes: 15, channel: "INBOX_ONLY", timezone: "Asia/Shanghai", request_key: `app-monitor-${requestId}` });
+      return message(conversationId, "mot", "task_result", "ACTIVE", "MOT_SCHEDULER", ctx.as_of,
+        `已保存资金池可用余额低于 ${minor(threshold)} 的监测规则。服务器每 15 分钟检查，异常写入站内 Inbox；下次计划 ${monitor.next_run_at}。`,
+        [{ kind: "monitor", monitor }], [{ action: "open_context", label: "管理监测", target: "tasks" }]);
+    }
     if (/调钱|划转|转账|转给|转到|调给|付款|占用|调拨/.test(query) && /把|安排|执行|现在|帮我/.test(query)) {
       const matches = ctx.accounts.flatMap(account => [account.name, account.account_id].filter(Boolean)
         .flatMap(label => [...query.matchAll(new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))]

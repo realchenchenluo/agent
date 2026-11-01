@@ -64,10 +64,10 @@ function makeMotHttp(env = process.env, engine = null) {
           core_risk: runtime.coreRisk ? "ADAPTER_CONFIGURED" : "UNAVAILABLE", execution_allowed: false };
       } else if (method === "GET" && route === "/overview") {
         result = await runtime.read(owner, state => overview(state, runtime.now()));
-      } else if (method === "GET" && ["/stores", "/accounts", "/transactions", "/alerts", "/tasks", "/inbox", "/runs", "/audit", "/memory", "/notification-events"].includes(route)) {
+      } else if (method === "GET" && ["/stores", "/accounts", "/transactions", "/alerts", "/tasks", "/inbox", "/runs", "/audit", "/memory", "/monitors", "/notification-events"].includes(route)) {
         const field = { "/stores": "stores", "/accounts": "accounts", "/transactions": "transactions",
           "/alerts": "inbox", "/tasks": "tasks", "/inbox": "inbox", "/runs": "checks", "/audit": "audit", "/memory": "memory",
-          "/notification-events": "notification_events" }[route];
+          "/notification-events": "notification_events", "/monitors": "monitors" }[route];
         result = await runtime.read(owner, state => ({ contract_version: "mot.v1", owner_id: owner,
           revision: state.revision, items: state[field].slice(-200) }));
       } else if (method === "GET" && /^\/tasks\/[^/]+$/.test(route)) {
@@ -84,6 +84,10 @@ function makeMotHttp(env = process.env, engine = null) {
       } else if (method === "POST" && route === "/check") {
         requireRole(actor, "operator");
         result = await runtime.check(owner, { trigger: "manual", requestKey: body.idempotency_key });
+      } else if (method === "POST" && route === "/monitors") {
+        requireRole(actor, "operator"); result = await runtime.createMonitor(owner, body); status = 201;
+      } else if (method === "POST" && /^\/monitors\/[^/]+$/.test(route)) {
+        requireRole(actor, "operator"); result = await runtime.changeMonitor(owner, decodeURIComponent(route.slice(10)), body);
       } else if (method === "POST" && route === "/pool/configure") {
         requireRole(actor, "approver");
         result = await runtime.configurePool(owner, body);

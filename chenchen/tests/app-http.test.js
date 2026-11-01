@@ -85,3 +85,27 @@ test("merchant and investment adapters return sourced results; transfer remains 
   assert.equal((await call(transferRoute, { method: "POST", body: transferBody })).data.messages[1].task_id, transferTaskId);
   assert.equal((await call("/api/mot/tasks")).data.items.filter(row => row.kind === "TRANSFER_PROPOSAL").length, 1);
 });
+
+test("MOT coordinator keeps one conversation and exposes persistent monitor controls", async () => {
+  const created = await call("/api/app/conversations", { method: "POST", body: { agent_id: "mot", request_id: "create-coordinator-http-1" } });
+  const route = `/api/app/conversations/${created.data.conversation_id}/messages`;
+  const combined = await call(route, { method: "POST", body: {
+    text: "检查两家门店资金，并告诉我有没有需要关注的持仓风险", request_id: "combined-coordinator-http-1" } });
+  assert.equal(combined.status, 200);
+  const reply = combined.data.messages[1];
+  assert.equal(reply.status, "PARTIAL");
+  assert.equal(reply.conversation_id, created.data.conversation_id);
+  const run = reply.tool_results.find(row => row.kind === "run").run;
+  assert.equal((await call("/api/app/bootstrap")).data.task_runs.find(row => row.run_id === run.run_id).task_id, run.task_id);
+  const monitorReply = await call(route, { method: "POST", body: {
+    text: "监测资金池可用余额低于 9000 元，站内提醒我", request_id: "monitor-chat-http-1" } });
+  assert.equal(monitorReply.status, 200);
+  const monitor = monitorReply.data.messages[1].tool_results[0].monitor;
+  assert.equal(monitor.status, "ACTIVE");
+  assert.equal((await call("/api/mot/monitors")).data.items.find(row => row.monitor_id === monitor.monitor_id).threshold_minor, 900_000);
+  assert.equal((await call("/api/mot/monitors", { token: keyB })).data.items.length, 0);
+  assert.equal((await call(`/api/mot/monitors/${monitor.monitor_id}`, { method: "POST", token: keyB,
+    body: { action: "PAUSE", request_key: "cross-owner-pause-1" } })).status, 404);
+  assert.equal((await call(`/api/mot/monitors/${monitor.monitor_id}`, { method: "POST",
+    body: { action: "PAUSE", request_key: "owner-pause-1" } })).data.status, "PAUSED");
+});

@@ -36,7 +36,7 @@ async function main() {
   assert.equal(login.status, 303); assert.match(setCookie, /HttpOnly; Secure; SameSite=Strict/);
   const cookie = setCookie.split(";")[0];
   const app = await call("/app", { cookie });
-  assert.equal(app.response.status, 200); assert.match(app.text, /AI Banking · 你的财务 Agent/);
+  assert.equal(app.response.status, 200); assert.match(app.text, /MOT · 财务总助手/);
   assert.ok(!app.text.includes(tokenA) && !app.text.includes(tokenB));
   const script = await call("/versions/app.js");
   assert.equal(script.response.status, 200); assert.ok(!script.text.includes(tokenA) && !script.text.includes(tokenB));
@@ -73,6 +73,28 @@ async function main() {
   assert.equal((await call(`/api/app/conversations/${id}`, { token: tokenB })).response.status, 404);
   const restored = await call(`/api/app/conversations/${id}`, { cookie });
   assert.equal(restored.data.messages.length, 4);
+  const combined = await call(messageRoute, { method: "POST", cookie,
+    body: { text: "检查两家门店资金，并告诉我有没有需要关注的持仓风险", request_id: `${createKey}-combined` } });
+  assert.equal(combined.response.status, 200);
+  assert.equal(combined.data.messages[1].status, "PARTIAL");
+  const run = combined.data.messages[1].tool_results.find(row => row.kind === "run").run;
+  assert.deepEqual(run.steps.map(row => row.agent_id), ["mot", "investment", "risk"]);
+  assert.equal(run.steps[2].status, "UNAVAILABLE");
+  assert.equal((await call("/api/app/bootstrap", { cookie })).data.task_runs.find(row => row.run_id === run.run_id).task_id, run.task_id);
+  const monitor = await call(messageRoute, { method: "POST", cookie,
+    body: { text: "监测资金池可用余额低于 9000 元，站内提醒我", request_id: `${createKey}-monitor` } });
+  assert.equal(monitor.response.status, 200);
+  const monitorId = monitor.data.messages[1].tool_results[0].monitor.monitor_id;
+  assert.equal((await call("/api/mot/monitors", { token: tokenB })).data.items.find(row => row.monitor_id === monitorId), undefined);
+  const manual = await call("/api/mot/check", { method: "POST", cookie, body: { idempotency_key: `${createKey}-monitor-check` } });
+  assert.equal(manual.response.status, 200);
+  assert.ok((await call("/api/mot/tasks", { cookie })).data.items.some(row => row.kind === "MONITOR_BELOW_THRESHOLD" && row.finding_key.endsWith(monitorId)));
+  const paused = await call(`/api/mot/monitors/${monitorId}`, { method: "POST", cookie,
+    body: { action: "PAUSE", request_key: `${createKey}-monitor-pause` } });
+  assert.equal(paused.data.status, "PAUSED");
+  const resumed = await call(`/api/mot/monitors/${monitorId}`, { method: "POST", cookie,
+    body: { action: "RESUME", request_key: `${createKey}-monitor-resume` } });
+  assert.equal(resumed.data.status, "ACTIVE");
   const unsafe = await call("/api/app/conversations", { method: "POST", cookie,
     origin: "https://attacker.example", body: { agent_id: "mot", request_id: randomUUID() } });
   assert.equal(unsafe.response.status, 403);

@@ -31,12 +31,16 @@ function makeAppHttp({ env = process.env, mot, merchantFor }) {
         const state = await store.read(owner);
         const motStatus = await motContext(mot.runtime, owner);
         result = { contract_version: "app.v1", owner_id: owner, mode: actor.mode,
-          agents: [{ agent_id: "mot", name: "MOT · Treasury Agent", ...Object.fromEntries(["status", "last_check_at", "next_check_at", "unresolved_count", "pending_approval_count", "last_result", "core_risk"].map(key => [key, motStatus[key]])) },
-            { agent_id: "merchant", name: "店主财务助手", status: "LOCAL_SESSION" },
-            { agent_id: "investment", name: "持仓分析", status: "DEMO_DATA" },
-            { agent_id: "risk", name: "风险审核", status: "UNAVAILABLE" }],
+          agents: [{ agent_id: "mot", name: "MOT · 财务总助手", connection_status: "AVAILABLE", data_mode: "SYNTHETIC",
+            ...Object.fromEntries(["status", "last_check_at", "next_check_at", "unresolved_count", "pending_approval_count", "last_result", "core_risk"].map(key => [key, motStatus[key]])) },
+            { agent_id: "merchant", name: "店主财务专员", status: "LOCAL_SESSION", connection_status: "AVAILABLE", data_mode: "LOCAL_SESSION_SYNTHETIC" },
+            { agent_id: "investment", name: "持仓分析专员", status: "DEMO_DATA", connection_status: "AVAILABLE", data_mode: "FIXED_DEMO_SNAPSHOT" },
+            { agent_id: "risk", name: "风险审核专员", status: "UNAVAILABLE", connection_status: "UNAVAILABLE", data_mode: "NONE" }],
+          voice_capabilities: { dictation: "BROWSER_DEPENDENT", realtime_call: "UNAVAILABLE", telephony: "DISABLED" },
           conversations: state.conversations.map(row => ({ conversation_id: row.conversation_id, agent_id: row.agent_id,
-            title: row.title, created_at: row.created_at, updated_at: row.updated_at })).reverse() };
+            title: row.title, created_at: row.created_at, updated_at: row.updated_at })).reverse(),
+          task_runs: state.conversations.flatMap(row => row.messages.flatMap(item => (item.tool_results || [])
+            .filter(result => result.kind === "run").map(result => result.run))).slice(-50).reverse() };
       } else if (method === "GET" && route === "/context/mot") {
         result = await motContext(mot.runtime, owner);
       } else if (method === "POST" && route === "/conversations") {

@@ -10,10 +10,12 @@ class DurableMotRepository {
   key(ownerId) { return `mot:owner:${ownerId}`; }
   async read(ownerId) { return clone(validateState(await this.storage.get(this.key(ownerId)) || empty(ownerId), ownerId)); }
   async transact(ownerId, fn) {
-    const state = await this.read(ownerId);
-    const result = await fn(state);
-    await this.storage.put(this.key(ownerId), state);
-    return clone(result);
+    return this.storage.transaction(async txn => {
+      const state = validateState(await txn.get(this.key(ownerId)) || empty(ownerId), ownerId);
+      const result = await fn(state);
+      await txn.put(this.key(ownerId), state);
+      return clone(result);
+    });
   }
   async owners() {
     const rows = await this.storage.list({ prefix: "mot:owner:" });
@@ -102,10 +104,10 @@ class MotWorker {
           external_notifications: false, execution_allowed: false };
       } else if (request.method === "GET" && route === "/overview") {
         result = await this.engine.read(owner, state => overview(state, this.engine.now()));
-      } else if (request.method === "GET" && ["/stores", "/accounts", "/transactions", "/alerts", "/tasks", "/inbox", "/runs", "/audit", "/memory", "/notification-events"].includes(route)) {
+      } else if (request.method === "GET" && ["/stores", "/accounts", "/transactions", "/alerts", "/tasks", "/inbox", "/runs", "/audit", "/memory", "/monitors", "/notification-events"].includes(route)) {
         const field = { "/stores": "stores", "/accounts": "accounts", "/transactions": "transactions",
           "/alerts": "inbox", "/tasks": "tasks", "/inbox": "inbox", "/runs": "checks", "/audit": "audit", "/memory": "memory",
-          "/notification-events": "notification_events" }[route];
+          "/notification-events": "notification_events", "/monitors": "monitors" }[route];
         result = await this.engine.read(owner, state => ({ contract_version: VERSION, owner_id: owner,
           revision: state.revision, items: state[field].slice(-200) }));
       } else if (request.method === "GET" && /^\/tasks\/[^/]+$/.test(route)) {
@@ -118,6 +120,10 @@ class MotWorker {
       } else if (request.method === "POST" && route === "/check") {
         role(actor, "operator"); const input = await body(request);
         result = await this.engine.check(owner, { trigger: "manual", requestKey: input.idempotency_key });
+      } else if (request.method === "POST" && route === "/monitors") {
+        role(actor, "operator"); result = await this.engine.createMonitor(owner, await body(request)); status = 201;
+      } else if (request.method === "POST" && /^\/monitors\/[^/]+$/.test(route)) {
+        role(actor, "operator"); result = await this.engine.changeMonitor(owner, decodeURIComponent(route.slice(10)), await body(request));
       } else if (request.method === "POST" && route === "/pool/configure") {
         role(actor, "approver"); result = await this.engine.configurePool(owner, await body(request));
       } else if (request.method === "POST" && route === "/reservations/propose") {

@@ -70,13 +70,32 @@ test("Worker scheduled trigger has a separate secret and never duplicates an Inb
   assert.equal(unauthenticated.status, 401);
 });
 
+test("Worker monitor survives restart and writes one owner-scoped Inbox alert", async () => {
+  const app = setup();
+  await call(app, "/api/mot/events/ingest", { snapshot: fixture(new Date().toISOString()), idempotency_key: "monitor-worker-seed" });
+  const input = { scope: "POOL", threshold_minor: 900_000, frequency_minutes: 15, channel: "INBOX_ONLY",
+    timezone: "Asia/Shanghai", request_key: "monitor-worker-create" };
+  const created = await call(app, "/api/mot/monitors", input);
+  assert.equal(created.status, 201);
+  const monitorId = created.data.monitor_id;
+  assert.equal((await call(app, "/api/mot/monitors", undefined, keyB)).data.items.length, 0);
+  assert.equal((await call(app, `/api/mot/monitors/${monitorId}`, { action: "PAUSE", request_key: "cross-owner-pause" }, keyB)).status, 404);
+  const first = await call(app, "/api/mot/check", { idempotency_key: "monitor-worker-manual-1" });
+  assert.equal(first.status, 200);
+  assert.equal((await call(app, "/api/mot/tasks")).data.items.filter(row => row.kind === "MONITOR_BELOW_THRESHOLD").length, 1);
+  app.restart();
+  assert.equal((await call(app, "/api/mot/monitors")).data.items[0].monitor_id, monitorId);
+  await call(app, "/api/mot/check", { idempotency_key: "monitor-worker-manual-2" });
+  assert.equal((await call(app, "/api/mot/tasks")).data.items.filter(row => row.kind === "MONITOR_BELOW_THRESHOLD").length, 1);
+});
+
 test("Worker storage failure returns unavailable and does not fabricate a task", async () => {
   const app = setup();
-  const original = app.storage.put;
-  app.storage.put = async () => { throw new Error("synthetic storage failure"); };
+  const original = app.storage.transaction;
+  app.storage.transaction = async () => { throw new Error("synthetic storage failure"); };
   const response = await call(app, "/api/mot/events/ingest", { snapshot: fixture(new Date().toISOString()), idempotency_key: "failed-seed" });
   assert.equal(response.status, 503);
-  app.storage.put = original;
+  app.storage.transaction = original;
   assert.equal((await call(app, "/api/mot/tasks")).data.items.length, 0);
 });
 
@@ -101,7 +120,7 @@ test("Staging app uses signed session, one owner and durable conversation histor
   assert.equal(login.status, 303);
   const cookie = login.headers.get("Set-Cookie").split(";")[0];
   assert.match(login.headers.get("Set-Cookie"), /HttpOnly; Secure; SameSite=Strict/);
-  assert.match(await (await staging.fetch(new Request(origin + "/app", { headers: { Cookie: cookie } }), app.env, {})).text(), /AI Banking · 你的财务 Agent/);
+  assert.match(await (await staging.fetch(new Request(origin + "/app", { headers: { Cookie: cookie } }), app.env, {})).text(), /MOT · 财务总助手/);
   const browse = async (route, body, token = null) => {
     const request = new Request(origin + route, { method: body ? "POST" : "GET",
       headers: { ...(token ? { "X-Mot-Key": token } : { Cookie: cookie }), Origin: origin,
