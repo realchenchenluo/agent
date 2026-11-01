@@ -31,7 +31,7 @@ flowchart LR
 - Node 本机以 MOT 的 `LOCAL_DEMO` owner 保护 `/api/app/*`，对话写入独立 owner 文件，原子替换且有进程内单写队列；MOT 账本保留原仓库，互不充当权威来源。
 - Staging 复用 MOT 的 token 身份和同一个 `ReviewService` Durable Object；前端只用 HttpOnly、Secure、SameSite Cookie。Worker 验证 Cookie 后在服务端注入 MOT token，浏览器 JS 不接收 API token。Staging 口令只保护合成演示 owner，不能当作生产本人身份体系。
 - 服务端发送结构化消息，包含 `conversation_id`、`agent_id`、`task_id`、`message_type`、`status`、`source`、`as_of`、`tool_results`、`actions`、`audit_ref`。确定性工具路由不冒充通用 LLM。
-- 流水、余额、待结算、审计来自 MOT Ledger；Merchant 数据来自原账本；Investment 使用固定样本。Core/Risk 缺少可信商户接线时，转账请求明确 `BLOCKED`，不创建执行成功回执。
+- 流水、余额、待结算、审计来自 MOT Ledger；Merchant 数据来自原账本；Investment 使用固定样本。金额和两个已核对账户明确时，调拨意图写入 `TRANSFER_PROPOSAL` 任务及审计；Core/Risk 的转账审批协议未接通时任务为 `BLOCKED`，不能审批、模拟或执行。信息不完整时返回 `NEEDS_INPUT`，不猜测账户。
 
 ## 部署和回退
 

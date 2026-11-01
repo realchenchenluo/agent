@@ -375,6 +375,37 @@ class MotEngine {
     });
   }
 
+  async proposeTransfer(ownerId, { amount_minor, from_account_id, to_account_id, request_key }) {
+    if (!money(amount_minor) || amount_minor === 0 || !validId(from_account_id) ||
+        !validId(to_account_id) || from_account_id === to_account_id || !validId(request_key))
+      throw error("INVALID_TRANSFER_PROPOSAL");
+    return this.repository.transact(ownerId, state => {
+      const existing = state.tasks.find(t => t.proposal?.request_key === request_key);
+      if (existing) {
+        if (existing.kind !== "TRANSFER_PROPOSAL" || existing.proposal.amount_minor !== amount_minor ||
+            existing.proposal.from_account_id !== from_account_id || existing.proposal.to_account_id !== to_account_id)
+          throw error("IDEMPOTENCY_CONFLICT", 409);
+        return clone(existing);
+      }
+      const view = overview(state, this.now());
+      const source = state.accounts.find(account => account.account_id === from_account_id);
+      const target = state.accounts.find(account => account.account_id === to_account_id);
+      if (!source?.verified || !target?.verified || !view.balance_fresh || !source.pool ||
+          amount_minor > view.available_minor) throw error("FUNDING_UNAVAILABLE", 409);
+      const at = this.now();
+      const task = { task_id: id("mot-task-"), owner_id: ownerId, source: "user_proposal", kind: "TRANSFER_PROPOSAL",
+        state: "CREATED", created_at: at, updated_at: at, ledger_revision: state.revision + 1,
+        evidence: [], approval: null, review: { status: "UNAVAILABLE", core: "UNAVAILABLE", risk: "UNAVAILABLE", execution_allowed: false },
+        proposal: { amount_minor, from_account_id, to_account_id, request_key, mode: "SIMULATION_ONLY" } };
+      state.tasks.push(task);
+      transition(task, "CHECKING", at, { available_minor: view.available_minor, ledger_revision: state.revision });
+      transition(task, "BLOCKED", at, { reason: "TRANSFER_CORE_RISK_CONTRACT_UNAVAILABLE" });
+      state.revision++;
+      audit(state, at, "transfer.proposed", task.task_id, { proposal: task.proposal, review: task.review });
+      return clone(task);
+    });
+  }
+
   async decideApproval(ownerId, taskId, decision) {
     if (!["APPROVE", "REJECT"].includes(decision)) throw error("INVALID_DECISION");
     return this.repository.transact(ownerId, async state => {

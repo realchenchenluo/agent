@@ -28,13 +28,35 @@ async function motContext(runtime, owner) {
   });
 }
 
-async function answer({ text, conversationId, agentId, owner, runtime, merchant }) {
+async function answer({ text, conversationId, agentId, owner, runtime, merchant, requestId }) {
   const now = new Date().toISOString();
   const query = text.trim();
   if (agentId === "mot" || /门店|收银|资金池|资金缺口|到账|调钱|划转|转账|转给|MOT/i.test(query)) {
     const ctx = await motContext(runtime, owner);
     if (/调钱|划转|转账|转给|转到|调给|付款|占用|调拨/.test(query) && /把|安排|执行|现在|帮我/.test(query)) {
-      return message(conversationId, "mot", "approval", "BLOCKED", "MOT_CORE_RISK", ctx.as_of, "资金安排需要明确金额、来源账户、目标账户，以及可信 Core、Risk 和本人审批。当前这些审批接口未接通，未创建转账或模拟执行记录。", [{ kind: "risk", status: ctx.core_risk, execution_allowed: false }], [], null);
+      const matches = ctx.accounts.flatMap(account => [account.name, account.account_id].filter(Boolean)
+        .flatMap(label => [...query.matchAll(new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))]
+          .map(hit => ({ account, at: hit.index })))).sort((a, b) => a.at - b.at);
+      const selected = matches.filter((hit, index) => matches.findIndex(item => item.account.account_id === hit.account.account_id) === index);
+      const amountText = query.match(/(\d+(?:\.\d{1,2})?)\s*元/);
+      const amountMinor = amountText ? Math.round(Number(amountText[1]) * 100) : 0;
+      if (!/转账|转给|转到|划转|调拨|调钱|调给/.test(query) || selected.length !== 2 || !Number.isSafeInteger(amountMinor) || amountMinor <= 0 || !requestId)
+        return message(conversationId, "mot", "approval", "NEEDS_INPUT", "MOT_CORE_RISK", ctx.as_of,
+          "请明确金额（元）、来源账户和目标账户。只识别已核对账户的名称或 ID，不会根据门店名猜测账户。",
+          [{ kind: "risk", status: ctx.core_risk, execution_allowed: false }]);
+      try {
+        const task = await runtime.proposeTransfer(owner, { amount_minor: amountMinor,
+          from_account_id: selected[0].account.account_id, to_account_id: selected[1].account.account_id,
+          request_key: `app-transfer-${requestId}` });
+        return message(conversationId, "mot", "approval", task.state, "MOT_CORE_RISK", ctx.as_of,
+          `已记录 ${minor(amountMinor)} 的调拨提案：${selected[0].account.name} → ${selected[1].account.name}。当前 Core/Risk 转账审批协议未接通，提案处于 ${task.state}，没有转账或模拟执行。`,
+          [{ kind: "transfer_proposal", task, execution_allowed: false }],
+          [{ action: "open_context", label: "查看提案与审计", target: "tasks" }], task.task_id);
+      } catch (cause) {
+        return message(conversationId, "mot", "approval", "BLOCKED", "MOT_CORE_RISK", ctx.as_of,
+          `未创建调拨提案：${cause.code || "FUNDING_UNAVAILABLE"}。请核对账户快照和可用资金。`,
+          [{ kind: "risk", status: cause.code || "UNAVAILABLE", execution_allowed: false }]);
+      }
     }
     if (/任务|提醒|异常|监测|风险|缺口/.test(query)) {
       const active = ctx.tasks.filter(task => !["RESOLVED", "CANCELLED"].includes(task.state));

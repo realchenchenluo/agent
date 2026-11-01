@@ -72,7 +72,7 @@ function makeAppHttp({ env = process.env, mot, merchantFor }) {
           }
           const at = new Date().toISOString();
           const reply = await answer({ text: body.text, conversationId: id, agentId: row.agent_id,
-            owner, runtime: mot.runtime, merchant: merchantFor(request, response) });
+            owner, runtime: mot.runtime, merchant: merchantFor(request, response), requestId: body.request_id });
           row.messages.push({ message_id: randomUUID(), conversation_id: id, agent_id: row.agent_id,
             task_id: null, message_type: "user", status: "RECORDED", source: "USER", as_of: at,
             text: body.text.trim(), tool_results: [], actions: [], audit_ref: null, request_id: body.request_id }, reply);
