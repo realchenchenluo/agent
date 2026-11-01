@@ -96,6 +96,7 @@ class MotWorker {
       let result, status = 200;
       if (request.method === "GET" && route === "/health") {
         result = { service: "mot", contract_version: VERSION, status: "ok", mode: "TOKEN",
+          build_sha: this.env.MOT_BUILD_SHA || null,
           persistence: "REVIEW_SERVICE_DURABLE_OBJECT", scheduler_interval_seconds: 900,
           core_risk: "UNAVAILABLE", cron_secret_configured: Boolean(this.env.MOT_CRON_SECRET),
           external_notifications: false, execution_allowed: false };
