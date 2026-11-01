@@ -24,3 +24,5 @@
 .app-shell{grid-template-rows:minmax(0,1fr);overflow:hidden}
 .workspace,.sidebar{min-height:0}
 .context-toggle{white-space:nowrap}
+.composer-bottom button,.secondary-action,.action-link,.context-tabs button,.context-head button,.agent-list button,.history-list button,.call-button,.context-toggle,.menu-button,.mobile-close{min-height:44px}
+.composer-bottom button{width:44px;height:44px;flex:0 0 44px}

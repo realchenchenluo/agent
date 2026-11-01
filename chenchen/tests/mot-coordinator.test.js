@@ -92,3 +92,104 @@ test("ten-thousand cash with four-thousand rent hold blocks eight-thousand and g
   await assert.rejects(engine.simulate(owner, smaller.task_id, "paper-three-thousand"), { code: "SIMULATION_BLOCKED" });
   assert.equal((await engine.read(owner, state => require("../mot/engine").overview(state, engine.now()))).available_minor, 600_000);
 });
+
+test("three demo prompts share one verified sample without inventing profit or payment", async t => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "mot-demo-stories-"));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const owner = "story-owner", engine = new MotEngine(new FileRepository(directory));
+  await engine.ingest(owner, fixture(new Date().toISOString()), "story-baseline");
+  const ask = (text, requestId) => answer({ text, conversationId: "story-conversation", agentId: "mot",
+    owner, runtime: engine, merchant: null, requestId });
+  const before = await engine.read(owner);
+  const treasury = await ask("帮我看两家店现在有多少钱，资金池里有多少，还有多少没到账。", "story-1");
+  assert.match(treasury.text, /15000\.00|15000/);
+  assert.match(treasury.text, /8000\.00|8000/);
+  assert.match(treasury.text, /550\.00|550/);
+  const recon = await ask("核对今天的收款和到账，哪几笔对不上？内部调拨不要算营业收入。", "story-2");
+  assert.equal(recon.status, "PARTIAL");
+  const evidence = recon.tool_results.find(row => row.kind === "reconciliation");
+  assert.deepEqual(evidence.pairs.map(row => [row.expected_minor, row.settled_minor, row.status]),
+    [[20_000, 20_000, "MATCHED"], [30_000, 29_000, "MISMATCH"]]);
+  assert.equal(evidence.pending.reduce((sum, row) => sum + row.amount_minor, 0), 55_000);
+  assert.equal(evidence.internal_transfers.length, 2);
+  assert.match(recon.text, /原因待核实/);
+  const rent = await ask("帮我支付 13,500 元房租。", "story-3");
+  assert.equal(rent.status, "BLOCKED");
+  assert.equal(rent.tool_results[0].shortfall_minor, 550_000);
+  assert.equal(rent.tool_results[0].account_id, "bank-main");
+  const profit = await ask("今天赚了多少钱？", "profit-scope");
+  assert.equal(profit.status, "UNKNOWN");
+  assert.match(profit.text, /无法计算净利润/);
+  const after = await engine.read(owner);
+  assert.deepEqual(after.accounts, before.accounts);
+  assert.equal(after.tasks.length, before.tasks.length);
+  assert.equal(after.transactions.length, before.transactions.length);
+});
+
+test("isolated synthetic approval completes one paper payment and preserves audit", async t => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "mot-paper-payment-"));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const owner = "isolated-payment-owner";
+  const engine = new MotEngine(new FileRepository(directory), { coreRisk: {
+    review: async ({ task_id, proposal_fingerprint }) => ({ status: "VERIFIED", risk: "APPROVE", verified: true,
+      core_task_id: task_id, risk_check_id: "synthetic-risk-payment-1", proof_id: "synthetic-risk-proof-1",
+      proposal_fingerprint, mode: "SIMULATION_ONLY" }),
+    approve: async ({ task_id, ledger_revision, review }) => ({ verified: true, decision: "APPROVE", task_id,
+      ledger_revision, proof_id: "synthetic-owner-proof-1", proposal_fingerprint: review.proposal_fingerprint })
+  } });
+  await engine.ingest(owner, fixture(new Date().toISOString()), "isolated-payment-fixture");
+  const baseline = await engine.read(owner, state => require("../mot/engine").overview(state, engine.now()));
+  assert.deepEqual([baseline.total_verified_minor, baseline.pool_balance_minor, baseline.pending_settlement_minor],
+    [1_500_000, 800_000, 55_000]);
+  const input = { amount_minor: 120_000, account_id: "bank-main", payee_id: "synthetic-landlord",
+    currency: "CNY", request_key: "paper-payment-1200" };
+  const task = await engine.proposePayment(owner, input);
+  assert.equal(task.kind, "PAYMENT_PROPOSAL");
+  assert.equal(task.state, "PENDING_APPROVAL");
+  assert.equal((await engine.proposePayment(owner, input)).task_id, task.task_id);
+  await assert.rejects(engine.proposePayment(owner, { ...input, amount_minor: 120_001 }), { code: "IDEMPOTENCY_CONFLICT" });
+  assert.equal((await engine.read(owner, state => state.accounts[0].balance_minor)), 800_000);
+  await engine.decideApproval(owner, task.task_id, "APPROVE");
+  assert.equal((await engine.read(owner, state => state.accounts[0].balance_minor)), 800_000);
+  const receipt = await engine.simulate(owner, task.task_id, "paper-payment-execute-1");
+  assert.equal(receipt.balance_after_minor, 680_000);
+  assert.equal(receipt.side_effects, false);
+  assert.equal((await engine.simulate(owner, task.task_id, "paper-payment-execute-1")).receipt_id, receipt.receipt_id);
+  await assert.rejects(engine.simulate(owner, task.task_id, "paper-payment-execute-2"), { code: "SIMULATION_BLOCKED" });
+  const after = await engine.read(owner);
+  const view = require("../mot/engine").overview(after, engine.now());
+  assert.deepEqual([view.total_verified_minor, view.pool_balance_minor, view.pending_settlement_minor],
+    [1_380_000, 680_000, 55_000]);
+  assert.equal(after.transactions.filter(row => row.source_system === "PAPER_SIMULATION" && row.task_id === task.task_id).length, 1);
+  assert.equal(after.audit.filter(row => row.task_id === task.task_id && row.event_type === "payment.simulated").length, 1);
+  assert.equal((await engine.read("another-owner", state => state.tasks)).length, 0);
+});
+
+test("paper payment approval expires and unavailable Risk never debits", async t => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "mot-payment-expiry-"));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  let clock = Date.parse("2026-11-01T09:00:00.000Z");
+  const repository = new FileRepository(directory), owner = "expiry-owner";
+  const now = () => new Date(clock).toISOString();
+  const input = { amount_minor: 120_000, account_id: "bank-main", payee_id: "synthetic-landlord",
+    currency: "CNY", request_key: "payment-expiry-1" };
+  const blocked = new MotEngine(repository, { now });
+  await blocked.ingest(owner, fixture(now()), "payment-expiry-fixture");
+  const denied = await blocked.proposePayment(owner, input);
+  assert.equal(denied.state, "BLOCKED");
+  await assert.rejects(blocked.decideApproval(owner, denied.task_id, "APPROVE"), { code: "APPROVAL_NOT_READY" });
+  await assert.rejects(blocked.simulate(owner, denied.task_id, "denied-execution"), { code: "SIMULATION_BLOCKED" });
+  const verified = new MotEngine(repository, { now, coreRisk: {
+    review: async ({ task_id, proposal_fingerprint }) => ({ status: "VERIFIED", risk: "APPROVE", verified: true,
+      core_task_id: task_id, risk_check_id: "synthetic-risk-expiry", proof_id: "synthetic-review-expiry",
+      proposal_fingerprint, mode: "SIMULATION_ONLY" }),
+    approve: async ({ task_id, ledger_revision, review }) => ({ verified: true, decision: "APPROVE", task_id,
+      ledger_revision, proof_id: "synthetic-approval-expiry", proposal_fingerprint: review.proposal_fingerprint })
+  } });
+  const approved = await verified.proposePayment(owner, { ...input, request_key: "payment-expiry-2" });
+  await verified.decideApproval(owner, approved.task_id, "APPROVE");
+  clock += 5 * 60_000 + 1;
+  await assert.rejects(verified.simulate(owner, approved.task_id, "expired-execution"), { code: "SIMULATION_BLOCKED" });
+  assert.equal((await verified.read(owner, state => state.accounts[0].balance_minor)), 800_000);
+  assert.equal((await verified.read(owner, state => state.transactions.filter(tx => tx.source_system === "PAPER_SIMULATION"))).length, 0);
+});

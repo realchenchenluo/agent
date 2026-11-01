@@ -128,6 +128,8 @@ class MotWorker {
         role(actor, "approver"); result = await this.engine.configurePool(owner, await body(request));
       } else if (request.method === "POST" && route === "/reservations/propose") {
         role(actor, "operator"); result = await this.engine.proposeReservation(owner, await body(request)); status = 201;
+      } else if (request.method === "POST" && route === "/payments/propose") {
+        role(actor, "operator"); result = await this.engine.proposePayment(owner, await body(request)); status = 201;
       } else if (request.method === "POST" && route === "/memory") {
         role(actor, "approver"); result = await this.engine.memory(owner, await body(request)); status = 201;
       } else if (request.method === "POST" && /^\/tasks\/[^/]+\/approval$/.test(route)) {

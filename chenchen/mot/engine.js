@@ -1,5 +1,7 @@
 "use strict";
 
+const { createHash } = require("node:crypto");
+
 const VERSION = "mot.v1";
 const STATES = new Set(["CREATED", "CHECKING", "NEEDS_ATTENTION", "PENDING_APPROVAL", "RESOLVED", "BLOCKED", "FAILED", "CANCELLED", "UNKNOWN"]);
 const clone = value => structuredClone(value);
@@ -446,6 +448,61 @@ class MotEngine {
     });
   }
 
+  async proposePayment(ownerId, { amount_minor, account_id, payee_id, currency, request_key }) {
+    if (!money(amount_minor) || amount_minor === 0 || !validId(account_id) || !validId(payee_id) ||
+        currency !== "CNY" || !validId(request_key)) throw error("INVALID_PAYMENT_PROPOSAL");
+    return this.repository.transact(ownerId, async state => {
+      const proposal = { amount_minor, account_id, payee_id, currency, request_key, mode: "SIMULATION_ONLY" };
+      const fingerprint = createHash("sha256").update(JSON.stringify(proposal)).digest("hex");
+      const existing = state.tasks.find(task => task.proposal?.request_key === request_key);
+      if (existing) {
+        if (existing.kind !== "PAYMENT_PROPOSAL" || existing.proposal_fingerprint !== fingerprint)
+          throw error("IDEMPOTENCY_CONFLICT", 409);
+        return clone(existing);
+      }
+      const account = state.accounts.find(row => row.account_id === account_id);
+      const view = overview(state, this.now());
+      if (!account?.verified || !account.pool || !view.balance_fresh ||
+          amount_minor > account.balance_minor || amount_minor > view.available_minor)
+        throw error("FUNDING_UNAVAILABLE", 409);
+      const at = this.now();
+      const task = { task_id: id("mot-task-"), owner_id: ownerId, source: "user_proposal", kind: "PAYMENT_PROPOSAL",
+        state: "CREATED", created_at: at, updated_at: at, ledger_revision: state.revision + 1,
+        evidence: [], approval: null, review: { status: "PENDING", execution_allowed: false },
+        proposal, proposal_fingerprint: fingerprint };
+      state.tasks.push(task);
+      transition(task, "CHECKING", at, { account_balance_minor: account.balance_minor,
+        pool_available_minor: view.available_minor, ledger_revision: state.revision, proposal_fingerprint: fingerprint });
+      if (this.coreRisk) {
+        try {
+          const review = await this.coreRisk.review({ owner_id: ownerId, task_id: task.task_id,
+            ledger_revision: task.ledger_revision, proposal: clone(proposal), proposal_fingerprint: fingerprint,
+            overview: view });
+          if (review?.status === "VERIFIED" && review.risk === "APPROVE" && review.verified === true &&
+              validId(review.core_task_id) && validId(review.risk_check_id) && validId(review.proof_id) &&
+              review.proposal_fingerprint === fingerprint && review.mode === "SIMULATION_ONLY") {
+            task.review = { ...clone(review), execution_allowed: false };
+            transition(task, "PENDING_APPROVAL", at, { core_task_id: review.core_task_id,
+              risk_check_id: review.risk_check_id, proposal_fingerprint: fingerprint });
+          } else {
+            task.review = { status: review?.status || "UNAVAILABLE", risk: review?.risk || "UNAVAILABLE",
+              execution_allowed: false };
+            transition(task, "BLOCKED", at, { reason: "CORE_RISK_NOT_VERIFIED" });
+          }
+        } catch {
+          task.review = { status: "UNKNOWN", risk: "UNKNOWN", execution_allowed: false };
+          transition(task, "UNKNOWN", at, { reason: "CORE_RISK_OUTCOME_UNKNOWN" });
+        }
+      } else {
+        task.review = { status: "UNAVAILABLE", core: "UNAVAILABLE", risk: "UNAVAILABLE", execution_allowed: false };
+        transition(task, "BLOCKED", at, { reason: "CORE_RISK_UNAVAILABLE" });
+      }
+      state.revision++;
+      audit(state, at, "payment.proposed", task.task_id, { proposal, proposal_fingerprint: fingerprint, review: task.review });
+      return clone(task);
+    });
+  }
+
   async proposeTransfer(ownerId, { amount_minor, from_account_id, to_account_id, request_key }) {
     if (!money(amount_minor) || amount_minor === 0 || !validId(from_account_id) ||
         !validId(to_account_id) || from_account_id === to_account_id || !validId(request_key))
@@ -502,7 +559,10 @@ class MotEngine {
         if (approval?.verified !== true || approval?.decision !== "APPROVE" ||
             approval?.task_id !== taskId || approval?.ledger_revision !== state.revision || !validId(approval.proof_id))
           throw error("APPROVAL_NOT_VERIFIED", 409);
-        task.approval = { ...clone(approval), at, owner_id: ownerId, ledger_revision: state.revision + 1 };
+        if (task.kind === "PAYMENT_PROPOSAL" && approval.proposal_fingerprint !== task.proposal_fingerprint)
+          throw error("APPROVAL_NOT_VERIFIED", 409);
+        task.approval = { ...clone(approval), at, owner_id: ownerId, ledger_revision: state.revision + 1,
+          ...(task.kind === "PAYMENT_PROPOSAL" ? { expires_at: new Date(Date.parse(at) + 5 * 60_000).toISOString() } : {}) };
       }
       state.revision++;
       audit(state, at, "approval.recorded", taskId, { decision });
@@ -516,14 +576,44 @@ class MotEngine {
       const task = state.tasks.find(t => t.task_id === taskId);
       if (!task) throw error("TASK_NOT_FOUND", 404);
       if (task.simulation?.request_key === requestKey) return clone(task.simulation);
-      if (task.kind !== "RESERVATION_PROPOSAL" || task.state !== "PENDING_APPROVAL" ||
+       if (!["RESERVATION_PROPOSAL", "PAYMENT_PROPOSAL"].includes(task.kind) || task.state !== "PENDING_APPROVAL" ||
           task.approval?.decision !== "APPROVE" || task.review?.status !== "VERIFIED" ||
           task.review?.risk !== "APPROVE" || task.approval.ledger_revision !== state.revision)
         throw error("SIMULATION_BLOCKED", 409);
       const view = overview(state, this.now());
-      if (!view.balance_fresh ||
-          JSON.stringify([...task.proposal.account_ids].sort()) !== JSON.stringify([...view.pool_account_ids].sort()) ||
-          task.proposal.amount_minor > view.available_minor) throw error("FUNDING_UNAVAILABLE", 409);
+       if (!view.balance_fresh || task.proposal.amount_minor > view.available_minor)
+         throw error("FUNDING_UNAVAILABLE", 409);
+       if (task.kind === "RESERVATION_PROPOSAL" &&
+           JSON.stringify([...task.proposal.account_ids].sort()) !== JSON.stringify([...view.pool_account_ids].sort()))
+         throw error("FUNDING_UNAVAILABLE", 409);
+       if (task.kind === "PAYMENT_PROPOSAL") {
+         const source = state.accounts.find(row => row.account_id === task.proposal.account_id);
+         if (!source?.verified || !source.pool || source.balance_minor < task.proposal.amount_minor ||
+             !task.approval.expires_at || Date.parse(task.approval.expires_at) <= Date.parse(this.now()) ||
+             task.review.proposal_fingerprint !== task.proposal_fingerprint ||
+             task.approval.proposal_fingerprint !== task.proposal_fingerprint) throw error("SIMULATION_BLOCKED", 409);
+         const at = this.now();
+         const before_minor = source.balance_minor;
+         source.balance_minor -= task.proposal.amount_minor;
+         source.revision++;
+         source.as_of = at;
+         const transactionId = id("paper-payment-");
+         state.transactions.push({ store_id: null, terminal_id: null, account_id: source.account_id,
+           source_system: "PAPER_SIMULATION", external_transaction_id: transactionId,
+           amount_minor: task.proposal.amount_minor, currency: "CNY", transaction_type: "PAYMENT",
+           status: "SETTLED", occurred_at: at, settled_at: at, as_of: at, revision: 1, due_at: null,
+           related_transaction_id: null, transfer_id: null, payee_id: task.proposal.payee_id,
+           task_id: taskId, mode: "SIMULATION_ONLY" });
+         task.simulation = { receipt_id: id("mot-receipt-"), task_id: taskId, owner_id: ownerId,
+           request_key: requestKey, transaction_id: transactionId, account_id: source.account_id,
+           payee_id: task.proposal.payee_id, amount_minor: task.proposal.amount_minor, currency: "CNY",
+           balance_before_minor: before_minor, balance_after_minor: source.balance_minor,
+           proposal_fingerprint: task.proposal_fingerprint, mode: "SIMULATION_ONLY", side_effects: false, at };
+         transition(task, "RESOLVED", at, { receipt_id: task.simulation.receipt_id });
+         state.revision++;
+         audit(state, at, "payment.simulated", taskId, task.simulation);
+         return clone(task.simulation);
+       }
       const at = this.now();
       const reservation = { reservation_id: id("mot-reservation-"), task_id: taskId, owner_id: ownerId,
         account_ids: clone(task.proposal.account_ids), amount_minor: task.proposal.amount_minor,

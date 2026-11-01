@@ -48,3 +48,11 @@ Staging 配置仅更新 `personal-ai-fund-manager-mot-staging`。新口令与 Co
 阈值监测使用 MOT 原有账本、Inbox、审计和 15 分钟调度器。旧 `mot.v1` 状态读取时补充空 `monitors` 数组，数据不丢失；`GET /api/mot/monitors`、`POST /api/mot/monitors`、`POST /api/mot/monitors/:id` 分别读取、创建、执行 `PAUSE`/`RESUME`/`UPDATE`/`CANCEL`。现只支持已核对资金池的可用余额阈值，频率固定 15 分钟、渠道固定 `INBOX_ONLY`、时区 `Asia/Shanghai`。创建和修改需要 operator 权限及幂等 key。手动、事件和定时检查走同一 `MotEngine.check`；同一异常复用开放任务，恢复后关闭 Inbox。Cloudflare 仍用既有 Cron → Durable Object 链路，本机用 `MotScheduler`，浏览器的 60 秒刷新只更新显示。
 
 浏览器语音听写使用可用时的 `SpeechRecognition`，点击麦克风后才启动，只把转写填入可编辑输入框，不自动发送。当前没有授权的实时语音通话服务或电话网关，所以“与 MOT 通话”显示明确的不可用状态。生产站、真实账户、可信 Risk 和本人审批仍保持阻断。
+
+## 赛前验收修复（2026-11-01）
+
+`app/router.js` 对同一账本的三个固定故事增加确定性口径：账户余额 15000 元、池内 8000 元、待结算 550 元分开列示；POS 与银行结算只按显式关联配对，300/290 元差异标为待核实，内部划转不计营业收入；13500 元房租从已登记待付单据确定付款账户，算出池内缺口 5500 元并阻断。样本流水不能证明完整一天利润，问“今天赚了多少钱”返回 `UNKNOWN`。上述均不调用模型，也不写账本。
+
+`POST /api/mot/payments/propose` 新增独立的 `PAYMENT_PROPOSAL`：要求明确账户、合成收款对象、金额、币种和幂等键。服务端检查池内可用资金，审批绑定提案 SHA-256、账本版本和五分钟有效期；`POST /api/mot/tasks/:id/simulate` 在同一持久化事务内重查并仅写一次 PAPER 流水、扣减合成账户快照、回执与审计。隔离 Node HTTP 测试以专用合成验证适配器完成 1200 元支付，公网 Staging 未配置该适配器，正向支付继续 `BLOCKED`。这不是已接通正式 Core/Risk 的证据。
+
+前端“待我确认”仅列 `PENDING_APPROVAL`，迟到回复不覆盖已切换的会话；对账、付款判断卡保留来源和时点。Staging 演示登录仍固定映射一个合成 owner，因此多人重复演示会共享已有任务。验收使用独立 `mot-staging-b` token/账本；正式参赛数据隔离和用户身份体系尚需接线。

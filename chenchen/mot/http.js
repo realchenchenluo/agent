@@ -94,6 +94,9 @@ function makeMotHttp(env = process.env, engine = null) {
       } else if (method === "POST" && route === "/reservations/propose") {
         requireRole(actor, "operator");
         result = await runtime.proposeReservation(owner, body); status = 201;
+      } else if (method === "POST" && route === "/payments/propose") {
+        requireRole(actor, "operator");
+        result = await runtime.proposePayment(owner, body); status = 201;
       } else if (method === "POST" && route === "/memory") {
         requireRole(actor, "approver");
         result = await runtime.memory(owner, body); status = 201;
