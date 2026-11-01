@@ -128,6 +128,23 @@ test("unknown balances, unknown Risk and unverified approval block reservation s
   await assert.rejects(ctx.engine.decideApproval(ctx.owner, task.task_id, "APPROVE"), { code: "IDEMPOTENCY_CONFLICT" });
 });
 
+test("transfer intent creates one traceable blocked proposal without moving funds", async t => {
+  const ctx = await setup(); t.after(ctx.cleanup);
+  await ctx.engine.ingestDemo(ctx.owner);
+  const input = { amount_minor: 50_000, from_account_id: "bank-main", to_account_id: "bank-west", request_key: "transfer-request-one" };
+  const task = await ctx.engine.proposeTransfer(ctx.owner, input);
+  assert.equal(task.kind, "TRANSFER_PROPOSAL");
+  assert.equal(task.state, "BLOCKED");
+  assert.equal(task.proposal.to_account_id, "bank-west");
+  assert.equal((await ctx.engine.proposeTransfer(ctx.owner, input)).task_id, task.task_id);
+  await assert.rejects(ctx.engine.decideApproval(ctx.owner, task.task_id, "APPROVE"), { code: "APPROVAL_NOT_READY" });
+  await assert.rejects(ctx.engine.simulate(ctx.owner, task.task_id, "transfer-paper-one"), { code: "SIMULATION_BLOCKED" });
+  const state = await ctx.engine.read(ctx.owner);
+  assert.equal(state.reservations.length, 0);
+  assert.equal(state.transactions.length, 8);
+  assert.ok(state.audit.some(row => row.task_id === task.task_id && row.event_type === "transfer.proposed"));
+});
+
 test("lost Core/Risk acknowledgement remains UNKNOWN and the same proposal is not dispatched twice", async t => {
   let calls = 0;
   const ctx = await setup({ coreRisk: { review: async () => { calls++; throw new Error("synthetic timeout"); } } });

@@ -89,7 +89,7 @@ class AppWorker {
           return payload(200, { conversation_id: conversationId, replayed: true, messages: current.messages.slice(-2) });
         }
         const reply = await answer({ text: input.text, conversationId, agentId: current.agent_id, owner,
-          runtime: this.runtime, merchant: null });
+          runtime: this.runtime, merchant: null, requestId: input.request_id });
         result = await this.change(owner, state => {
           const row = state.conversations.find(item => item.conversation_id === conversationId);
           if (!row) throw failure("CONVERSATION_NOT_FOUND", 404);

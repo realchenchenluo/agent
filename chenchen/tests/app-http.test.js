@@ -71,7 +71,17 @@ test("merchant and investment adapters return sourced results; transfer remains 
     const sent = await call(`/api/app/conversations/${created.data.conversation_id}/messages`, { method: "POST", body: { text, request_id: `message-${agent}-test` } });
     assert.equal(sent.status, 200, sent.data.error?.code);
     assert.equal(sent.data.messages[1].source, source);
-    if (agent === "mot") assert.equal(sent.data.messages[1].status, "BLOCKED");
+    if (agent === "mot") assert.equal(sent.data.messages[1].status, "NEEDS_INPUT");
   }
   assert.equal((await call("/api/mot/tasks")).data.items.filter(row => row.kind === "RESERVATION_PROPOSAL").length, 0);
+  const createdTransfer = await call("/api/app/conversations", { method: "POST", body: { agent_id: "mot", request_id: "create-transfer-chat-001" } });
+  const transferRoute = `/api/app/conversations/${createdTransfer.data.conversation_id}/messages`;
+  const transferBody = { text: "帮我从运营账户转账 500 元到西店账户", request_id: "transfer-chat-001" };
+  const transfer = await call(transferRoute, { method: "POST", body: transferBody });
+  assert.equal(transfer.data.messages[1].status, "BLOCKED");
+  assert.equal(transfer.data.messages[1].tool_results[0].kind, "transfer_proposal");
+  const transferTaskId = transfer.data.messages[1].task_id;
+  assert.ok(transferTaskId);
+  assert.equal((await call(transferRoute, { method: "POST", body: transferBody })).data.messages[1].task_id, transferTaskId);
+  assert.equal((await call("/api/mot/tasks")).data.items.filter(row => row.kind === "TRANSFER_PROPOSAL").length, 1);
 });
