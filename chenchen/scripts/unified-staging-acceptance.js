@@ -60,9 +60,16 @@ async function main() {
   assert.equal(replied.response.status, 200); assert.equal(replied.data.messages[1].source, "MOT_INBOX");
   assert.ok(replied.data.messages[1].tool_results[0].tasks.length >= 2);
   assert.equal((await call(messageRoute, { method: "POST", cookie, body: message })).data.replayed, true);
-  const blocked = await call(messageRoute, { method: "POST", cookie,
-    body: { text: "把东店的钱转给西店", request_id: `${createKey}-transfer` } });
+  const transferInput = { text: "帮我从运营账户转账 500 元到西店账户", request_id: `${createKey}-transfer` };
+  const blocked = await call(messageRoute, { method: "POST", cookie, body: transferInput });
   assert.equal(blocked.response.status, 200); assert.equal(blocked.data.messages[1].status, "BLOCKED");
+  const transferTask = blocked.data.messages[1].tool_results[0].task;
+  assert.equal(transferTask.kind, "TRANSFER_PROPOSAL");
+  assert.equal(transferTask.proposal.amount_minor, 50_000);
+  assert.equal(transferTask.proposal.to_account_id, "bank-west");
+  assert.equal((await call(messageRoute, { method: "POST", cookie, body: transferInput })).data.messages[1].task_id, transferTask.task_id);
+  assert.equal((await call(`/api/mot/tasks/${transferTask.task_id}/simulate`, { method: "POST", cookie,
+    body: { idempotency_key: `${createKey}-paper` } })).response.status, 409);
   assert.equal((await call(`/api/app/conversations/${id}`, { token: tokenB })).response.status, 404);
   const restored = await call(`/api/app/conversations/${id}`, { cookie });
   assert.equal(restored.data.messages.length, 4);
