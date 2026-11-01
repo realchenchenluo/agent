@@ -45,6 +45,17 @@ test("conflicting external transaction and stale account snapshots fail closed",
   assert.equal((await ctx.engine.read(ctx.owner, s => s.transactions)).length, 8);
 });
 
+test("small source clock skew is tolerated while a later future snapshot stays unknown", async t => {
+  const near = await setup(); t.after(near.cleanup);
+  const oneMinuteAhead = new Date(Date.parse(AT) + 60_000).toISOString();
+  await near.engine.ingest(near.owner, fixture(oneMinuteAhead), "near-clock", "event");
+  assert.equal((await near.engine.read(near.owner, s => require("../mot/engine").overview(s, AT))).balance_fresh, true);
+  const far = await setup(); t.after(far.cleanup);
+  const tenMinutesAhead = new Date(Date.parse(AT) + 600_000).toISOString();
+  await far.engine.ingest(far.owner, fixture(tenMinutesAhead), "far-clock", "event");
+  assert.equal((await far.engine.read(far.owner, s => require("../mot/engine").overview(s, AT))).balance_fresh, false);
+});
+
 test("checks detect settlement mismatch and known payment shortfall without duplicate tasks", async t => {
   const ctx = await setup(); t.after(ctx.cleanup);
   await ctx.engine.ingestDemo(ctx.owner);

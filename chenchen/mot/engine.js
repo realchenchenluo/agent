@@ -112,7 +112,11 @@ function overview(state, at) {
   const total = sum(verified.map(a => a.balance_minor));
   const poolTotal = sum(pool.map(a => a.balance_minor));
   const held = sum(state.reservations.filter(r => r.status === "ACTIVE").map(r => r.amount_minor));
-  const fresh = pool.length > 0 && pool.every(a => Date.parse(at) - Date.parse(a.as_of) <= 24 * 3600_000 && Date.parse(at) >= Date.parse(a.as_of));
+  // Source and Worker clocks may differ slightly; larger future timestamps remain unknown.
+  const fresh = pool.length > 0 && pool.every(a => {
+    const age = Date.parse(at) - Date.parse(a.as_of);
+    return age <= 24 * 3600_000 && age >= -5 * 60_000;
+  });
   return { schema_version: VERSION, owner_id: state.owner_id, revision: state.revision,
     as_of: pool.length ? pool.map(a => a.as_of).sort()[0] : null, evaluated_at: at,
     stores: state.stores.length, terminals: state.terminals.length, accounts: state.accounts.length,
