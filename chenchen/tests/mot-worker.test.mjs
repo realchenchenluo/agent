@@ -14,6 +14,13 @@ function setup() {
       if (arguments.length === 1) for (const [name, row] of Object.entries(key)) records.set(name, structuredClone(row));
       else records.set(key, structuredClone(value));
     },
+    async transaction(update) {
+      const next = new Map(records);
+      const result = await update({ get: async name => structuredClone(next.get(name)),
+        put: async (name, value) => next.set(name, structuredClone(value)) });
+      records.clear(); for (const [name, value] of next) records.set(name, value);
+      return result;
+    },
     async list({ prefix }) { return new Map([...records].filter(([key]) => key.startsWith(prefix))); }
   };
   const env = { MOT_AUTH_TOKENS_JSON: JSON.stringify([
@@ -79,4 +86,42 @@ test("MOT staging entry rejects unrelated public review routes", async () => {
   assert.equal(unrelated.status, 404);
   const mot = await staging.fetch(new Request("https://mot.example/api/mot/overview"), app.env, {});
   assert.equal(mot.status, 401);
+});
+
+test("Staging app uses signed session, one owner and durable conversation history", async () => {
+  const app = setup();
+  Object.assign(app.env, { APP_STAGING_OWNER_ID: "owner-a", APP_STAGING_PASSWORD: "staging-synthetic-password-123456789",
+    APP_STAGING_COOKIE_KEY: "staging-synthetic-cookie-signing-key-123456789" });
+  const origin = "https://mot.example";
+  const anonymous = await staging.fetch(new Request(origin + "/app"), app.env, {});
+  assert.match(await anonymous.text(), /Staging 登录/);
+  const login = await staging.fetch(new Request(origin + "/api/app/login", { method: "POST",
+    headers: { Origin: origin, "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ password: app.env.APP_STAGING_PASSWORD }) }), app.env, {});
+  assert.equal(login.status, 303);
+  const cookie = login.headers.get("Set-Cookie").split(";")[0];
+  assert.match(login.headers.get("Set-Cookie"), /HttpOnly; Secure; SameSite=Strict/);
+  assert.match(await (await staging.fetch(new Request(origin + "/app", { headers: { Cookie: cookie } }), app.env, {})).text(), /AI Banking · 你的财务 Agent/);
+  const browse = async (route, body, token = null) => {
+    const request = new Request(origin + route, { method: body ? "POST" : "GET",
+      headers: { ...(token ? { "X-Mot-Key": token } : { Cookie: cookie }), Origin: origin,
+        ...(body ? { "Content-Type": "application/json" } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const response = await staging.fetch(request, app.env, {});
+    return { status: response.status, data: await response.json() };
+  };
+  assert.equal((await browse("/api/app/bootstrap")).data.owner_id, "owner-a");
+  const created = await browse("/api/app/conversations", { agent_id: "mot", request_id: "worker-chat-create-001" });
+  assert.equal(created.status, 201);
+  const conversationId = created.data.conversation_id;
+  const route = `/api/app/conversations/${conversationId}/messages`;
+  const body = { text: "查看当前监测任务", request_id: "worker-chat-message-001" };
+  assert.equal((await browse(route, body)).data.messages[1].source, "MOT_INBOX");
+  assert.equal((await browse(route, body)).data.replayed, true);
+  assert.equal((await browse(`/api/app/conversations/${conversationId}`, undefined, keyB)).status, 404);
+  app.restart();
+  assert.equal((await browse(`/api/app/conversations/${conversationId}`)).data.messages.length, 2);
+  const unsafe = await staging.fetch(new Request(origin + "/api/app/conversations", { method: "POST",
+    headers: { Cookie: cookie, Origin: "https://attacker.example", "Content-Type": "application/json" },
+    body: JSON.stringify({ agent_id: "mot", request_id: "cross-site-request-001" }) }), app.env, {});
+  assert.equal(unsafe.status, 403);
 });

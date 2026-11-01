@@ -138,4 +138,4 @@ class MotWorker {
   }
 }
 
-export { DurableMotRepository, MotWorker };
+export { DurableMotRepository, MotWorker, authenticate };

@@ -10,4 +10,7 @@ function check(directory){for(const file of fs.readdirSync(directory,{withFileTy
     if(result.status!==0){console.error(full,result.stderr);process.exitCode=1;}
   }
 }}
-check(root);if(!process.exitCode)console.log('JavaScript syntax checks passed.');
+check(root);
+const assets=spawnSync(process.execPath,[path.join(root,'scripts','build-app-assets.js'),'--check'],{encoding:'utf8'});
+if(assets.status!==0){console.error(assets.stderr);process.exitCode=1;}
+if(!process.exitCode)console.log('JavaScript syntax and staging asset checks passed.');

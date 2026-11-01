@@ -1,3 +1,5 @@
+.dev.vars*
 .wrangler/
 .wrangler-dry-run/
 chenchen/.wrangler-dry-run/
+chenchen/unified-test-fail.tap

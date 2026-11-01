@@ -13,6 +13,7 @@ import bailianBudgetModule from "../integrations/bailian-budget.js";
 import reviewReservationModule from "../integrations/review-reservation.js";
 import reviewTransitionModule from "../integrations/review-transition.js";
 import { MotWorker } from "./mot-worker.js";
+import { AppWorker } from "./app-worker.js";
 import { reviewDocs } from "./review-docs.js";
 
 const { Harness } = harnessModule;
@@ -244,6 +245,7 @@ export class ReviewService {
     this.reservations = new reviewReservationModule.ReviewReservations(this.storage);
     this.transitions = new reviewTransitionModule.ReviewTransitions(this.storage);
     this.motWorker = new MotWorker(this.storage, env, request => headers(request, env));
+    this.appWorker = new AppWorker(this.storage, this.motWorker.engine, env);
     this.pendingRequests = 0;
   }
 
@@ -301,6 +303,7 @@ export class ReviewService {
     let transition = null, transitionRecord = null, committing = false;
     try {
       if (url.pathname.startsWith("/api/mot/")) return this.motWorker.handle(request);
+      if (url.pathname.startsWith("/api/app/")) return this.appWorker.handle(request);
       if (request.method === "GET" && url.pathname.startsWith("/api/funding-demo/plan/")) {
         const planId = decodeURIComponent(url.pathname.slice("/api/funding-demo/plan/".length));
         await this.loadFundingPlan(fundingPlans, planId);
@@ -474,6 +477,7 @@ export default {
       });
     }
     const isMot = url.pathname.startsWith("/api/mot/") && ["GET", "POST"].includes(request.method);
+    const isApp = url.pathname.startsWith("/api/app/") && ["GET", "POST"].includes(request.method);
     const isCapabilitiesRead = request.method === "GET" && url.pathname === "/api/review/capabilities";
     const isReviewRead = request.method === "GET" && (url.pathname.startsWith("/api/review/") || url.pathname.startsWith("/api/funding-demo/plan/"));
     const isKnownPost = request.method === "POST" && [
@@ -481,15 +485,15 @@ export default {
       "/api/review/risk-decision", "/api/review/risk-callback", "/api/review/approval", "/api/review/risk-dispatch", "/api/review/simulate", "/api/review/cancel",
       "/api/funding-demo/plan", "/api/funding-demo/plan/revise"
     ].includes(url.pathname);
-    if (!isKnownPost && !isReviewRead && !isCapabilitiesRead && !isMot) {
+    if (!isKnownPost && !isReviewRead && !isCapabilitiesRead && !isMot && !isApp) {
       return json(request, env, 404, errorPayload(routeNotFoundFailure()));
     }
-    if (isMot) {
+    if (isMot || isApp) {
       try {
         const service = env.REVIEW_SERVICE.get(env.REVIEW_SERVICE.idFromName("team-review-v1"));
         return await service.fetch(request);
       } catch {
-        return json(request, env, 503, { contract_version: "mot.v1", error: { code: "PERSISTENCE_UNAVAILABLE" }, execution_allowed: false });
+        return json(request, env, 503, { contract_version: isApp ? "app.v1" : "mot.v1", error: { code: "PERSISTENCE_UNAVAILABLE" }, execution_allowed: false });
       }
     }
     if (!requiresApiKey(request, env)) return json(request, env, 401, errorPayload(authFailure()), { "WWW-Authenticate": "X-Core-Agent-Key" });

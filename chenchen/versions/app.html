@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f7f8f6"><title>AI Banking · 你的财务 Agent</title><link rel="stylesheet" href="/versions/app.css"></head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="导航">
+    <div class="brand"><span class="brand-symbol">◎</span><div><strong>AI Banking</strong><small>YOUR FINANCIAL AGENTS</small></div><button class="mobile-close" id="close-sidebar" aria-label="关闭导航">×</button></div>
+    <button class="new-chat" id="new-chat">＋ 新建对话</button>
+    <label class="search"><span>⌕</span><input id="history-search" placeholder="搜索对话" aria-label="搜索对话"></label>
+    <p class="nav-label">我的 Agent</p><div id="agents" class="agent-list" aria-live="polite"></div>
+    <p class="nav-label history-label">历史对话</p><div id="history" class="history-list"></div>
+    <div class="sidebar-foot"><span class="online-dot"></span><span id="identity">正在连接</span></div>
+  </aside>
+  <main class="workspace">
+    <header class="topbar"><button class="menu-button" id="open-sidebar" aria-label="打开导航">☰</button><div class="top-title"><strong id="agent-title">AI Banking</strong><small id="agent-subtitle">一个入口，连接你的财务 Agent</small></div><button class="context-toggle" id="open-context" aria-label="打开详情">详情</button></header>
+    <div id="global-error" class="global-error" role="alert" hidden></div>
+    <div class="conversation-scroll" id="conversation-scroll"><div class="conversation" id="conversation"><div class="welcome"><span class="welcome-mark">◎</span><h1>今天想先看什么？</h1><p>选择左侧 Agent，询问门店资金、账单、持仓或监测任务。所有数字从后端读取。</p></div></div></div>
+    <div class="composer-wrap"><form id="composer" class="composer"><label for="prompt" class="sr-only">向 Agent 提问</label><textarea id="prompt" rows="2" maxlength="2000" placeholder="向 MOT 提问或安排任务…"></textarea><div class="composer-bottom"><span id="composer-hint">合成演示数据 · 资金操作需人工审批</span><button id="send" type="submit" aria-label="发送">↑</button></div></form><p class="composer-note">Agent 解释数据，规则计算金额，资金操作由人批准。</p></div>
+  </main>
+  <aside class="context-panel" id="context-panel" aria-label="Agent 详情"><div class="context-head"><div><small>AGENT CONTEXT</small><h2 id="context-title">MOT · Treasury</h2></div><button id="close-context" aria-label="关闭详情">×</button></div><div class="context-tabs" id="context-tabs"><button data-tab="treasury" class="active">资金</button><button data-tab="tasks">任务</button><button data-tab="audit">审计</button></div><div id="context-body" class="context-body"><p class="muted">正在读取后端状态…</p></div><div class="context-foot" id="context-foot">来源与时间由后端记录</div></aside>
+</div>
+<div id="mobile-shade" class="mobile-shade" hidden></div>
+<script type="module" src="/versions/app.js"></script>
+</body></html>

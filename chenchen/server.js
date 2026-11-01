@@ -17,9 +17,11 @@ const { randomUUID } = require("node:crypto");
 const { MerchantSession, demo: merchantDemo } = require("./merchant/ledger");
 const { makeMotHttp } = require("./mot/http");
 const { MotScheduler } = require("./mot/scheduler");
+const { makeAppHttp } = require("./app/http");
 const merchantSessions = new Map();
 const reviewRuns = new Map();
 const mot = makeMotHttp(process.env);
+const app = makeAppHttp({ env: process.env, mot, merchantFor });
 const motScheduler = mot.runtime && (process.env.MOT_SCHEDULER_ENABLED === "true" ||
   (process.env.MOT_LOCAL_DEMO === "true" && process.env.MOT_SCHEDULER_ENABLED !== "false")) ? new MotScheduler(mot.runtime) : null;
 if (mot.runtime) mot.runtime.scheduler = motScheduler;
@@ -178,6 +180,7 @@ async function handleApi(request, response, pathname, url) {
   let body = {};
   if (method === "POST") body = await parseBody(request);
   if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("JSON body must be an object");
+  if (pathname.startsWith("/api/app/")) return app.handle(request, response, pathname, body);
   if (pathname.startsWith("/api/mot/")) return mot.handle(request, response, pathname, url, body);
   if (method === "POST" && (pathname === "/api/review" || pathname === "/api/review/legacy")) {
     body = {
@@ -390,9 +393,14 @@ function serveStatic(response, pathname) {
     sendJson(response, 400, { error: { code: "INVALID_PATH", message: "invalid URL path" } });
     return;
   }
-  const routes = { "/": "versions/investment.html", "/index.html": "versions/investment.html", "/catalog": "versions/home.html", "/investment": "versions/investment.html", "/investment-v0.10": "versions/investment-legacy.html", "/merchant": "versions/merchant.html", "/mot": "versions/mot.html", "/risk-workbench": "versions/risk-workbench.html" };
+  const legacy = { "/mot": "mot", "/merchant": "merchant", "/investment": "investment", "/investment-v0.10": "investment", "/risk-workbench": "risk", "/catalog": "mot" };
+  if (legacy[decodedPath]) {
+    response.writeHead(302, { Location: "/app?agent=" + legacy[decodedPath], "Cache-Control": "no-store" });
+    response.end(); return;
+  }
+  const routes = { "/": "versions/app.html", "/app": "versions/app.html", "/index.html": "versions/app.html" };
   const relativePath = routes[decodedPath] || decodedPath.replace(/^\/+/, "");
-  const allowed = new Set(["versions/home.html", "versions/investment.html", "versions/merchant.html", "versions/risk-workbench.html",
+  const allowed = new Set(["versions/app.html", "versions/app.css", "versions/app.js", "versions/home.html", "versions/investment.html", "versions/merchant.html", "versions/risk-workbench.html",
     "contracts/risk-handoff.v1.schema.json", "contracts/owner-bridge.v1.schema.json", "contracts/examples/risk-callback.request.json",
     "contracts/funding-plan-demo.v1.schema.json", "contracts/examples/funding-plan.request.json",
     "versions/style.css", "versions/product-overrides.css", "versions/mot.css", "versions/mot.js", "versions/mot.html", "versions/presentation.mjs", "versions/investment-report.mjs", "versions/investment.js", "versions/investment-legacy.js", "versions/investment-legacy.html", "versions/merchant.js", "versions/risk-workbench.js", "versions/common.js",
@@ -460,4 +468,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { server, harness, reviewRuns, reviewWorkflow, mot, motScheduler };
+module.exports = { server, harness, reviewRuns, reviewWorkflow, mot, motScheduler, app };

@@ -6,6 +6,7 @@ workers_dev = true
 
 [vars]
 RATE_LIMIT_PER_MINUTE = "60"
+APP_STAGING_OWNER_ID = "mot-staging-a"
 
 [triggers]
 crons = ["*/15 * * * *"]

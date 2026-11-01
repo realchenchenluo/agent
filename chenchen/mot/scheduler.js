@@ -8,6 +8,7 @@ class MotScheduler {
     this.timer = null;
     this.running = false;
     this.lastError = null;
+    this.nextRunAt = null;
   }
 
   async tick() {
@@ -30,11 +31,15 @@ class MotScheduler {
   start() {
     if (this.timer) return;
     this.tick().catch(() => {});
-    this.timer = setInterval(() => this.tick().catch(() => {}), this.intervalMs);
+    this.nextRunAt = new Date(this.now() + this.intervalMs).toISOString();
+    this.timer = setInterval(() => {
+      this.nextRunAt = new Date(this.now() + this.intervalMs).toISOString();
+      this.tick().catch(() => {});
+    }, this.intervalMs);
     this.timer.unref?.();
   }
 
-  stop() { if (this.timer) clearInterval(this.timer); this.timer = null; }
+  stop() { if (this.timer) clearInterval(this.timer); this.timer = null; this.nextRunAt = null; }
 }
 
 module.exports = { MotScheduler };
