@@ -18,8 +18,8 @@
 | LED-11 | 两家店引用同一账户 ID | 跨店汇总余额 | 同一账户只计一次 | 当前合成模型未记录门店到账户的引用关系，无法构造该关联验收 | 无 | `mot/engine.js` 的 stores/accounts fixture | BLOCKED |
 | LED-02 | 固定 POS 待结算 | 资金总览 | 550 元待结算不计可用 | pending=55000 分，available=800000 分 | 无 | TAP: `synthetic import...`；本轮直接计算 | PASS_LOCAL |
 | LED-03 | 同一导入键 | 重复导入 | 不重复写流水 | replayed 且未新增 | 无 | TAP: `synthetic import...` | PASS_LOCAL |
-| LED-04 | 同一外部交易 ID、不同内容 | 导入冲突 | Fail-Closed | 拒绝冲突 | 无 | TAP: `conflicting external transaction...` | PASS_LOCAL |
-| LED-05 | 过期或未来余额快照 | 查询/提议 | 可用资金未知并阻断 | 过期拒绝；少量时钟偏差容忍 | 无 | TAP: `conflicting external...`、`small source clock skew...` | PASS_LOCAL |
+| LED-04 | 同一外部交易 ID、不同内容；零/负/缺金额 | 导入冲突与非法金额 | Fail-Closed | 拒绝交易冲突及三种非法金额，账本未写入 | 无 | TAP: `conflicting external transaction...`、`zero, negative and missing...` | PASS_LOCAL |
+| LED-05 | 过期或未来余额快照；非池内账户过期 | 查询/提议 | 可用资金未知并阻断；总额不引用过期非池内余额 | 池内过期拒绝；少量时钟偏差容忍；非池内过期使总额为未知但新鲜池内余额仍可读 | 无 | TAP: `small source clock skew...`、`stale non-pool account...`、`treasury chat marks...` | PASS_LOCAL |
 | LED-06 | POS 300、银行结算 290 | 运行对账规则 | 差额 10 元，原因未知 | `SETTLEMENT_MISMATCH`，1000 分 | 任务/Inbox | TAP: `checks detect settlement mismatch...`；本轮直接计算 | PASS_LOCAL |
 | LED-07 | 房租待付 13500、池内 8000 | 缺口检测 | 缺口 5500 元 | `FUNDING_SHORTFALL`，550000 分 | 任务/Inbox | TAP: `checks detect settlement mismatch...`；本轮直接计算 | PASS_LOCAL |
 | LED-08 | 一或三账户池配置 | 配置后检查 | 只按池内账户计算 | 配置后短缺状态更新 | 配置/任务 | TAP: `pool configuration supports one or three...` | PASS_LOCAL |
@@ -39,7 +39,7 @@
 | STORY-3 | 固定房租待付 13500 | “帮我支付 13,500 元房租。” | 池内仅 8000，缺 5500，禁止执行 | `BLOCKED`、shortfall=550000 分 | 无 | TAP: 同上；2026-11-01 首轮曾只回通用余额，已由主线修复 | PASS_LOCAL |
 | STORY-4 | 上述有限流水 | “今天赚了多少钱？” | 不把余额/收款当利润 | `UNKNOWN`，说明缺完整收入、成本、费用、退款 | 无 | TAP: 同上 | PASS_LOCAL |
 | EXEC-01 | 隔离副本，合成收款人及测试专用验证适配器 | 提议、Risk、本人批准、模拟支付 1200 并重放 | 池内 6800、总额 13800、待结算 550；只扣一次 | Node HTTP 真路由返回一张回执、一笔 PAPER 流水、一条审计；重复请求不再扣 | 隔离账本 -120000 分 | TAP: `isolated synthetic approval completes one paper payment...`、`isolated HTTP payment uses real MOT routes...` | PASS_LOCAL |
-| EXT-01 | 公网 Staging；独立 token owner B | 重放三个故事与正向付款 | 同版本、可复现且互不污染的响应 | 主线在 owner B 完成 12 次 HTTP 请求，三个故事返回 READY/PARTIAL/BLOCKED；正向付款因 Core/Risk 不可用返回 409。浏览器口令仍固定到 owner A，多位评委共享其演示账本 | B 仅新增任务/会话，无扣账 | [qa-delivery-staging-20261101.json](./qa-delivery-staging-20261101.json)；`deployment/mot-staging-entry.js` | BLOCKED |
+| EXT-01 | 公网 Staging；独立 token owner B | 重放三个故事与正向付款 | 同版本、可复现且互不污染的响应 | 主线完成 16 次 HTTP 请求，三个故事返回 READY/PARTIAL/BLOCKED；正向付款因 Core/Risk 不可用返回 409；未认证 401、跨 owner 404、Cookie 跨源写入 403。浏览器口令仍固定到 owner A，多位评委共享其演示账本 | B 仅新增任务/会话，无扣账 | [qa-delivery-staging-20261101.json](./qa-delivery-staging-20261101.json)；`deployment/mot-staging-entry.js` | BLOCKED |
 | EXT-02 | 公网 Staging | 真正 Core/Risk 审批及正向 1200 元模拟支付 | 可验证审批、回执与扣账 | Worker 构造 MotEngine 时没有 `coreRisk`；health 明示 UNAVAILABLE，正向公网链路不可演示 | 无 | `deployment/mot-worker.js` | BLOCKED |
 | EXT-03 | 官方赛题说明 | 将三个门店故事映射到至少三个官方核心场景 | 每个场景有独立端到端证据 | 官网列出 01 智能转账、02 账单分析、03 理财操作、04 卡片管理、05 订阅/代扣、06 跨场景联动，要求至少三个。门店余额、对账、被阻断房租付款不是三个不同官方场景；现有固定持仓和受阻转账也未形成 01/03 完整闭环 | 无 | [赛事官网](https://fintechathon.g-ican.com/) 公开赛题说明（搜索索引全文，官网 SPA 直开需 JS）；内部 PRD 只作团队基线 | BLOCKED |
 | EXT-04 | MOT Staging 当前路由 | 真实模型解释调用与费用 | 记录次数、费用、预算 | 本轮 MOT 调用为确定性路由，真实模型调用 0；账户级已用费用和剩余额度未取得 | 无 | `app/router.js`；Staging entry 仅放行 app/mot API | BLOCKED |
@@ -49,4 +49,4 @@
 
 ## 独立结论
 
-本机 30 个目标测试全部通过；全量 `npm test` 为 320/320。矩阵 40 项中，32 项 PASS_LOCAL、6 项 BLOCKED、2 项 NOT_TESTED。三个门店故事在修复后可作为**合成数据只读/阻断演示**。正向 1200 元模拟付款已经通过隔离 Node HTTP 链路，但公网 Staging 的真实 Core/Risk 仍未接通，不能把这项本机通过当作公网通过。应用内实时语音和官方三场景覆盖也无端到端证据。此矩阵不将测试专用 Risk 适配器、固定持仓快照或 Worker 模拟运行时算作真实公网能力。
+本机 30 个目标测试全部通过；最终全量 `npm test` 为 324/324。矩阵 40 项中，32 项 PASS_LOCAL、6 项 BLOCKED、2 项 NOT_TESTED。三个门店故事在修复后可作为**合成数据只读/阻断演示**。正向 1200 元模拟付款已经通过隔离 Node HTTP 链路，但公网 Staging 的真实 Core/Risk 仍未接通，不能把这项本机通过当作公网通过。应用内实时语音和官方三场景覆盖也无端到端证据。此矩阵不将测试专用 Risk 适配器、固定持仓快照或 Worker 模拟运行时算作真实公网能力。

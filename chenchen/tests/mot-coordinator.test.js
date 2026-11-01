@@ -210,3 +210,31 @@ test("treasury chat marks stale non-pool totals unknown without hiding a fresh p
   assert.equal(reply.tool_results[0].overview.pool_balance_minor, 800_000);
   assert.match(reply.text, /账户总额 待核对/);
 });
+
+test("two competing paper payments cannot approve and spend the same pool snapshot", async t => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "mot-payment-concurrent-"));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const owner = "concurrent-payment-owner";
+  const engine = new MotEngine(new FileRepository(directory), { coreRisk: {
+    review: async ({ task_id, proposal_fingerprint }) => ({ status: "VERIFIED", risk: "APPROVE", verified: true,
+      core_task_id: task_id, risk_check_id: `risk-${task_id}`, proof_id: `review-${task_id}`,
+      proposal_fingerprint, mode: "SIMULATION_ONLY" }),
+    approve: async ({ task_id, ledger_revision, review }) => ({ verified: true, decision: "APPROVE", task_id,
+      ledger_revision, proof_id: `approval-${task_id}`, proposal_fingerprint: review.proposal_fingerprint })
+  } });
+  await engine.ingest(owner, fixture(new Date().toISOString()), "concurrent-payment-fixture");
+  const first = await engine.proposePayment(owner, { amount_minor: 600_000, account_id: "bank-main",
+    payee_id: "synthetic-payee-a", currency: "CNY", request_key: "concurrent-payment-a" });
+  const second = await engine.proposePayment(owner, { amount_minor: 600_000, account_id: "bank-main",
+    payee_id: "synthetic-payee-b", currency: "CNY", request_key: "concurrent-payment-b" });
+  const approvals = await Promise.allSettled([
+    engine.decideApproval(owner, first.task_id, "APPROVE"), engine.decideApproval(owner, second.task_id, "APPROVE")
+  ]);
+  assert.equal(approvals.filter(row => row.status === "fulfilled").length, 1);
+  assert.equal(approvals.filter(row => row.status === "rejected" && row.reason.code === "STALE_TASK").length, 1);
+  const approvedId = approvals[0].status === "fulfilled" ? first.task_id : second.task_id;
+  await engine.simulate(owner, approvedId, "concurrent-payment-execute");
+  const state = await engine.read(owner);
+  assert.equal(state.accounts[0].balance_minor, 200_000);
+  assert.equal(state.transactions.filter(row => row.source_system === "PAPER_SIMULATION").length, 1);
+});

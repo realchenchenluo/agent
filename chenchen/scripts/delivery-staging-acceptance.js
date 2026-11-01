@@ -7,12 +7,16 @@ const { fixture } = require("../mot/engine");
 async function main() {
   const base = process.env.MOT_STAGING_BASE;
   const token = process.env.MOT_TOKEN_B;
+  const tokenA = process.env.MOT_TOKEN_A;
+  const password = process.env.APP_STAGING_PASSWORD;
   const expectedSha = process.env.EXPECTED_SHA;
-  if (!base || !token || !expectedSha) throw new Error("Missing isolated Staging acceptance configuration");
+  if (!base || !token || !tokenA || !password || !expectedSha) throw new Error("Missing isolated Staging acceptance configuration");
   const evidence = { base, expected_sha: expectedSha, owner_id: null, requests: [], stories: {}, payment: {} };
-  const call = async (route, body) => {
+  const call = async (route, body, options = {}) => {
+    const selectedToken = options.token === undefined ? token : options.token;
     const response = await fetch(base + route, { method: body ? "POST" : "GET",
-      headers: { "X-Mot-Key": token, ...(body ? { "Content-Type": "application/json", Origin: base } : {}) },
+      headers: { ...(selectedToken ? { "X-Mot-Key": selectedToken } : {}),
+        ...(body ? { "Content-Type": "application/json", Origin: options.origin || base } : {}) },
       body: body ? JSON.stringify(body) : undefined });
     const data = await response.json();
     evidence.requests.push({ route, status: response.status, error: data.error?.code || null });
@@ -21,6 +25,7 @@ async function main() {
   const health = await call("/api/mot/health");
   assert.equal(health.status, 200);
   assert.equal(health.data.build_sha, expectedSha);
+  assert.equal((await call("/api/mot/health", undefined, { token: null })).status, 401);
   let view = (await call("/api/mot/overview")).data;
   evidence.owner_id = view.owner_id;
   assert.equal(view.owner_id, "mot-staging-b");
@@ -39,6 +44,19 @@ async function main() {
   assert.equal(conversation.status, 201);
   const conversationId = conversation.data.conversation_id;
   evidence.conversation_id = conversationId;
+  assert.equal((await call(`/api/app/conversations/${conversationId}`, undefined, { token: tokenA })).status, 404);
+  const login = await fetch(base + "/api/app/login", { method: "POST", redirect: "manual",
+    headers: { Origin: base, "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ password }) });
+  evidence.requests.push({ route: "/api/app/login", status: login.status, error: null });
+  assert.equal(login.status, 303);
+  const cookie = login.headers.get("set-cookie")?.split(";")[0];
+  assert.ok(cookie);
+  const unsafe = await fetch(base + "/api/app/conversations", { method: "POST",
+    headers: { Cookie: cookie, Origin: "https://untrusted.example", "Content-Type": "application/json" },
+    body: JSON.stringify({ agent_id: "mot", request_id: randomUUID() }) });
+  evidence.requests.push({ route: "/api/app/conversations", status: unsafe.status, error: (await unsafe.json()).error?.code });
+  assert.equal(unsafe.status, 403);
   const ask = async text => {
     const response = await call(`/api/app/conversations/${conversationId}/messages`, { text, request_id: randomUUID() });
     assert.equal(response.status, 200, response.data.error?.code);

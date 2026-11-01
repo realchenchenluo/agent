@@ -1,12 +1,17 @@
 {
   "base": "https://personal-ai-fund-manager-mot-staging.ai-banking-agent.workers.dev",
-  "expected_sha": "8d137ba4bd83e9eb9841fbef4c894f069978daf7",
+  "expected_sha": "a26ded59fdf9c2f42954031a5f78f56261d08962",
   "owner_id": "mot-staging-b",
   "requests": [
     {
       "route": "/api/mot/health",
       "status": 200,
       "error": null
+    },
+    {
+      "route": "/api/mot/health",
+      "status": 401,
+      "error": "AUTHENTICATION_REQUIRED"
     },
     {
       "route": "/api/mot/overview",
@@ -19,22 +24,37 @@
       "error": null
     },
     {
-      "route": "/api/app/conversations/d91cd4b9-d720-4a18-811a-cad70625c6c3/messages",
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6",
+      "status": 404,
+      "error": "CONVERSATION_NOT_FOUND"
+    },
+    {
+      "route": "/api/app/login",
+      "status": 303,
+      "error": null
+    },
+    {
+      "route": "/api/app/conversations",
+      "status": 403,
+      "error": "ORIGIN_MISMATCH"
+    },
+    {
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6/messages",
       "status": 200,
       "error": null
     },
     {
-      "route": "/api/app/conversations/d91cd4b9-d720-4a18-811a-cad70625c6c3/messages",
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6/messages",
       "status": 200,
       "error": null
     },
     {
-      "route": "/api/app/conversations/d91cd4b9-d720-4a18-811a-cad70625c6c3/messages",
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6/messages",
       "status": 200,
       "error": null
     },
     {
-      "route": "/api/app/conversations/d91cd4b9-d720-4a18-811a-cad70625c6c3/messages",
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6/messages",
       "status": 200,
       "error": null
     },
@@ -49,12 +69,12 @@
       "error": null
     },
     {
-      "route": "/api/mot/tasks/mot-task-9865bcda-088d-404e-9c36-e2787dafae3b/approval",
+      "route": "/api/mot/tasks/mot-task-ac43c8c6-561d-41bb-857d-a1241c03c74d/approval",
       "status": 409,
       "error": "APPROVAL_NOT_READY"
     },
     {
-      "route": "/api/mot/tasks/mot-task-9865bcda-088d-404e-9c36-e2787dafae3b/simulate",
+      "route": "/api/mot/tasks/mot-task-ac43c8c6-561d-41bb-857d-a1241c03c74d/simulate",
       "status": 409,
       "error": "SIMULATION_BLOCKED"
     },
@@ -70,7 +90,7 @@
       "source": "MOT_LEDGER",
       "text": "已核对账户总额 ¥15000.00，资金池可用 ¥8000.00，待结算 ¥550.00。待结算不计入可用资金。",
       "as_of": "2026-11-01T12:56:47.208Z",
-      "message_id": "63dcf3e3-de94-45e0-8cc1-addc68757d49"
+      "message_id": "9a0354f5-97ca-4304-94a4-7848cfd00acf"
     },
     "reconciliation": {
       "status": "PARTIAL",
@@ -125,7 +145,7 @@
           "as_of": "2026-11-01T12:56:47.208Z"
         }
       ],
-      "message_id": "2fdcb8c1-18dc-4da0-ace4-37cf186eca62"
+      "message_id": "a959e6c8-b2b2-4568-9391-1c41bc97e176"
     },
     "rent": {
       "status": "BLOCKED",
@@ -139,16 +159,16 @@
         "pool_available_minor": 800000,
         "shortfall_minor": 550000,
         "bill_source_id": "ERP_A:rent-next",
-        "ledger_revision": 3,
+        "ledger_revision": 6,
         "as_of": "2026-11-01T12:56:47.208Z",
         "data_mode": "SYNTHETIC_ONLY",
         "execution_allowed": false
       },
-      "message_id": "30963a5f-ff38-4f44-9bc9-05dfb57cb6c4"
+      "message_id": "8ef5cba4-f687-45bd-8766-096cec40d8b5"
     }
   },
   "payment": {
-    "task_id": "mot-task-9865bcda-088d-404e-9c36-e2787dafae3b",
+    "task_id": "mot-task-ac43c8c6-561d-41bb-857d-a1241c03c74d",
     "review": {
       "status": "UNAVAILABLE",
       "core": "UNAVAILABLE",
@@ -162,27 +182,27 @@
     "ledger_unchanged": true
   },
   "baseline": {
-    "ledger_revision": 3,
+    "ledger_revision": 6,
     "as_of": "2026-11-01T12:56:47.208Z",
     "total_minor": 1500000,
     "pool_minor": 800000,
     "pending_minor": 55000
   },
-  "conversation_id": "d91cd4b9-d720-4a18-811a-cad70625c6c3",
+  "conversation_id": "5f702013-a489-4d05-a010-8594196838f6",
   "coordination": {
-    "run_id": "d92bcef9-f9ff-40f4-ad49-73f5ba202bdc",
-    "task_id": "d041fbb6-27f4-4e89-9357-de492b845942",
+    "run_id": "fd9baf45-4aee-4306-9454-70ee4960ae02",
+    "task_id": "15599de8-a941-4b6a-9766-bd7b8519e533",
     "steps": [
       {
-        "task_id": "26c2475a-0b1a-4b5f-ba3c-a14b1e5371a2",
-        "parent_task_id": "d041fbb6-27f4-4e89-9357-de492b845942",
-        "run_id": "d92bcef9-f9ff-40f4-ad49-73f5ba202bdc",
+        "task_id": "80a47efd-1db7-4fa1-895c-0b7bffda40e3",
+        "parent_task_id": "15599de8-a941-4b6a-9766-bd7b8519e533",
+        "run_id": "fd9baf45-4aee-4306-9454-70ee4960ae02",
         "agent_id": "mot",
         "status": "READY",
         "source": "MOT_LEDGER",
         "as_of": "2026-11-01T12:56:47.208Z",
         "evidence": {
-          "ledger_revision": 3,
+          "ledger_revision": 6,
           "account_ids": [
             "bank-main",
             "bank-west",
@@ -191,9 +211,9 @@
         }
       },
       {
-        "task_id": "917d2d17-4423-4493-8e19-49d2e9b75d23",
-        "parent_task_id": "d041fbb6-27f4-4e89-9357-de492b845942",
-        "run_id": "d92bcef9-f9ff-40f4-ad49-73f5ba202bdc",
+        "task_id": "d7a5c53b-3e66-4183-9cdc-5005281d6ab8",
+        "parent_task_id": "15599de8-a941-4b6a-9766-bd7b8519e533",
+        "run_id": "fd9baf45-4aee-4306-9454-70ee4960ae02",
         "agent_id": "investment",
         "status": "DEMO_DATA",
         "source": "INVESTMENT_DEMO_SNAPSHOT",
@@ -204,13 +224,13 @@
         }
       },
       {
-        "task_id": "b1a3863b-86a2-43d1-93f7-f661582caa2b",
-        "parent_task_id": "d041fbb6-27f4-4e89-9357-de492b845942",
-        "run_id": "d92bcef9-f9ff-40f4-ad49-73f5ba202bdc",
+        "task_id": "1f1f6c1c-ff45-463e-8e73-491b19673217",
+        "parent_task_id": "15599de8-a941-4b6a-9766-bd7b8519e533",
+        "run_id": "fd9baf45-4aee-4306-9454-70ee4960ae02",
         "agent_id": "risk",
         "status": "UNAVAILABLE",
         "source": "CORE_RISK_GATE",
-        "as_of": "2026-11-01T13:00:25.322Z",
+        "as_of": "2026-11-01T13:11:19.689Z",
         "evidence": {
           "core_risk": "UNAVAILABLE"
         }
@@ -219,5 +239,5 @@
     "stop_reason": "RISK_ADAPTER_UNAVAILABLE",
     "restored": true
   },
-  "request_count": 12
+  "request_count": 16
 }
