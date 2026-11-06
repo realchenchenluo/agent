@@ -9,6 +9,12 @@ on:
       - "chenchen/versions/risk-workbench.html"
       - "chenchen/versions/risk-workbench.js"
       - "chenchen/versions/common.js"
+      - "chenchen/versions/task-state.mjs"
+      - "chenchen/versions/task-client.mjs"
+      - "chenchen/versions/task-view.mjs"
+      - "chenchen/versions/task-view.css"
+      - "chenchen/scripts/standalone-assets-check.cjs"
+      - "chenchen/scripts/standalone-release-test.cjs"
       - "chenchen/versions/style.css"
       - "chenchen/versions/product-overrides.css"
       - "chenchen/data/risk-workbench-demo.json"
@@ -46,17 +52,25 @@ jobs:
           cp chenchen/versions/common.js _site/risk-workbench/common.js
           cp chenchen/versions/style.css _site/risk-workbench/style.css
           cp chenchen/versions/product-overrides.css _site/risk-workbench/product-overrides.css
+          # Require the complete task module graph when the UI P0 page is present.
+          if grep -q 'task-view.css' chenchen/versions/risk-workbench.html; then
+            cp chenchen/versions/task-state.mjs chenchen/versions/task-client.mjs chenchen/versions/task-view.mjs chenchen/versions/task-view.css _site/risk-workbench/
+          fi
           cp chenchen/data/risk-workbench-demo.json _site/risk-workbench/risk-workbench-demo.json
           sed -i \
             -e 's#/versions/style.css#./style.css#g' \
             -e 's#/versions/product-overrides.css#./product-overrides.css#g' \
             -e 's#/versions/risk-workbench.js#./risk-workbench.js#g' \
+            -e 's#/versions/task-view.css#./task-view.css#g' \
             -e 's#href="/investment"#href="../"#g' \
             _site/risk-workbench/index.html
           cat > _site/index.html <<'EOF'
           <!doctype html>
           <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Personal AI Fund Manager · 独立演示</title><style>body{margin:0;background:#f4f6f7;color:#18232b;font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif}main{width:min(760px,calc(100% - 36px));margin:12vh auto}h1{font-size:clamp(30px,5vw,54px);letter-spacing:-.05em}p{color:#71808a;line-height:1.7}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px}a{display:block;padding:22px;border:1px solid #dce4e8;border-radius:14px;background:#fff;color:#18232b;text-decoration:none}a:hover{border-color:#233d52}strong,small{display:block}small{margin-top:8px;color:#71808a}@media(max-width:700px){.grid{grid-template-columns:1fr}}</style></head><body><main><p>PERSONAL AI FUND MANAGER · STANDALONE DEMOS</p><h1>三个独立实验网站</h1><p>每个 Demo 独立运行，先验证边界和体验，再决定是否并入主产品。</p><div class="grid"><a href="./holdings-intake/"><strong>持仓导入台</strong><small>上传、预览、校验和确认</small></a><a href="./fund-market-analysis/"><strong>基金市场雷达</strong><small>市场状态、观察项和证据</small></a><a href="./risk-workbench/"><strong>风控工作台 Demo</strong><small>Core Agent → Risk 只读交接</small></a></div></main></body></html>
           EOF
+
+      - name: Validate standalone resource paths
+        run: node chenchen/scripts/standalone-assets-check.cjs _site
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
