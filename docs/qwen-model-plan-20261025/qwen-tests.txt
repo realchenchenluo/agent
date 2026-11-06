@@ -1,0 +1,131 @@
+TAP version 13
+# Subtest: Qwen profile only accepts the verified Beijing workspace and explicit non-thinking mode
+ok 1 - Qwen profile only accepts the verified Beijing workspace and explicit non-thinking mode
+  ---
+  duration_ms: 2.5215
+  type: 'test'
+  ...
+# Subtest: Qwen HTTP planning sends top-level enable_thinking=false and JSON without reasoning or tools parameters
+ok 2 - Qwen HTTP planning sends top-level enable_thinking=false and JSON without reasoning or tools parameters
+  ---
+  duration_ms: 21.3974
+  type: 'test'
+  ...
+# Subtest: Qwen SSE accepts an empty-choices usage chunk and returns Chinese text and usage
+ok 3 - Qwen SSE accepts an empty-choices usage chunk and returns Chinese text and usage
+  ---
+  duration_ms: 2.7973
+  type: 'test'
+  ...
+# Subtest: unexpected thinking is rejected in both JSON and SSE without exposing it
+ok 4 - unexpected thinking is rejected in both JSON and SSE without exposing it
+  ---
+  duration_ms: 2.6363
+  type: 'test'
+  ...
+# Subtest: CNY settlement uses no FX conversion and rounds up only after summing token costs
+ok 5 - CNY settlement uses no FX conversion and rounds up only after summing token costs
+  ---
+  duration_ms: 0.651
+  type: 'test'
+  ...
+# Subtest: Qwen budgets reject missing CNY currency, mixed USD fields, absent approval and unverified bounds
+ok 6 - Qwen budgets reject missing CNY currency, mixed USD fields, absent approval and unverified bounds
+  ---
+  duration_ms: 1.1661
+  type: 'test'
+  ...
+# Subtest: the shipped Qwen template is disabled and contains no key value or backup slot
+ok 7 - the shipped Qwen template is disabled and contains no key value or backup slot
+  ---
+  duration_ms: 7.4226
+  type: 'test'
+  ...
+# Subtest: Arrearage (400) and HTTP 402 preserve a quota error without retrying a nonexistent backup
+ok 8 - Arrearage (400) and HTTP 402 preserve a quota error without retrying a nonexistent backup
+  ---
+  duration_ms: 1.9882
+  type: 'test'
+  ...
+# Subtest: Qwen 429 and connection timeout stop after two attempts with no successful answer
+ok 9 - Qwen 429 and connection timeout stop after two attempts with no successful answer
+  ---
+  duration_ms: 31.392
+  type: 'test'
+  ...
+# Subtest: a Qwen partial answer is never retried or replaced
+ok 10 - a Qwen partial answer is never retried or replaced
+  ---
+  duration_ms: 1.3659
+  type: 'test'
+  ...
+# Subtest: Qwen gateway reserves before transport and records a CNY-only settled receipt
+ok 11 - Qwen gateway reserves before transport and records a CNY-only settled receipt
+  ---
+  duration_ms: 12.2985
+  type: 'test'
+  ...
+# Subtest: Qwen budget denial makes zero upstream requests and does not clear the ledger
+ok 12 - Qwen budget denial makes zero upstream requests and does not clear the ledger
+  ---
+  duration_ms: 4.2249
+  type: 'test'
+  ...
+# Subtest: unknown Qwen usage keeps the full reservation rather than inventing a zero cost
+ok 13 - unknown Qwen usage keeps the full reservation rather than inventing a zero cost
+  ---
+  duration_ms: 3.9543
+  type: 'test'
+  ...
+# Subtest: a successful Qwen retry retains both attempts and the full bound for unknown failed-attempt usage
+ok 14 - a successful Qwen retry retains both attempts and the full bound for unknown failed-attempt usage
+  ---
+  duration_ms: 3.9202
+  type: 'test'
+  ...
+# Subtest: Qwen cannot introduce native tool execution through a provider response
+ok 15 - Qwen cannot introduce native tool execution through a provider response
+  ---
+  duration_ms: 0.4604
+  type: 'test'
+  ...
+# Subtest: Qwen Worker cannot save holdings or generate a success answer when Risk blocks or cannot authenticate
+    # Subtest: block
+    ok 1 - block
+      ---
+      duration_ms: 20.0886
+      type: 'test'
+      ...
+    # Subtest: bad-signature
+    ok 2 - bad-signature
+      ---
+      duration_ms: 10.6966
+      type: 'test'
+      ...
+    # Subtest: unavailable
+    ok 3 - unavailable
+      ---
+      duration_ms: 10.3736
+      type: 'test'
+      ...
+    1..3
+ok 16 - Qwen Worker cannot save holdings or generate a success answer when Risk blocks or cannot authenticate
+  ---
+  duration_ms: 41.912
+  type: 'test'
+  ...
+# Subtest: offline Worker flow keeps deterministic holdings, signed Risk, idempotence and no real execution
+ok 17 - offline Worker flow keeps deterministic holdings, signed Risk, idempotence and no real execution
+  ---
+  duration_ms: 33.0114
+  type: 'test'
+  ...
+1..17
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 301.9496
