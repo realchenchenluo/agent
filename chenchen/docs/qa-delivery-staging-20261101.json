@@ -1,0 +1,243 @@
+{
+  "base": "https://personal-ai-fund-manager-mot-staging.ai-banking-agent.workers.dev",
+  "expected_sha": "a26ded59fdf9c2f42954031a5f78f56261d08962",
+  "owner_id": "mot-staging-b",
+  "requests": [
+    {
+      "route": "/api/mot/health",
+      "status": 200,
+      "error": null
+    },
+    {
+      "route": "/api/mot/health",
+      "status": 401,
+      "error": "AUTHENTICATION_REQUIRED"
+    },
+    {
+      "route": "/api/mot/overview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "route": "/api/app/conversations",
+      "status": 201,
+      "error": null
+    },
+    {
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6",
+      "status": 404,
+      "error": "CONVERSATION_NOT_FOUND"
+    },
+    {
+      "route": "/api/app/login",
+      "status": 303,
+      "error": null
+    },
+    {
+      "route": "/api/app/conversations",
+      "status": 403,
+      "error": "ORIGIN_MISMATCH"
+    },
+    {
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6/messages",
+      "status": 200,
+      "error": null
+    },
+    {
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6/messages",
+      "status": 200,
+      "error": null
+    },
+    {
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6/messages",
+      "status": 200,
+      "error": null
+    },
+    {
+      "route": "/api/app/conversations/5f702013-a489-4d05-a010-8594196838f6/messages",
+      "status": 200,
+      "error": null
+    },
+    {
+      "route": "/api/app/bootstrap",
+      "status": 200,
+      "error": null
+    },
+    {
+      "route": "/api/mot/payments/propose",
+      "status": 201,
+      "error": null
+    },
+    {
+      "route": "/api/mot/tasks/mot-task-ac43c8c6-561d-41bb-857d-a1241c03c74d/approval",
+      "status": 409,
+      "error": "APPROVAL_NOT_READY"
+    },
+    {
+      "route": "/api/mot/tasks/mot-task-ac43c8c6-561d-41bb-857d-a1241c03c74d/simulate",
+      "status": 409,
+      "error": "SIMULATION_BLOCKED"
+    },
+    {
+      "route": "/api/mot/overview",
+      "status": 200,
+      "error": null
+    }
+  ],
+  "stories": {
+    "treasury": {
+      "status": "READY",
+      "source": "MOT_LEDGER",
+      "text": "已核对账户总额 ¥15000.00，资金池可用 ¥8000.00，待结算 ¥550.00。待结算不计入可用资金。",
+      "as_of": "2026-11-01T12:56:47.208Z",
+      "message_id": "9a0354f5-97ca-4304-94a4-7848cfd00acf"
+    },
+    "reconciliation": {
+      "status": "PARTIAL",
+      "source": "MOT_LEDGER",
+      "text": "已载入样本中，1 组收款与到账相符；POS_A:sale-101 差额 ¥10.00，原因待核实；另有 ¥550.00 待结算。内部转账不计营业收入。当前流水样本未证明覆盖完整一天。",
+      "pairs": [
+        {
+          "source_id": "POS_A:sale-100",
+          "source_system": "POS_A",
+          "expected_minor": 20000,
+          "settled_minor": 20000,
+          "difference_minor": 0,
+          "settlement_ids": [
+            "BANK_A:settle-100"
+          ],
+          "status": "MATCHED",
+          "as_of": "2026-11-01T12:56:47.208Z"
+        },
+        {
+          "source_id": "POS_A:sale-101",
+          "source_system": "POS_A",
+          "expected_minor": 30000,
+          "settled_minor": 29000,
+          "difference_minor": 1000,
+          "settlement_ids": [
+            "BANK_A:settle-101"
+          ],
+          "status": "MISMATCH",
+          "as_of": "2026-11-01T12:56:47.208Z"
+        }
+      ],
+      "pending": [
+        {
+          "source_id": "POS_B:sale-200",
+          "amount_minor": 55000,
+          "as_of": "2026-11-01T12:56:47.208Z"
+        }
+      ],
+      "internal_transfers": [
+        {
+          "source_id": "BANK_A:transfer-out",
+          "transfer_id": "internal-1",
+          "amount_minor": 50000,
+          "account_id": "bank-main",
+          "as_of": "2026-11-01T12:56:47.208Z"
+        },
+        {
+          "source_id": "BANK_B:transfer-in",
+          "transfer_id": "internal-1",
+          "amount_minor": 50000,
+          "account_id": "bank-west",
+          "as_of": "2026-11-01T12:56:47.208Z"
+        }
+      ],
+      "message_id": "a959e6c8-b2b2-4568-9391-1c41bc97e176"
+    },
+    "rent": {
+      "status": "BLOCKED",
+      "source": "MOT_LEDGER",
+      "text": "已登记房租 ¥13500.00，付款账户 bank-main 的资金池当前可用 ¥8000.00，缺口 ¥5500.00。未发起付款；非池内资金须另行授权调拨，冻结及预占还需核对。",
+      "decision": {
+        "kind": "payment_decision",
+        "status": "BLOCKED",
+        "amount_minor": 1350000,
+        "account_id": "bank-main",
+        "pool_available_minor": 800000,
+        "shortfall_minor": 550000,
+        "bill_source_id": "ERP_A:rent-next",
+        "ledger_revision": 6,
+        "as_of": "2026-11-01T12:56:47.208Z",
+        "data_mode": "SYNTHETIC_ONLY",
+        "execution_allowed": false
+      },
+      "message_id": "8ef5cba4-f687-45bd-8766-096cec40d8b5"
+    }
+  },
+  "payment": {
+    "task_id": "mot-task-ac43c8c6-561d-41bb-857d-a1241c03c74d",
+    "review": {
+      "status": "UNAVAILABLE",
+      "core": "UNAVAILABLE",
+      "risk": "UNAVAILABLE",
+      "execution_allowed": false
+    },
+    "approval_status": 409,
+    "simulation_status": 409,
+    "approval_error": "APPROVAL_NOT_READY",
+    "simulation_error": "SIMULATION_BLOCKED",
+    "ledger_unchanged": true
+  },
+  "baseline": {
+    "ledger_revision": 6,
+    "as_of": "2026-11-01T12:56:47.208Z",
+    "total_minor": 1500000,
+    "pool_minor": 800000,
+    "pending_minor": 55000
+  },
+  "conversation_id": "5f702013-a489-4d05-a010-8594196838f6",
+  "coordination": {
+    "run_id": "fd9baf45-4aee-4306-9454-70ee4960ae02",
+    "task_id": "15599de8-a941-4b6a-9766-bd7b8519e533",
+    "steps": [
+      {
+        "task_id": "80a47efd-1db7-4fa1-895c-0b7bffda40e3",
+        "parent_task_id": "15599de8-a941-4b6a-9766-bd7b8519e533",
+        "run_id": "fd9baf45-4aee-4306-9454-70ee4960ae02",
+        "agent_id": "mot",
+        "status": "READY",
+        "source": "MOT_LEDGER",
+        "as_of": "2026-11-01T12:56:47.208Z",
+        "evidence": {
+          "ledger_revision": 6,
+          "account_ids": [
+            "bank-main",
+            "bank-west",
+            "bank-reserve"
+          ]
+        }
+      },
+      {
+        "task_id": "d7a5c53b-3e66-4183-9cdc-5005281d6ab8",
+        "parent_task_id": "15599de8-a941-4b6a-9766-bd7b8519e533",
+        "run_id": "fd9baf45-4aee-4306-9454-70ee4960ae02",
+        "agent_id": "investment",
+        "status": "DEMO_DATA",
+        "source": "INVESTMENT_DEMO_SNAPSHOT",
+        "as_of": "2026-09-23T08:00:00Z",
+        "evidence": {
+          "snapshot_id": "snapshot-de37f3dab3586cd6",
+          "position_count": 4
+        }
+      },
+      {
+        "task_id": "1f1f6c1c-ff45-463e-8e73-491b19673217",
+        "parent_task_id": "15599de8-a941-4b6a-9766-bd7b8519e533",
+        "run_id": "fd9baf45-4aee-4306-9454-70ee4960ae02",
+        "agent_id": "risk",
+        "status": "UNAVAILABLE",
+        "source": "CORE_RISK_GATE",
+        "as_of": "2026-11-01T13:11:19.689Z",
+        "evidence": {
+          "core_risk": "UNAVAILABLE"
+        }
+      }
+    ],
+    "stop_reason": "RISK_ADAPTER_UNAVAILABLE",
+    "restored": true
+  },
+  "request_count": 16
+}

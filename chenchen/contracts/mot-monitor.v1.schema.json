@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-banking.example/contracts/mot-monitor.v1.schema.json",
+  "title": "MOT pool threshold monitor v1",
+  "type": "object",
+  "required": ["monitor_id", "owner_id", "scope", "threshold_minor", "frequency_minutes", "channel", "timezone", "status", "request_key", "created_at", "updated_at", "next_run_at", "last_run_at"],
+  "properties": {
+    "monitor_id": { "type": "string", "minLength": 1 },
+    "owner_id": { "type": "string", "minLength": 1 },
+    "scope": { "const": "POOL" },
+    "threshold_minor": { "type": "integer", "minimum": 1 },
+    "frequency_minutes": { "const": 15 },
+    "channel": { "const": "INBOX_ONLY" },
+    "timezone": { "const": "Asia/Shanghai" },
+    "status": { "enum": ["ACTIVE", "PAUSED", "CANCELLED"] },
+    "request_key": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "next_run_at": { "type": "string", "format": "date-time" },
+    "last_run_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "additionalProperties": false
+}

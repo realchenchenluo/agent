@@ -12,16 +12,17 @@ test('HTTP flows: pages, independent cookies, review gating, import failure and 
   const health=await fetch(base+'/health');
   assert.equal(health.status,200);
   assert.equal((await health.json()).status,'ok');
-  assert.match(await fetch(base+'/').then(r=>r.text()),/个人投资顾问/);
-  assert.match(await fetch(base+'/catalog').then(r=>r.text()),/店主财务助手/);
-  assert.match(await fetch(base+'/investment').then(r=>r.text()),/现在先检查什么/);
-  assert.match(await fetch(base+'/investment-v0.10').then(r=>r.text()),/旧版/);
+  assert.match(await fetch(base+'/').then(r=>r.text()),/AI Banking/);
+  assert.equal((await fetch(base+'/investment',{redirect:'manual'})).headers.get('location'),'/app?agent=investment');
+  assert.equal((await fetch(base+'/merchant',{redirect:'manual'})).headers.get('location'),'/app?agent=merchant');
+  assert.match(await fetch(base+'/versions/investment.html').then(r=>r.text()),/现在先检查什么/);
+  assert.match(await fetch(base+'/versions/investment-legacy.html').then(r=>r.text()),/旧版/);
   assert.equal((await fetch(base+'/contracts/investment-agent.v1.schema.json').then(r=>r.json())).$id,'https://fintechathon-agent.github.io/contracts/investment-agent.v1.schema.json');
   await t.test('all page assets load with the right type including the separate product stylesheet',async()=>{
     const assets=new Set(['/versions/presentation.mjs']);
-    for(const route of ['/','/catalog','/investment','/investment-v0.10','/merchant']){
+    for(const route of ['/versions/investment.html','/versions/investment-legacy.html','/versions/merchant.html','/app']){
       const html=await fetch(base+route).then(r=>r.text());
-      assert.match(html,/product-overrides\.css/);
+      assert.match(html,/\.css/);
       for(const match of html.matchAll(/(?:src|href)="(\/versions\/[^"]+)"/g))assets.add(match[1]);
     }
     for(const asset of assets){

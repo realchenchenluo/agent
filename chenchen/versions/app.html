@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f7f8f6"><title>MOT · 财务总助手 | AI Banking</title><link rel="stylesheet" href="/versions/app.css"></head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="导航">
+    <div class="brand"><span class="brand-symbol">◎</span><div><strong>AI Banking</strong><small>YOUR FINANCIAL AGENTS</small></div><button class="mobile-close" id="close-sidebar" aria-label="关闭导航">×</button></div>
+    <button class="new-chat" id="new-chat">＋ 新建对话</button>
+    <label class="search"><span>⌕</span><input id="history-search" placeholder="搜索对话" aria-label="搜索对话"></label>
+    <p class="nav-label">工作台</p><div class="agent-list"><button type="button" class="active" id="mot-home"><span class="agent-icon">◉</span><strong>MOT · 财务总助手</strong><small id="mot-nav-status">正在连接</small></button><button type="button" id="task-center">任务中心</button><button type="button" id="approval-center">待我确认</button></div>
+    <details class="team-details"><summary>协作团队</summary><div id="agents" class="agent-list" aria-live="polite"></div></details>
+    <p class="nav-label history-label">历史对话</p><div id="history" class="history-list"></div>
+    <div class="sidebar-foot"><span class="online-dot"></span><span id="identity">正在连接</span><button type="button" id="settings-open">连接与权限</button></div>
+  </aside>
+  <main class="workspace">
+    <header class="topbar"><button class="menu-button" id="open-sidebar" aria-label="打开导航">☰</button><div class="top-title"><strong id="agent-title">MOT · 财务总助手</strong><small id="agent-subtitle">正在读取运行状态</small></div><button class="call-button" id="call-mot" type="button">与 MOT 通话</button><button class="context-toggle" id="open-context" aria-label="打开详情">任务与证据</button></header>
+    <div id="global-error" class="global-error" role="alert" hidden></div>
+    <div class="conversation-scroll" id="conversation-scroll"><div class="conversation" id="conversation"></div></div>
+    <div class="composer-wrap"><form id="composer" class="composer"><label for="prompt" class="sr-only">向 MOT 提问</label><textarea id="prompt" rows="2" maxlength="2000" placeholder="向 MOT 提问或安排任务…"></textarea><div class="composer-bottom"><span id="composer-hint">合成演示数据 · 资金操作需人工审批</span><div class="composer-actions"><button id="attach" type="button" class="icon-action" aria-label="附件状态">＋</button><button id="dictate" type="button" class="icon-action" aria-label="语音听写">🎙</button><button id="stop-dictate" type="button" class="icon-action" aria-label="停止听写" hidden>■</button><button id="stop-message" type="button" class="icon-action" aria-label="停止等待" hidden>■</button><button id="send" type="submit" aria-label="发送">↑</button></div></div></form><p class="composer-note" id="voice-status" role="status">语音听写需浏览器支持；识别文本可修改，发送前请核对。</p></div>
+  </main>
+  <aside class="context-panel" id="context-panel" aria-label="任务与证据"><div class="context-head"><div><small>MOT CONTEXT</small><h2 id="context-title">资金与任务</h2></div><button id="close-context" aria-label="关闭详情">×</button></div><div class="context-tabs" id="context-tabs"><button data-tab="treasury" class="active">资金</button><button data-tab="tasks">任务</button><button data-tab="audit">审计</button><button data-tab="settings">连接</button></div><div id="context-body" class="context-body"><p class="muted">正在读取后端状态…</p></div><div class="context-foot" id="context-foot">来源与时间由后端记录</div></aside>
+</div>
+<div id="mobile-shade" class="mobile-shade" hidden></div>
+<script type="module" src="/versions/app.js"></script>
+</body></html>

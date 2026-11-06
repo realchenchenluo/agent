@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-banking.example/contracts/app-message.v1.schema.json",
+  "title": "AI Banking unified conversation message v1",
+  "type": "object",
+  "required": ["message_id", "conversation_id", "agent_id", "task_id", "message_type", "status", "source", "as_of", "text", "tool_results", "actions", "audit_ref"],
+  "properties": {
+    "message_id": { "type": "string", "minLength": 1 },
+    "conversation_id": { "type": "string", "minLength": 1 },
+    "agent_id": { "enum": ["mot", "merchant", "investment", "risk"] },
+    "task_id": { "type": ["string", "null"] },
+    "message_type": { "enum": ["user", "tool_result", "task_result", "approval", "status"] },
+    "status": { "type": "string", "minLength": 1 },
+    "source": { "type": "string", "minLength": 1 },
+    "as_of": { "type": ["string", "null"] },
+    "text": { "type": "string", "maxLength": 2000 },
+    "tool_results": { "type": "array", "items": { "type": "object" } },
+    "actions": { "type": "array", "items": { "type": "object", "required": ["action", "label", "target"] } },
+    "audit_ref": { "type": ["string", "null"] },
+    "request_id": { "type": "string" }
+  },
+  "additionalProperties": false
+}

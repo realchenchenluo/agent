@@ -15,8 +15,16 @@ const ownerBridge = require("./integrations/owner-bridge");
 const { ReviewWorkflowStore, WorkflowError } = require("./integrations/review-workflow");
 const { randomUUID } = require("node:crypto");
 const { MerchantSession, demo: merchantDemo } = require("./merchant/ledger");
+const { makeMotHttp } = require("./mot/http");
+const { MotScheduler } = require("./mot/scheduler");
+const { makeAppHttp } = require("./app/http");
 const merchantSessions = new Map();
 const reviewRuns = new Map();
+const mot = makeMotHttp(process.env);
+const app = makeAppHttp({ env: process.env, mot, merchantFor });
+const motScheduler = mot.runtime && (process.env.MOT_SCHEDULER_ENABLED === "true" ||
+  (process.env.MOT_LOCAL_DEMO === "true" && process.env.MOT_SCHEDULER_ENABLED !== "false")) ? new MotScheduler(mot.runtime) : null;
+if (mot.runtime) mot.runtime.scheduler = motScheduler;
 
 function merchantFor(request, response) {
   let id = /(?:^|;\s*)merchant_session=([a-z0-9-]+)/.exec(request.headers.cookie || "")?.[1];
@@ -58,7 +66,7 @@ function applyCors(request, response) {
   if (!origin || (!corsOrigins.has("*") && !corsOrigins.has(origin))) return false;
   response.setHeader("Access-Control-Allow-Origin", corsOrigins.has("*") ? "*" : origin);
   response.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  response.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Core-Agent-Key, Idempotency-Key, X-Request-ID, X-Risk-Signature, X-Approval-Signature");
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Core-Agent-Key, X-Mot-Key, Idempotency-Key, X-Request-ID, X-Risk-Signature, X-Approval-Signature");
   response.setHeader("Vary", "Origin");
   return true;
 }
@@ -172,6 +180,8 @@ async function handleApi(request, response, pathname, url) {
   let body = {};
   if (method === "POST") body = await parseBody(request);
   if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("JSON body must be an object");
+  if (pathname.startsWith("/api/app/")) return app.handle(request, response, pathname, body);
+  if (pathname.startsWith("/api/mot/")) return mot.handle(request, response, pathname, url, body);
   if (method === "POST" && (pathname === "/api/review" || pathname === "/api/review/legacy")) {
     body = {
       ...body,
@@ -383,12 +393,17 @@ function serveStatic(response, pathname) {
     sendJson(response, 400, { error: { code: "INVALID_PATH", message: "invalid URL path" } });
     return;
   }
-  const routes = { "/": "versions/investment.html", "/index.html": "versions/investment.html", "/catalog": "versions/home.html", "/investment": "versions/investment.html", "/investment-v0.10": "versions/investment-legacy.html", "/merchant": "versions/merchant.html", "/risk-workbench": "versions/risk-workbench.html" };
+  const legacy = { "/mot": "mot", "/merchant": "merchant", "/investment": "investment", "/investment-v0.10": "investment", "/risk-workbench": "risk", "/catalog": "mot" };
+  if (legacy[decodedPath]) {
+    response.writeHead(302, { Location: "/app?agent=" + legacy[decodedPath], "Cache-Control": "no-store" });
+    response.end(); return;
+  }
+  const routes = { "/": "versions/app.html", "/app": "versions/app.html", "/index.html": "versions/app.html" };
   const relativePath = routes[decodedPath] || decodedPath.replace(/^\/+/, "");
-  const allowed = new Set(["versions/home.html", "versions/investment.html", "versions/merchant.html", "versions/risk-workbench.html",
+  const allowed = new Set(["versions/app.html", "versions/app.css", "versions/app.js", "versions/home.html", "versions/investment.html", "versions/merchant.html", "versions/risk-workbench.html",
     "contracts/risk-handoff.v1.schema.json", "contracts/owner-bridge.v1.schema.json", "contracts/examples/risk-callback.request.json",
     "contracts/funding-plan-demo.v1.schema.json", "contracts/examples/funding-plan.request.json",
-    "versions/style.css", "versions/product-overrides.css", "versions/presentation.mjs", "versions/investment-report.mjs", "versions/investment.js", "versions/investment-legacy.js", "versions/investment-legacy.html", "versions/merchant.js", "versions/risk-workbench.js", "versions/common.js",
+    "versions/style.css", "versions/product-overrides.css", "versions/mot.css", "versions/mot.js", "versions/mot.html", "versions/presentation.mjs", "versions/investment-report.mjs", "versions/investment.js", "versions/investment-legacy.js", "versions/investment-legacy.html", "versions/merchant.js", "versions/risk-workbench.js", "versions/common.js",
     "contracts/investment-agent.v1.schema.json", "contracts/core-agent-error.v1.schema.json", "contracts/model-review.v1.schema.json", "contracts/examples/health-check.request.json", "contracts/examples/health-check.response.json", "contracts/examples/core-agent-error.response.json", "contracts/examples/model-review.request.json", "contracts/examples/model-review.response.json", "contracts/examples/risk-decision.request.json", "contracts/examples/approval.request.json", "contracts/examples/simulation.request.json",
     "data/market-brief-2026-10-08.json", "data/market-brief-2026-10-09.json", "data/risk-workbench-demo.json", "index.html", "app.js", "styles.css"]);
   if (!allowed.has(relativePath)) { sendJson(response, 404, { error: { code: "NOT_FOUND", message: "not found" } }); return; }
@@ -448,8 +463,9 @@ const server = http.createServer(async (request, response) => {
 
 if (require.main === module) {
   server.listen(port, "127.0.0.1", () => {
+    motScheduler?.start();
     console.log(`Portfolio Sentinel running at http://127.0.0.1:${port}`);
   });
 }
 
-module.exports = { server, harness, reviewRuns, reviewWorkflow };
+module.exports = { server, harness, reviewRuns, reviewWorkflow, mot, motScheduler, app };

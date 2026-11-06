@@ -1,0 +1,81 @@
+{
+  "contract_version": "mot.v1",
+  "data_mode": "SYNTHETIC_ONLY",
+  "base": "https://personal-ai-fund-manager-mot-staging.ai-banking-agent.workers.dev",
+  "requests": [
+    {
+      "method": "GET",
+      "route": "/api/mot/overview",
+      "status": 401,
+      "result": "AUTHENTICATION_REQUIRED"
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/health",
+      "status": 200,
+      "result": "mot.v1"
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/overview",
+      "status": 200,
+      "result": "mot.v1"
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/overview",
+      "status": 200,
+      "result": "mot.v1"
+    },
+    {
+      "method": "POST",
+      "route": "/api/mot/check",
+      "status": 200,
+      "result": null
+    },
+    {
+      "method": "POST",
+      "route": "/api/mot/check",
+      "status": 200,
+      "result": null
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/tasks",
+      "status": 200,
+      "result": "mot.v1"
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/inbox",
+      "status": 200,
+      "result": "mot.v1"
+    },
+    {
+      "method": "POST",
+      "route": "/api/mot/reservations/propose",
+      "status": 201,
+      "result": "BLOCKED"
+    },
+    {
+      "method": "POST",
+      "route": "/api/mot/tasks/mot-task-515bc013-49c7-435a-b3ba-7ad0c8bb75ca/approval",
+      "status": 409,
+      "result": "APPROVAL_NOT_READY"
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/overview",
+      "status": 200,
+      "result": "mot.v1"
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/audit",
+      "status": 200,
+      "result": "mot.v1"
+    }
+  ],
+  "build_sha": "522e84108ba19c7c5819933eb76d7474007c6a2b",
+  "seeded": false
+}

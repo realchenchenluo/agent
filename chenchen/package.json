@@ -7,6 +7,7 @@
     "start": "node server.js",
     "start:public": "node scripts/start-public.js",
     "check": "node scripts/check.js",
+    "build:app": "node scripts/build-app-assets.js",
     "test": "node --test",
     "smoke": "node scripts/smoke.js"
   },
