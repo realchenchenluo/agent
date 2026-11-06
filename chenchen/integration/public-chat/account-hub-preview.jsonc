@@ -1,0 +1,26 @@
+{
+  "name": "personal-ai-fund-chat-account-hub-preview",
+  "account_id": "ac6544ae4b883727097fd868d2a5a13d",
+  "main": "account-hub-preview.mjs",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {"directory": "./public", "binding": "ASSETS", "run_worker_first": true},
+  "vars": {
+    "PUBLIC_ORIGIN": "https://personal-ai-fund-chat-account-hub-preview.realchenchenluo.workers.dev",
+    "MODEL_ENABLED": "true",
+    "MODEL_NAME": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "DEMO_START_AT": "2026-10-28T00:00:00+08:00",
+    "DEMO_END_AT": "2026-11-20T00:00:00+08:00",
+    "DEMO_BUDGET_CENTS": "100",
+    "DAILY_BUDGET_CENTS": "50",
+    "RELEASE_ID": "account-hub-preview-20261028-test-double"
+  },
+  "durable_objects": {"bindings": [
+    {"name": "CHAT_SESSIONS", "class_name": "CanarySession"},
+    {"name": "CHAT_GATE", "class_name": "CanaryGate"}
+  ]},
+  "migrations": [{"tag": "account-hub-preview-v1", "new_sqlite_classes": ["CanarySession", "CanaryGate"]}],
+  "observability": {"enabled": false}
+}

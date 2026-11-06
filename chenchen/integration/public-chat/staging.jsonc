@@ -1,0 +1,30 @@
+{
+  "name": "personal-ai-fund-chat-staging",
+  "account_id": "9b41127a11a47c2538db70e5ddafd7f6",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {"directory": "./public", "binding": "ASSETS", "run_worker_first": true},
+  "vars": {
+    "PUBLIC_ORIGIN": "https://personal-ai-fund-chat-staging.ai-banking-agent.workers.dev",
+    "MODEL_ENABLED": "true",
+    "MODEL_NAME": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "LLM_GATEWAY_MODE": "cloudflare",
+    "LLM_PAID_PROVIDER_APPROVED": "false",
+    "DEMO_START_AT": "2026-10-24T00:00:00+08:00",
+    "DEMO_END_AT": "2026-11-09T00:00:00+08:00",
+    "DEMO_BUDGET_CENTS": "100",
+    "DAILY_BUDGET_CENTS": "50",
+    "RELEASE_ID": "staging-dynamic-budget-20261024-llm-v1"
+  },
+  "ai": {"binding": "AI"},
+  "services": [{"binding": "AMOUNT_RISK", "service": "personal-ai-fund-chat-risk-staging"}],
+  "durable_objects": {"bindings": [
+    {"name": "CHAT_SESSIONS", "class_name": "ChatSession"},
+    {"name": "CHAT_GATE", "class_name": "ChatGate"}
+  ]},
+  "migrations": [{"tag": "staging-chat-v1", "new_sqlite_classes": ["ChatSession", "ChatGate"]}],
+  "observability": {"enabled": false}
+}
