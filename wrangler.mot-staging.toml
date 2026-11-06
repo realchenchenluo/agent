@@ -1,0 +1,22 @@
+name = "personal-ai-fund-manager-mot-staging"
+main = "chenchen/deployment/mot-staging-entry.js"
+compatibility_date = "2026-10-11"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[vars]
+RATE_LIMIT_PER_MINUTE = "60"
+
+[triggers]
+crons = ["*/15 * * * *"]
+
+[ai]
+binding = "AI"
+
+[[durable_objects.bindings]]
+name = "REVIEW_SERVICE"
+class_name = "ReviewService"
+
+[[migrations]]
+tag = "mot-staging-review-service-v1"
+new_sqlite_classes = ["ReviewService"]

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/realchenchenluo/agent/chenchen/contracts/mot-state.v1.schema.json",
+  "title": "MOT owner aggregate v1",
+  "type": "object",
+  "required": ["schema_version", "owner_id", "revision", "stores", "terminals", "accounts", "transactions", "reservations", "tasks", "inbox", "notification_events", "audit", "memory", "checks", "ingests", "pool_configs", "observed_transaction_keys"],
+  "properties": {
+    "schema_version": { "const": "mot.v1" },
+    "owner_id": { "type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,79}$" },
+    "revision": { "type": "integer", "minimum": 0 },
+    "stores": { "type": "array", "items": { "type": "object", "required": ["store_id", "name", "source_system"] } },
+    "terminals": { "type": "array", "items": { "type": "object", "required": ["terminal_id", "store_id"] } },
+    "accounts": { "type": "array", "items": { "type": "object", "required": ["account_id", "currency", "balance_minor", "as_of", "revision", "verified", "pool", "source_system"], "properties": { "balance_minor": { "type": "integer", "minimum": 0 }, "currency": { "const": "CNY" }, "verified": { "type": "boolean" }, "pool": { "type": "boolean" } } } },
+    "transactions": { "type": "array", "items": { "$ref": "#/$defs/transaction" } },
+    "reservations": { "type": "array" },
+    "tasks": { "type": "array", "items": { "type": "object", "required": ["task_id", "owner_id", "source", "state", "updated_at", "evidence"], "properties": { "state": { "enum": ["CREATED", "CHECKING", "NEEDS_ATTENTION", "PENDING_APPROVAL", "RESOLVED", "BLOCKED", "FAILED", "CANCELLED", "UNKNOWN"] } } } },
+    "inbox": { "type": "array" },
+    "notification_events": { "type": "array" },
+    "audit": { "type": "array" },
+    "memory": { "type": "array" },
+    "checks": { "type": "array" },
+    "ingests": { "type": "array" },
+    "pool_configs": { "type": "array" },
+    "observed_transaction_keys": { "type": "array", "items": { "type": "string" } },
+    "last_check_at": { "type": ["string", "null"] },
+    "last_check_error": { "type": ["object", "null"] }
+  },
+  "$defs": {
+    "transaction": {
+      "type": "object",
+      "required": ["store_id", "terminal_id", "account_id", "source_system", "external_transaction_id", "amount_minor", "currency", "transaction_type", "status", "occurred_at", "settled_at", "as_of", "revision"],
+      "properties": {
+        "store_id": { "type": ["string", "null"] },
+        "terminal_id": { "type": ["string", "null"] },
+        "account_id": { "type": "string" },
+        "source_system": { "type": "string" },
+        "external_transaction_id": { "type": "string" },
+        "amount_minor": { "type": "integer", "minimum": 0 },
+        "currency": { "const": "CNY" },
+        "transaction_type": { "enum": ["RECEIPT", "PAYMENT", "REFUND", "INTERNAL_TRANSFER", "SETTLEMENT"] },
+        "status": { "enum": ["PENDING", "SETTLED", "CANCELLED"] },
+        "occurred_at": { "type": "string", "format": "date-time" },
+        "settled_at": { "type": ["string", "null"], "format": "date-time" },
+        "as_of": { "type": "string", "format": "date-time" },
+        "revision": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}
