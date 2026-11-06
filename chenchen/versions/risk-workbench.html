@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Core Agent · 风控工作台联调 Demo</title><link rel="stylesheet" href="/versions/style.css"><link rel="stylesheet" href="/versions/product-overrides.css?v=funding-20261015-1"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Core Agent · 风控工作台联调 Demo</title><link rel="stylesheet" href="/versions/style.css"><link rel="stylesheet" href="/versions/product-overrides.css?v=funding-20261015-1"><link rel="stylesheet" href="/versions/task-view.css"></head>
 <body class="investment-product">
 <header class="product-header"><a class="brand" href="/investment"><span class="brand-mark">01</span><span class="brand-copy">个人投资顾问<small>YOUR FUND MANAGER</small></span></a><nav class="product-nav"><span class="product-label">Core Agent × Risk</span><a class="back-link" href="/investment">返回投资分析</a></nav></header>
 <main class="compact-main">
@@ -9,11 +9,11 @@
     <span class="product-stamp">虚构资金演示</span>
   </section>
   <details class="compact-detail"><summary>查看旧版持仓联调 Demo（保留）</summary>
-  <section class="panel bridge-notice"><strong>当前接入方式：适配层预览</strong><p>这个风控工作台目前没有公开的外部 Handoff 导入接口，所以本 Demo 会真实运行 Core Agent、生成适配包，并打开工作台供人工查看；不会伪造“已写入远程任务”，也不会触发真实交易。</p><a class="secondary bridge-link" href="https://fund-risk-workbench.panxintian44.chatgpt.site/risk" target="_blank" rel="noopener">打开安全攻防与风控工作台 ↗</a></section>
+  <section class="panel bridge-notice"><strong>当前接入方式：适配层预览</strong><p>这个风控工作台目前没有公开的外部 Handoff 导入接口，所以本 Demo 会真实运行 Core Agent、生成适配包，并打开工作台供人工查看；不会伪造“已写入远程任务”，也不会触发真实交易。</p><a class="secondary bridge-link" href="https://fund-risk-workbench.panxintian44.chatgpt.site/risk" target="_blank" rel="noopener">打开安全攻防与风控工作台 </a></section>
   <section class="panel bridge-panel">
-    <div class="row"><div><p class="section-kicker">一次联调</p><h2>Core Agent → Risk Handoff → 风控工作台</h2></div><span class="tag" id="bridge-status">尚未运行</span></div>
-    <div class="bridge-flow" aria-label="联调流程"><article><span>01</span><h3>Agent 分析</h3><p>生成健康报告、候选方案和模拟结果。</p></article><i aria-hidden="true">→</i><article><span>02</span><h3>统一交接</h3><p>保留 request、task、session、audit 关联。</p></article><i aria-hidden="true">→</i><article><span>03</span><h3>Risk 复核</h3><p>固定不允许执行，等待独立风控决定。</p></article></div>
-    <button id="run-bridge" type="button">运行一次联调 Demo →</button><p id="bridge-message" class="small muted" role="status">使用固定演示持仓，不连接真实账户。</p>
+    <div class="row"><div><p class="section-kicker">一次联调</p><h2>Core Agent / Risk Handoff / 风控工作台</h2></div><span class="tag" id="bridge-status">尚未运行</span></div>
+    <div class="bridge-flow" aria-label="联调流程"><article><span>01</span><h3>Agent 分析</h3><p>生成健康报告、候选方案和模拟结果。</p></article><i aria-hidden="true"> / </i><article><span>02</span><h3>统一交接</h3><p>保留 request、task、session、audit 关联。</p></article><i aria-hidden="true"> / </i><article><span>03</span><h3>Risk 复核</h3><p>固定不允许执行，等待独立风控决定。</p></article></div>
+    <button id="run-bridge" type="button">运行一次联调 Demo</button><p id="bridge-message" class="small muted" role="status">使用固定演示持仓，不连接真实账户。</p>
   </section>
   </details>
   <section class="panel workflow-panel">
@@ -33,18 +33,18 @@
   <section class="panel workflow-panel">
     <div class="row"><div><p class="section-kicker">02 · 检查投资计划</p><h2>这次想安排多少钱？</h2></div><span class="tag" id="workflow-status">尚未发起</span></div>
     <div class="workflow-inputs">
-      <label>你想做什么？<textarea id="workflow-text" rows="2">我想再买一些基金。按我确认的虚构资金安排，会影响下个月交房租吗？</textarea></label>
+      <label>你想做什么？<textarea id="workflow-text" rows="2" maxlength="12000">我想再买一些基金。按我确认的虚构资金安排，会影响下个月交房租吗？</textarea></label>
       <label>本次拟议金额（元）<input id="workflow-amount" type="number" min="0.01" max="100000000" step="0.01" value="8000" /></label>
     </div>
-    <details class="compact-detail"><summary>补充处理目标</summary><div class="workflow-inputs"><label>请求动作<input id="workflow-action" value="检查新增基金投资与房租安排是否冲突" /></label></div></details>
-    <button id="run-workflow" type="button">发起模型复核 →</button>
-    <p id="workflow-message" class="small muted" role="status">真实调用模型；风控与审批由演示按钮模拟，最终只做模拟执行。</p>
+    <details class="compact-detail"><summary>补充处理目标</summary><div class="workflow-inputs"><label>请求动作<input id="workflow-action" maxlength="1000" value="检查新增基金投资与房租安排是否冲突" /></label></div></details>
+    <button id="run-workflow" type="button">发起模型复核</button>
+    <p id="workflow-message" class="small muted" role="status">真实调用模型；仅请求只读分析；可信 Risk、本人审批及模拟执行尚未联合验收，相关入口已禁用。</p>
     <div id="workflow-result" class="workflow-result" hidden>
       <div id="funding-verdict" class="funding-verdict" role="status" hidden></div>
       <div class="workflow-metrics" id="workflow-metrics"></div>
       <details class="compact-detail workflow-proposal"><summary id="workflow-proposal-title">查看模型解释</summary><p id="workflow-proposal-reason"></p><small id="workflow-proposal-source"></small></details>
       <div class="workflow-actions" id="workflow-actions"></div>
-      <details class="compact-detail"><summary>给联调同学的交接材料</summary><p class="small muted">交接包带有任务编号与参数指纹，可与 Risk 回调逐项核对。</p><a id="workflow-handoff-link" target="_blank" rel="noopener">打开 Risk 交接包 ↗</a></details>
+      <details class="compact-detail"><summary>给联调同学的交接材料</summary><p class="small muted">交接包带有任务编号与参数指纹，可与 Risk 回调逐项核对。</p><a id="workflow-handoff-link" target="_blank" rel="noopener">打开 Risk 交接包 </a></details>
       <details class="compact-detail"><summary>查看完整模型响应和运行记录</summary><pre id="workflow-json"></pre></details>
     </div>
   </section>

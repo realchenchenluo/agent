@@ -1,0 +1,18 @@
+diff --git a/.github/workflows/deploy-standalone-sites.yml b/.github/workflows/deploy-standalone-sites.yml
+--- a/.github/workflows/deploy-standalone-sites.yml
++++ b/.github/workflows/deploy-standalone-sites.yml
+@@ -45,6 +45,8 @@ jobs:
+           cp chenchen/versions/common.js _site/risk-workbench/common.js
+           cp chenchen/versions/style.css _site/risk-workbench/style.css
+           cp chenchen/versions/product-overrides.css _site/risk-workbench/product-overrides.css
++          cp chenchen/versions/task-state.mjs chenchen/versions/task-client.mjs chenchen/versions/task-view.mjs _site/risk-workbench/
++          cp chenchen/versions/task-view.css _site/risk-workbench/task-view.css
+           cp chenchen/data/risk-workbench-demo.json _site/risk-workbench/risk-workbench-demo.json
+           sed -i \
+             -e 's#/versions/style.css#./style.css#g' \
+@@ -51,4 +53,5 @@ jobs:
+             -e 's#/versions/product-overrides.css#./product-overrides.css#g' \
+             -e 's#/versions/risk-workbench.js#./risk-workbench.js#g' \
++            -e 's#/versions/task-view.css#./task-view.css#g' \
+             -e 's#href="/investment"#href="../"#g' \
+             _site/risk-workbench/index.html

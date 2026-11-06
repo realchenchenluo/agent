@@ -1,11 +1,16 @@
-import { $, esc, money, pct, api, toast, downloadLink, chart, today, tip, healthCheckRequest } from "./common.js";
+import { $, esc, money, pct, toast, downloadLink, chart, today, tip, healthCheckRequest } from "./common.js";
 import { dateStatus, planComparison } from "./presentation.mjs";
 import { buildInvestmentReport, investmentReportHtml, investmentReportText } from "./investment-report.mjs";
+import { TaskClient } from "./task-client.mjs";
+import { mountTaskView } from "./task-view.mjs";
+const taskClient = new TaskClient();
+const api = (path, body) => taskClient.request(path, body);
+const observer = mountTaskView({ client: taskClient });
 let result, readableReport, inputVersion = 0;
 const names = { CURRENT:"当前组合", A:"A 保持或最小动作", B:"B 温和调整", C:"C 风险优先" };
 const planCopy = { A:"保留当前配置", B:"适度降低集中度", C:"降低高波动资产权重" };
 function invalidate() {
-  inputVersion++;
+  inputVersion++; observer.invalidate();
   readableReport = null;
   if (result) { result=null; $("#results").hidden=true; $("#input-changed").hidden=false; }
 }
@@ -58,7 +63,7 @@ function renderDashboard(report, snapshot, health) {
 $("#check-form").addEventListener("input",invalidate);
 $("#demo-profile").onclick=()=>{ invalidate(); $("#horizon").value=365;$("#drawdown").value=10;$("#liquidity").value="medium";toast("已填入虚构偏好，可修改。"); };
 $("#check-form").onsubmit=async event=>{
-  event.preventDefault();const version=inputVersion;readableReport=null;$("#run").disabled=true;$("#results").hidden=true;$("#input-changed").hidden=true;$("#run").textContent="正在诊断…";
+  event.preventDefault();if(taskClient.busy)return;const version=inputVersion;readableReport=null;$("#run").disabled=true;$("#results").hidden=true;$("#input-changed").hidden=true;$("#run").textContent="正在诊断…";
   try {
     const next=await api("/api/health-check/run",healthCheckRequest({
       riskProfile:{investment_horizon_days:Number($("#horizon").value),max_drawdown:Number($("#drawdown").value)/100,liquidity_need:$("#liquidity").value},
@@ -66,7 +71,7 @@ $("#check-form").onsubmit=async event=>{
     }));
     if(version!==inputVersion) { $("#input-changed").hidden=false; return toast("输入已改变，请重新检查。"); }
     if(next.task_state.status!=="HANDOFF_REQUIRED")throw new Error(next.task_state.error_state?.reasons?.join("；")||"请补齐有效的持仓与风险信息。");
-    result=next; const a=result.artifacts,m=a.health_report.metrics,s=a.simulation,view=planComparison(s.comparisons);
+    observer.show(next); result=next; const a=result.artifacts,m=a.health_report.metrics,s=a.simulation,view=planComparison(s.comparisons);
     readableReport=buildInvestmentReport(result,{observedOn:today()});
     if(!readableReport.available)throw new Error(readableReport.context);
     if(!view.best||!view.baseline)throw new Error("模拟缺少有效结果，暂不展示结论。");
@@ -101,9 +106,9 @@ $("#check-form").onsubmit=async event=>{
     }).catch(()=>{
       if(result===next&&version===inputVersion)$("#evidence").textContent+="\n完整运行记录暂未读取成功，可重新检查后再试。";
     });
-    $("#results").hidden=false;$("#input-panel").open=false;$("#result-summary").scrollIntoView({behavior:"smooth",block:"start"});toast("分析完成。展开方案可查看细节。");
-  }catch(error){ result=null;readableReport=null;toast(error.message); }
-  finally{$("#run").disabled=false;$("#run").textContent="开始健康检查 →";}
+    $("#results").hidden=false;$("#input-panel").open=false;$("#task-observer").scrollIntoView({behavior:"smooth",block:"start"});toast("分析完成。展开方案可查看细节。");
+  }catch(error){ result=null;readableReport=null;observer.message(error.message);toast(error.message); }
+  finally{$("#run").disabled=false;$("#run").textContent="开始健康检查";}
 };
 $("#export").onclick=()=>{if(result)downloadLink("/api/task/"+encodeURIComponent(result.task_state.task_id)+"/export");};
 $("#export-readable").onclick=()=>{

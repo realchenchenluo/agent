@@ -1,0 +1,2620 @@
+{
+  "layer": "LOCAL_REAL_API",
+  "fixture_version": "ui-demo-p0-20261101.v1",
+  "synthetic": true,
+  "paid_model_calls": 0,
+  "real_financial_operations": 0,
+  "records": [
+    {
+      "route": "/api/health-check/run",
+      "http_status": 200,
+      "payload": {
+        "contract_version": "investment-agent.v1",
+        "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5",
+        "operation": "PORTFOLIO_HEALTH_CHECK",
+        "trace": {
+          "contract_version": "investment-agent.v1",
+          "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5",
+          "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781"
+        },
+        "task_state": {
+          "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+          "contract_version": "investment-agent.v1",
+          "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5",
+          "intent": "PORTFOLIO_HEALTH_CHECK",
+          "stage": "RISK_CHECK",
+          "status": "HANDOFF_REQUIRED",
+          "risk_profile": {
+            "investment_horizon_days": 365,
+            "max_drawdown": 0.1,
+            "liquidity_need": "medium"
+          },
+          "missing_fields": [],
+          "portfolio_snapshot_id": "snapshot-de37f3dab3586cd6",
+          "risk_profile_id": "risk-profile-89261580-d01d-46bd-9044-0a53f4fbabc8",
+          "tool_result_refs": [
+            "trace-47a06c109ce838e8",
+            "trace-806989342cd10329",
+            "trace-b859fe1a05c6b119",
+            "trace-1f704db52146f8f1"
+          ],
+          "proposed_action_ids": [
+            "proposal-a-74ef228729",
+            "proposal-b-53a1666dd2",
+            "proposal-c-45eb627fc2"
+          ],
+          "risk_decision_id": null,
+          "approval_id": null,
+          "error_state": null,
+          "checkpoint": {
+            "stage": "RISK_CHECK",
+            "completed": [
+              "VALIDATE_INPUT",
+              "DIAGNOSE",
+              "GENERATE_CANDIDATES",
+              "SIMULATE"
+            ],
+            "result_refs": {
+              "VALIDATE_INPUT": "trace-47a06c109ce838e8",
+              "DIAGNOSE": "trace-806989342cd10329",
+              "GENERATE_CANDIDATES": "trace-b859fe1a05c6b119",
+              "SIMULATE": "trace-1f704db52146f8f1"
+            },
+            "resume_token": "resume-926c3b13-dc67-4b81-82db-994e502366ba",
+            "last_tool_result_ref": "trace-1f704db52146f8f1"
+          },
+          "handoff": {
+            "owner": "Safety/Risk/Eval",
+            "reason": "Risk decision is outside Agent Core and Tools ownership."
+          }
+        },
+        "artifacts": {
+          "portfolio_snapshot": {
+            "snapshot_id": "snapshot-de37f3dab3586cd6",
+            "portfolio_id": "golden-demo-portfolio",
+            "as_of": "2026-09-23T08:00:00Z",
+            "positions": [
+              {
+                "instrument_id": "EQUITY_ALPHA",
+                "name": "Alpha Holdings",
+                "type": "A_SHARE",
+                "sector": "Technology",
+                "quantity": 100,
+                "price": 47.2,
+                "market_value": 4720,
+                "weight": 0.15186615
+              },
+              {
+                "instrument_id": "ETF_GROWTH",
+                "name": "Growth ETF",
+                "type": "ETF",
+                "sector": "Technology",
+                "quantity": 100,
+                "price": 75.5,
+                "market_value": 7550,
+                "weight": 0.24292149
+              },
+              {
+                "instrument_id": "ETF_CONSUMER",
+                "name": "Consumer ETF",
+                "type": "ETF",
+                "sector": "Consumer",
+                "quantity": 100,
+                "price": 47.6,
+                "market_value": 4760,
+                "weight": 0.15315315
+              },
+              {
+                "instrument_id": "ETF_BOND",
+                "name": "Bond ETF",
+                "type": "ETF",
+                "sector": "Fixed Income",
+                "quantity": 100,
+                "price": 40.5,
+                "market_value": 4050,
+                "weight": 0.13030888
+              }
+            ],
+            "cash": 10000,
+            "cash_weight": 0.32175032,
+            "total_value": 31080,
+            "data_quality": {
+              "status": "VALID",
+              "errors": [],
+              "warnings": []
+            }
+          },
+          "health_report": {
+            "report_id": "health-45f227c09db8cce7",
+            "snapshot_id": "snapshot-de37f3dab3586cd6",
+            "metrics": {
+              "cumulative_return": -0.02789133,
+              "annualized_return": -0.69519485,
+              "annualized_volatility": 0.15334647,
+              "max_drawdown": -0.02789133,
+              "sharpe_ratio": -7.79583962,
+              "ending_index": 0.97210867
+            },
+            "cash_weight": 0.32175032,
+            "concentration": {
+              "hhi": 0.22603374,
+              "hhi_basis": "all assets including cash; top-N excludes cash",
+              "top_1": 0.24292149,
+              "top_3": 0.54794079,
+              "largest_instrument": "ETF_GROWTH"
+            },
+            "correlation_matrix": {
+              "EQUITY_ALPHA": {
+                "EQUITY_ALPHA": 1,
+                "ETF_GROWTH": 0.988122,
+                "ETF_CONSUMER": 0.938165,
+                "ETF_BOND": -0.825061
+              },
+              "ETF_GROWTH": {
+                "EQUITY_ALPHA": 0.988122,
+                "ETF_GROWTH": 1,
+                "ETF_CONSUMER": 0.97728,
+                "ETF_BOND": -0.815422
+              },
+              "ETF_CONSUMER": {
+                "EQUITY_ALPHA": 0.938165,
+                "ETF_GROWTH": 0.97728,
+                "ETF_CONSUMER": 1,
+                "ETF_BOND": -0.819951
+              },
+              "ETF_BOND": {
+                "EQUITY_ALPHA": -0.825061,
+                "ETF_GROWTH": -0.815422,
+                "ETF_CONSUMER": -0.819951,
+                "ETF_BOND": 1
+              }
+            },
+            "hidden_clusters": [
+              {
+                "instruments": [
+                  "EQUITY_ALPHA",
+                  "ETF_GROWTH"
+                ],
+                "correlation": 0.988122
+              },
+              {
+                "instruments": [
+                  "EQUITY_ALPHA",
+                  "ETF_CONSUMER"
+                ],
+                "correlation": 0.938165
+              },
+              {
+                "instruments": [
+                  "ETF_GROWTH",
+                  "ETF_CONSUMER"
+                ],
+                "correlation": 0.97728
+              }
+            ],
+            "attention_points": [
+              "largest position exceeds 20%",
+              "multiple instruments move together in the fixed window"
+            ],
+            "data_window": {
+              "start": "2026-09-15",
+              "end": "2026-09-23",
+              "observations": 7,
+              "annualization_factor": 252
+            }
+          },
+          "candidates": [
+            {
+              "proposal_id": "proposal-a-74ef228729",
+              "plan_id": "A",
+              "label": "Keep / minimum action",
+              "objective": "preserve the current allocation and avoid unnecessary turnover",
+              "target_weights": {
+                "CASH": 0.32175033,
+                "EQUITY_ALPHA": 0.15186615,
+                "ETF_GROWTH": 0.24292149,
+                "ETF_CONSUMER": 0.15315315,
+                "ETF_BOND": 0.13030888
+              },
+              "actions": [
+                {
+                  "instrument_id": "CASH",
+                  "from_weight": 0.32175033,
+                  "to_weight": 0.32175033,
+                  "delta_weight": 0,
+                  "side": "HOLD"
+                },
+                {
+                  "instrument_id": "EQUITY_ALPHA",
+                  "from_weight": 0.15186615,
+                  "to_weight": 0.15186615,
+                  "delta_weight": 0,
+                  "side": "HOLD"
+                },
+                {
+                  "instrument_id": "ETF_BOND",
+                  "from_weight": 0.13030888,
+                  "to_weight": 0.13030888,
+                  "delta_weight": 0,
+                  "side": "HOLD"
+                },
+                {
+                  "instrument_id": "ETF_CONSUMER",
+                  "from_weight": 0.15315315,
+                  "to_weight": 0.15315315,
+                  "delta_weight": 0,
+                  "side": "HOLD"
+                },
+                {
+                  "instrument_id": "ETF_GROWTH",
+                  "from_weight": 0.24292149,
+                  "to_weight": 0.24292149,
+                  "delta_weight": 0,
+                  "side": "HOLD"
+                }
+              ],
+              "constraints": {
+                "max_single_asset_weight": 0.35,
+                "max_turnover": 0.05,
+                "objective": "minimum_action"
+              },
+              "turnover": 0,
+              "rationale": [
+                "No hard constraint is currently violated; keep the baseline for comparison."
+              ],
+              "expected_metrics": {
+                "max_single_asset_weight": 0.24292149,
+                "cash_weight": 0.32175033
+              },
+              "proposal_hash": "b1c4acfbd501a4221e0e7e766b395102138a5ad99315c7cbcd06e33f243a7b74",
+              "validation": {
+                "valid": true,
+                "errors": []
+              }
+            },
+            {
+              "proposal_id": "proposal-b-53a1666dd2",
+              "plan_id": "B",
+              "label": "Moderate rebalance",
+              "objective": "reduce the largest position with bounded turnover",
+              "target_weights": {
+                "CASH": 0.36467182,
+                "EQUITY_ALPHA": 0.15186615,
+                "ETF_GROWTH": 0.2,
+                "ETF_CONSUMER": 0.15315315,
+                "ETF_BOND": 0.13030888
+              },
+              "actions": [
+                {
+                  "instrument_id": "CASH",
+                  "from_weight": 0.32175033,
+                  "to_weight": 0.36467182,
+                  "delta_weight": 0.04292149,
+                  "side": "BUY_OR_HOLD_CASH"
+                },
+                {
+                  "instrument_id": "EQUITY_ALPHA",
+                  "from_weight": 0.15186615,
+                  "to_weight": 0.15186615,
+                  "delta_weight": 0,
+                  "side": "HOLD"
+                },
+                {
+                  "instrument_id": "ETF_BOND",
+                  "from_weight": 0.13030888,
+                  "to_weight": 0.13030888,
+                  "delta_weight": 0,
+                  "side": "HOLD"
+                },
+                {
+                  "instrument_id": "ETF_CONSUMER",
+                  "from_weight": 0.15315315,
+                  "to_weight": 0.15315315,
+                  "delta_weight": 0,
+                  "side": "HOLD"
+                },
+                {
+                  "instrument_id": "ETF_GROWTH",
+                  "from_weight": 0.24292149,
+                  "to_weight": 0.2,
+                  "delta_weight": -0.04292149,
+                  "side": "SELL_OR_REDUCE"
+                }
+              ],
+              "constraints": {
+                "max_single_asset_weight": 0.2,
+                "max_turnover": 0.1,
+                "objective": "concentration_control"
+              },
+              "turnover": 0.04292149,
+              "rationale": [
+                "Cap any security above 20% and move the difference to cash."
+              ],
+              "expected_metrics": {
+                "max_single_asset_weight": 0.2,
+                "cash_weight": 0.36467182
+              },
+              "proposal_hash": "5f7da0e23aac20fb0cb88850548bad2d4b23d6b1eb1f82491aa20d63f871e707",
+              "validation": {
+                "valid": true,
+                "errors": []
+              }
+            },
+            {
+              "proposal_id": "proposal-c-45eb627fc2",
+              "plan_id": "C",
+              "label": "Risk priority",
+              "objective": "reduce correlated exposure and increase the defensive sleeve",
+              "target_weights": {
+                "CASH": 0.38,
+                "EQUITY_ALPHA": 0.14,
+                "ETF_GROWTH": 0.14,
+                "ETF_CONSUMER": 0.14,
+                "ETF_BOND": 0.2
+              },
+              "actions": [
+                {
+                  "instrument_id": "CASH",
+                  "from_weight": 0.32175033,
+                  "to_weight": 0.38,
+                  "delta_weight": 0.05824967,
+                  "side": "BUY_OR_HOLD_CASH"
+                },
+                {
+                  "instrument_id": "EQUITY_ALPHA",
+                  "from_weight": 0.15186615,
+                  "to_weight": 0.14,
+                  "delta_weight": -0.01186615,
+                  "side": "SELL_OR_REDUCE"
+                },
+                {
+                  "instrument_id": "ETF_BOND",
+                  "from_weight": 0.13030888,
+                  "to_weight": 0.2,
+                  "delta_weight": 0.06969112,
+                  "side": "BUY_OR_HOLD_CASH"
+                },
+                {
+                  "instrument_id": "ETF_CONSUMER",
+                  "from_weight": 0.15315315,
+                  "to_weight": 0.14,
+                  "delta_weight": -0.01315315,
+                  "side": "SELL_OR_REDUCE"
+                },
+                {
+                  "instrument_id": "ETF_GROWTH",
+                  "from_weight": 0.24292149,
+                  "to_weight": 0.14,
+                  "delta_weight": -0.10292149,
+                  "side": "SELL_OR_REDUCE"
+                }
+              ],
+              "constraints": {
+                "max_single_asset_weight": 0.2,
+                "max_turnover": 0.25,
+                "objective": "risk_budget"
+              },
+              "turnover": 0.12794079,
+              "rationale": [
+                "Reduce the detected correlated cluster, then split released weight between bond ETF and cash."
+              ],
+              "expected_metrics": {
+                "max_single_asset_weight": 0.2,
+                "cash_weight": 0.38
+              },
+              "proposal_hash": "610b4ca5b8fcce69f0f0bfb166d2aeb5703de5bd861e229c295026b548b97966",
+              "validation": {
+                "valid": true,
+                "errors": []
+              }
+            }
+          ],
+          "simulation": {
+            "simulation_id": "simulation-199585da939d4269",
+            "snapshot_id": "snapshot-de37f3dab3586cd6",
+            "historical_window": {
+              "start": "2026-09-15",
+              "end": "2026-09-23"
+            },
+            "transaction_cost_rate": 0.001,
+            "assumptions": {
+              "data_mode": "SYNTHETIC_REPLAY",
+              "initial_capital": 31080,
+              "annualization_factor": 252,
+              "risk_free_rate": 0.02,
+              "portfolio_method": "buy-and-hold",
+              "cost_basis": "one-way turnover times rate charged once",
+              "sample_observations": 7,
+              "caveat": "Ex-post allocation comparison on a short synthetic window, not an out-of-sample strategy backtest."
+            },
+            "comparisons": [
+              {
+                "plan_id": "CURRENT",
+                "proposal_id": "proposal-current-74ef228729",
+                "label": "Current portfolio",
+                "turnover": 0,
+                "transaction_cost": 0,
+                "metrics": {
+                  "cumulative_return": -0.02789133,
+                  "annualized_return": -0.69519485,
+                  "annualized_volatility": 0.15334647,
+                  "max_drawdown": -0.02789133,
+                  "sharpe_ratio": -7.79583962,
+                  "ending_index": 0.97210867
+                },
+                "curve": [
+                  {
+                    "date": "2026-09-15",
+                    "value": 1
+                  },
+                  {
+                    "date": "2026-09-16",
+                    "value": 0.9914955
+                  },
+                  {
+                    "date": "2026-09-17",
+                    "value": 0.98512717
+                  },
+                  {
+                    "date": "2026-09-18",
+                    "value": 0.99392753
+                  },
+                  {
+                    "date": "2026-09-21",
+                    "value": 0.9778425
+                  },
+                  {
+                    "date": "2026-09-22",
+                    "value": 0.98273126
+                  },
+                  {
+                    "date": "2026-09-23",
+                    "value": 0.97210867
+                  }
+                ]
+              },
+              {
+                "plan_id": "A",
+                "proposal_id": "proposal-a-74ef228729",
+                "label": "Keep / minimum action",
+                "turnover": 0,
+                "transaction_cost": 0,
+                "metrics": {
+                  "cumulative_return": -0.02789133,
+                  "annualized_return": -0.69519485,
+                  "annualized_volatility": 0.15334647,
+                  "max_drawdown": -0.02789133,
+                  "sharpe_ratio": -7.79583962,
+                  "ending_index": 0.97210867
+                },
+                "curve": [
+                  {
+                    "date": "2026-09-15",
+                    "value": 1
+                  },
+                  {
+                    "date": "2026-09-16",
+                    "value": 0.9914955
+                  },
+                  {
+                    "date": "2026-09-17",
+                    "value": 0.98512717
+                  },
+                  {
+                    "date": "2026-09-18",
+                    "value": 0.99392753
+                  },
+                  {
+                    "date": "2026-09-21",
+                    "value": 0.9778425
+                  },
+                  {
+                    "date": "2026-09-22",
+                    "value": 0.98273126
+                  },
+                  {
+                    "date": "2026-09-23",
+                    "value": 0.97210867
+                  }
+                ]
+              },
+              {
+                "plan_id": "B",
+                "proposal_id": "proposal-b-53a1666dd2",
+                "label": "Moderate rebalance",
+                "turnover": 0.04292149,
+                "transaction_cost": 0.00004292,
+                "metrics": {
+                  "cumulative_return": -0.02551882,
+                  "annualized_return": -0.66233569,
+                  "annualized_volatility": 0.13900778,
+                  "max_drawdown": -0.02551882,
+                  "sharpe_ratio": -7.87940182,
+                  "ending_index": 0.97448118
+                },
+                "curve": [
+                  {
+                    "date": "2026-09-15",
+                    "value": 1
+                  },
+                  {
+                    "date": "2026-09-16",
+                    "value": 0.99220403
+                  },
+                  {
+                    "date": "2026-09-17",
+                    "value": 0.98642613
+                  },
+                  {
+                    "date": "2026-09-18",
+                    "value": 0.99436771
+                  },
+                  {
+                    "date": "2026-09-21",
+                    "value": 0.97973192
+                  },
+                  {
+                    "date": "2026-09-22",
+                    "value": 0.98413762
+                  },
+                  {
+                    "date": "2026-09-23",
+                    "value": 0.97448118
+                  }
+                ]
+              },
+              {
+                "plan_id": "C",
+                "proposal_id": "proposal-c-45eb627fc2",
+                "label": "Risk priority",
+                "turnover": 0.12794079,
+                "transaction_cost": 0.00012794,
+                "metrics": {
+                  "cumulative_return": -0.02006039,
+                  "annualized_return": -0.57305579,
+                  "annualized_volatility": 0.11048451,
+                  "max_drawdown": -0.02006039,
+                  "sharpe_ratio": -7.82526986,
+                  "ending_index": 0.97993961
+                },
+                "curve": [
+                  {
+                    "date": "2026-09-15",
+                    "value": 1
+                  },
+                  {
+                    "date": "2026-09-16",
+                    "value": 0.99372285
+                  },
+                  {
+                    "date": "2026-09-17",
+                    "value": 0.98921842
+                  },
+                  {
+                    "date": "2026-09-18",
+                    "value": 0.99543763
+                  },
+                  {
+                    "date": "2026-09-21",
+                    "value": 0.98387411
+                  },
+                  {
+                    "date": "2026-09-22",
+                    "value": 0.98762863
+                  },
+                  {
+                    "date": "2026-09-23",
+                    "value": 0.97993961
+                  }
+                ]
+              }
+            ],
+            "scenarios": [
+              {
+                "plan_id": "CURRENT",
+                "distribution": {
+                  "method": "block_bootstrap",
+                  "block_size": 3,
+                  "paths": 2000,
+                  "seed": 20260924,
+                  "horizon_days": 20,
+                  "sampling": "joint asset daily returns; identical block indices across Current/A/B/C",
+                  "p10": -0.0913528,
+                  "p50": -0.07048466,
+                  "p90": -0.04823071
+                }
+              },
+              {
+                "plan_id": "A",
+                "distribution": {
+                  "method": "block_bootstrap",
+                  "block_size": 3,
+                  "paths": 2000,
+                  "seed": 20260924,
+                  "horizon_days": 20,
+                  "sampling": "joint asset daily returns; identical block indices across Current/A/B/C",
+                  "p10": -0.0913528,
+                  "p50": -0.07048466,
+                  "p90": -0.04823071
+                }
+              },
+              {
+                "plan_id": "B",
+                "distribution": {
+                  "method": "block_bootstrap",
+                  "block_size": 3,
+                  "paths": 2000,
+                  "seed": 20260924,
+                  "horizon_days": 20,
+                  "sampling": "joint asset daily returns; identical block indices across Current/A/B/C",
+                  "p10": -0.08345959,
+                  "p50": -0.06455058,
+                  "p90": -0.04436988
+                }
+              },
+              {
+                "plan_id": "C",
+                "distribution": {
+                  "method": "block_bootstrap",
+                  "block_size": 3,
+                  "paths": 2000,
+                  "seed": 20260924,
+                  "horizon_days": 20,
+                  "sampling": "joint asset daily returns; identical block indices across Current/A/B/C",
+                  "p10": -0.06499043,
+                  "p50": -0.05054828,
+                  "p90": -0.03462233
+                }
+              }
+            ],
+            "limitation": "Historical replay and fixed-seed scenario simulation are not a prediction of future returns."
+          }
+        },
+        "tool_results": {
+          "trace-47a06c109ce838e8": {
+            "tool_name": "portfolio.import",
+            "version": "financial-tools@0.4.0",
+            "inputs_hash": "433a67d262335df71c038d8920341090bf900298bb61d18a50e7bbe589cf7563",
+            "output": {
+              "valid": true,
+              "snapshot": {
+                "snapshot_id": "snapshot-de37f3dab3586cd6",
+                "portfolio_id": "golden-demo-portfolio",
+                "as_of": "2026-09-23T08:00:00Z",
+                "positions": [
+                  {
+                    "instrument_id": "EQUITY_ALPHA",
+                    "name": "Alpha Holdings",
+                    "type": "A_SHARE",
+                    "sector": "Technology",
+                    "quantity": 100,
+                    "price": 47.2,
+                    "market_value": 4720,
+                    "weight": 0.15186615
+                  },
+                  {
+                    "instrument_id": "ETF_GROWTH",
+                    "name": "Growth ETF",
+                    "type": "ETF",
+                    "sector": "Technology",
+                    "quantity": 100,
+                    "price": 75.5,
+                    "market_value": 7550,
+                    "weight": 0.24292149
+                  },
+                  {
+                    "instrument_id": "ETF_CONSUMER",
+                    "name": "Consumer ETF",
+                    "type": "ETF",
+                    "sector": "Consumer",
+                    "quantity": 100,
+                    "price": 47.6,
+                    "market_value": 4760,
+                    "weight": 0.15315315
+                  },
+                  {
+                    "instrument_id": "ETF_BOND",
+                    "name": "Bond ETF",
+                    "type": "ETF",
+                    "sector": "Fixed Income",
+                    "quantity": 100,
+                    "price": 40.5,
+                    "market_value": 4050,
+                    "weight": 0.13030888
+                  }
+                ],
+                "cash": 10000,
+                "cash_weight": 0.32175032,
+                "total_value": 31080,
+                "data_quality": {
+                  "status": "VALID",
+                  "errors": [],
+                  "warnings": []
+                }
+              },
+              "errors": [],
+              "warnings": []
+            },
+            "data_as_of": "2026-09-23T08:00:00Z",
+            "warnings": [
+              "Synthetic replay data: seven observations only; not suitable for investment decisions."
+            ],
+            "trace_id": "trace-47a06c109ce838e8"
+          },
+          "trace-806989342cd10329": {
+            "tool_name": "portfolio.diagnose",
+            "version": "financial-tools@0.4.0",
+            "inputs_hash": "47afdede0c23b3a53f4cb1c74408060a1e2bb437342456ecf5b6b3fd1c407b19",
+            "output": {
+              "report_id": "health-45f227c09db8cce7",
+              "snapshot_id": "snapshot-de37f3dab3586cd6",
+              "metrics": {
+                "cumulative_return": -0.02789133,
+                "annualized_return": -0.69519485,
+                "annualized_volatility": 0.15334647,
+                "max_drawdown": -0.02789133,
+                "sharpe_ratio": -7.79583962,
+                "ending_index": 0.97210867
+              },
+              "cash_weight": 0.32175032,
+              "concentration": {
+                "hhi": 0.22603374,
+                "hhi_basis": "all assets including cash; top-N excludes cash",
+                "top_1": 0.24292149,
+                "top_3": 0.54794079,
+                "largest_instrument": "ETF_GROWTH"
+              },
+              "correlation_matrix": {
+                "EQUITY_ALPHA": {
+                  "EQUITY_ALPHA": 1,
+                  "ETF_GROWTH": 0.988122,
+                  "ETF_CONSUMER": 0.938165,
+                  "ETF_BOND": -0.825061
+                },
+                "ETF_GROWTH": {
+                  "EQUITY_ALPHA": 0.988122,
+                  "ETF_GROWTH": 1,
+                  "ETF_CONSUMER": 0.97728,
+                  "ETF_BOND": -0.815422
+                },
+                "ETF_CONSUMER": {
+                  "EQUITY_ALPHA": 0.938165,
+                  "ETF_GROWTH": 0.97728,
+                  "ETF_CONSUMER": 1,
+                  "ETF_BOND": -0.819951
+                },
+                "ETF_BOND": {
+                  "EQUITY_ALPHA": -0.825061,
+                  "ETF_GROWTH": -0.815422,
+                  "ETF_CONSUMER": -0.819951,
+                  "ETF_BOND": 1
+                }
+              },
+              "hidden_clusters": [
+                {
+                  "instruments": [
+                    "EQUITY_ALPHA",
+                    "ETF_GROWTH"
+                  ],
+                  "correlation": 0.988122
+                },
+                {
+                  "instruments": [
+                    "EQUITY_ALPHA",
+                    "ETF_CONSUMER"
+                  ],
+                  "correlation": 0.938165
+                },
+                {
+                  "instruments": [
+                    "ETF_GROWTH",
+                    "ETF_CONSUMER"
+                  ],
+                  "correlation": 0.97728
+                }
+              ],
+              "attention_points": [
+                "largest position exceeds 20%",
+                "multiple instruments move together in the fixed window"
+              ],
+              "data_window": {
+                "start": "2026-09-15",
+                "end": "2026-09-23",
+                "observations": 7,
+                "annualization_factor": 252
+              }
+            },
+            "data_as_of": "2026-09-23T08:00:00Z",
+            "warnings": [
+              "Synthetic replay data: seven observations only; not suitable for investment decisions."
+            ],
+            "trace_id": "trace-806989342cd10329"
+          },
+          "trace-b859fe1a05c6b119": {
+            "tool_name": "strategy.generate",
+            "version": "financial-tools@0.4.0",
+            "inputs_hash": "3e0c7157d3fa4da576e4bacb27ca4acfb4be02ace7695da88bdf4a847e6c7d54",
+            "output": {
+              "snapshot_id": "snapshot-de37f3dab3586cd6",
+              "report_id": "health-45f227c09db8cce7",
+              "candidates": [
+                {
+                  "proposal_id": "proposal-a-74ef228729",
+                  "plan_id": "A",
+                  "label": "Keep / minimum action",
+                  "objective": "preserve the current allocation and avoid unnecessary turnover",
+                  "target_weights": {
+                    "CASH": 0.32175033,
+                    "EQUITY_ALPHA": 0.15186615,
+                    "ETF_GROWTH": 0.24292149,
+                    "ETF_CONSUMER": 0.15315315,
+                    "ETF_BOND": 0.13030888
+                  },
+                  "actions": [
+                    {
+                      "instrument_id": "CASH",
+                      "from_weight": 0.32175033,
+                      "to_weight": 0.32175033,
+                      "delta_weight": 0,
+                      "side": "HOLD"
+                    },
+                    {
+                      "instrument_id": "EQUITY_ALPHA",
+                      "from_weight": 0.15186615,
+                      "to_weight": 0.15186615,
+                      "delta_weight": 0,
+                      "side": "HOLD"
+                    },
+                    {
+                      "instrument_id": "ETF_BOND",
+                      "from_weight": 0.13030888,
+                      "to_weight": 0.13030888,
+                      "delta_weight": 0,
+                      "side": "HOLD"
+                    },
+                    {
+                      "instrument_id": "ETF_CONSUMER",
+                      "from_weight": 0.15315315,
+                      "to_weight": 0.15315315,
+                      "delta_weight": 0,
+                      "side": "HOLD"
+                    },
+                    {
+                      "instrument_id": "ETF_GROWTH",
+                      "from_weight": 0.24292149,
+                      "to_weight": 0.24292149,
+                      "delta_weight": 0,
+                      "side": "HOLD"
+                    }
+                  ],
+                  "constraints": {
+                    "max_single_asset_weight": 0.35,
+                    "max_turnover": 0.05,
+                    "objective": "minimum_action"
+                  },
+                  "turnover": 0,
+                  "rationale": [
+                    "No hard constraint is currently violated; keep the baseline for comparison."
+                  ],
+                  "expected_metrics": {
+                    "max_single_asset_weight": 0.24292149,
+                    "cash_weight": 0.32175033
+                  },
+                  "proposal_hash": "b1c4acfbd501a4221e0e7e766b395102138a5ad99315c7cbcd06e33f243a7b74",
+                  "validation": {
+                    "valid": true,
+                    "errors": []
+                  }
+                },
+                {
+                  "proposal_id": "proposal-b-53a1666dd2",
+                  "plan_id": "B",
+                  "label": "Moderate rebalance",
+                  "objective": "reduce the largest position with bounded turnover",
+                  "target_weights": {
+                    "CASH": 0.36467182,
+                    "EQUITY_ALPHA": 0.15186615,
+                    "ETF_GROWTH": 0.2,
+                    "ETF_CONSUMER": 0.15315315,
+                    "ETF_BOND": 0.13030888
+                  },
+                  "actions": [
+                    {
+                      "instrument_id": "CASH",
+                      "from_weight": 0.32175033,
+                      "to_weight": 0.36467182,
+                      "delta_weight": 0.04292149,
+                      "side": "BUY_OR_HOLD_CASH"
+                    },
+                    {
+                      "instrument_id": "EQUITY_ALPHA",
+                      "from_weight": 0.15186615,
+                      "to_weight": 0.15186615,
+                      "delta_weight": 0,
+                      "side": "HOLD"
+                    },
+                    {
+                      "instrument_id": "ETF_BOND",
+                      "from_weight": 0.13030888,
+                      "to_weight": 0.13030888,
+                      "delta_weight": 0,
+                      "side": "HOLD"
+                    },
+                    {
+                      "instrument_id": "ETF_CONSUMER",
+                      "from_weight": 0.15315315,
+                      "to_weight": 0.15315315,
+                      "delta_weight": 0,
+                      "side": "HOLD"
+                    },
+                    {
+                      "instrument_id": "ETF_GROWTH",
+                      "from_weight": 0.24292149,
+                      "to_weight": 0.2,
+                      "delta_weight": -0.04292149,
+                      "side": "SELL_OR_REDUCE"
+                    }
+                  ],
+                  "constraints": {
+                    "max_single_asset_weight": 0.2,
+                    "max_turnover": 0.1,
+                    "objective": "concentration_control"
+                  },
+                  "turnover": 0.04292149,
+                  "rationale": [
+                    "Cap any security above 20% and move the difference to cash."
+                  ],
+                  "expected_metrics": {
+                    "max_single_asset_weight": 0.2,
+                    "cash_weight": 0.36467182
+                  },
+                  "proposal_hash": "5f7da0e23aac20fb0cb88850548bad2d4b23d6b1eb1f82491aa20d63f871e707",
+                  "validation": {
+                    "valid": true,
+                    "errors": []
+                  }
+                },
+                {
+                  "proposal_id": "proposal-c-45eb627fc2",
+                  "plan_id": "C",
+                  "label": "Risk priority",
+                  "objective": "reduce correlated exposure and increase the defensive sleeve",
+                  "target_weights": {
+                    "CASH": 0.38,
+                    "EQUITY_ALPHA": 0.14,
+                    "ETF_GROWTH": 0.14,
+                    "ETF_CONSUMER": 0.14,
+                    "ETF_BOND": 0.2
+                  },
+                  "actions": [
+                    {
+                      "instrument_id": "CASH",
+                      "from_weight": 0.32175033,
+                      "to_weight": 0.38,
+                      "delta_weight": 0.05824967,
+                      "side": "BUY_OR_HOLD_CASH"
+                    },
+                    {
+                      "instrument_id": "EQUITY_ALPHA",
+                      "from_weight": 0.15186615,
+                      "to_weight": 0.14,
+                      "delta_weight": -0.01186615,
+                      "side": "SELL_OR_REDUCE"
+                    },
+                    {
+                      "instrument_id": "ETF_BOND",
+                      "from_weight": 0.13030888,
+                      "to_weight": 0.2,
+                      "delta_weight": 0.06969112,
+                      "side": "BUY_OR_HOLD_CASH"
+                    },
+                    {
+                      "instrument_id": "ETF_CONSUMER",
+                      "from_weight": 0.15315315,
+                      "to_weight": 0.14,
+                      "delta_weight": -0.01315315,
+                      "side": "SELL_OR_REDUCE"
+                    },
+                    {
+                      "instrument_id": "ETF_GROWTH",
+                      "from_weight": 0.24292149,
+                      "to_weight": 0.14,
+                      "delta_weight": -0.10292149,
+                      "side": "SELL_OR_REDUCE"
+                    }
+                  ],
+                  "constraints": {
+                    "max_single_asset_weight": 0.2,
+                    "max_turnover": 0.25,
+                    "objective": "risk_budget"
+                  },
+                  "turnover": 0.12794079,
+                  "rationale": [
+                    "Reduce the detected correlated cluster, then split released weight between bond ETF and cash."
+                  ],
+                  "expected_metrics": {
+                    "max_single_asset_weight": 0.2,
+                    "cash_weight": 0.38
+                  },
+                  "proposal_hash": "610b4ca5b8fcce69f0f0bfb166d2aeb5703de5bd861e229c295026b548b97966",
+                  "validation": {
+                    "valid": true,
+                    "errors": []
+                  }
+                }
+              ]
+            },
+            "data_as_of": "2026-09-23T08:00:00Z",
+            "warnings": [
+              "Synthetic replay data: seven observations only; not suitable for investment decisions."
+            ],
+            "trace_id": "trace-b859fe1a05c6b119"
+          },
+          "trace-1f704db52146f8f1": {
+            "tool_name": "simulation.run",
+            "version": "financial-tools@0.4.0",
+            "inputs_hash": "251e211a9970ee2d1f553d08bb8234499fb087237f5710edc878cff5485ef100",
+            "output": {
+              "simulation_id": "simulation-199585da939d4269",
+              "snapshot_id": "snapshot-de37f3dab3586cd6",
+              "historical_window": {
+                "start": "2026-09-15",
+                "end": "2026-09-23"
+              },
+              "transaction_cost_rate": 0.001,
+              "assumptions": {
+                "data_mode": "SYNTHETIC_REPLAY",
+                "initial_capital": 31080,
+                "annualization_factor": 252,
+                "risk_free_rate": 0.02,
+                "portfolio_method": "buy-and-hold",
+                "cost_basis": "one-way turnover times rate charged once",
+                "sample_observations": 7,
+                "caveat": "Ex-post allocation comparison on a short synthetic window, not an out-of-sample strategy backtest."
+              },
+              "comparisons": [
+                {
+                  "plan_id": "CURRENT",
+                  "proposal_id": "proposal-current-74ef228729",
+                  "label": "Current portfolio",
+                  "turnover": 0,
+                  "transaction_cost": 0,
+                  "metrics": {
+                    "cumulative_return": -0.02789133,
+                    "annualized_return": -0.69519485,
+                    "annualized_volatility": 0.15334647,
+                    "max_drawdown": -0.02789133,
+                    "sharpe_ratio": -7.79583962,
+                    "ending_index": 0.97210867
+                  },
+                  "curve": [
+                    {
+                      "date": "2026-09-15",
+                      "value": 1
+                    },
+                    {
+                      "date": "2026-09-16",
+                      "value": 0.9914955
+                    },
+                    {
+                      "date": "2026-09-17",
+                      "value": 0.98512717
+                    },
+                    {
+                      "date": "2026-09-18",
+                      "value": 0.99392753
+                    },
+                    {
+                      "date": "2026-09-21",
+                      "value": 0.9778425
+                    },
+                    {
+                      "date": "2026-09-22",
+                      "value": 0.98273126
+                    },
+                    {
+                      "date": "2026-09-23",
+                      "value": 0.97210867
+                    }
+                  ]
+                },
+                {
+                  "plan_id": "A",
+                  "proposal_id": "proposal-a-74ef228729",
+                  "label": "Keep / minimum action",
+                  "turnover": 0,
+                  "transaction_cost": 0,
+                  "metrics": {
+                    "cumulative_return": -0.02789133,
+                    "annualized_return": -0.69519485,
+                    "annualized_volatility": 0.15334647,
+                    "max_drawdown": -0.02789133,
+                    "sharpe_ratio": -7.79583962,
+                    "ending_index": 0.97210867
+                  },
+                  "curve": [
+                    {
+                      "date": "2026-09-15",
+                      "value": 1
+                    },
+                    {
+                      "date": "2026-09-16",
+                      "value": 0.9914955
+                    },
+                    {
+                      "date": "2026-09-17",
+                      "value": 0.98512717
+                    },
+                    {
+                      "date": "2026-09-18",
+                      "value": 0.99392753
+                    },
+                    {
+                      "date": "2026-09-21",
+                      "value": 0.9778425
+                    },
+                    {
+                      "date": "2026-09-22",
+                      "value": 0.98273126
+                    },
+                    {
+                      "date": "2026-09-23",
+                      "value": 0.97210867
+                    }
+                  ]
+                },
+                {
+                  "plan_id": "B",
+                  "proposal_id": "proposal-b-53a1666dd2",
+                  "label": "Moderate rebalance",
+                  "turnover": 0.04292149,
+                  "transaction_cost": 0.00004292,
+                  "metrics": {
+                    "cumulative_return": -0.02551882,
+                    "annualized_return": -0.66233569,
+                    "annualized_volatility": 0.13900778,
+                    "max_drawdown": -0.02551882,
+                    "sharpe_ratio": -7.87940182,
+                    "ending_index": 0.97448118
+                  },
+                  "curve": [
+                    {
+                      "date": "2026-09-15",
+                      "value": 1
+                    },
+                    {
+                      "date": "2026-09-16",
+                      "value": 0.99220403
+                    },
+                    {
+                      "date": "2026-09-17",
+                      "value": 0.98642613
+                    },
+                    {
+                      "date": "2026-09-18",
+                      "value": 0.99436771
+                    },
+                    {
+                      "date": "2026-09-21",
+                      "value": 0.97973192
+                    },
+                    {
+                      "date": "2026-09-22",
+                      "value": 0.98413762
+                    },
+                    {
+                      "date": "2026-09-23",
+                      "value": 0.97448118
+                    }
+                  ]
+                },
+                {
+                  "plan_id": "C",
+                  "proposal_id": "proposal-c-45eb627fc2",
+                  "label": "Risk priority",
+                  "turnover": 0.12794079,
+                  "transaction_cost": 0.00012794,
+                  "metrics": {
+                    "cumulative_return": -0.02006039,
+                    "annualized_return": -0.57305579,
+                    "annualized_volatility": 0.11048451,
+                    "max_drawdown": -0.02006039,
+                    "sharpe_ratio": -7.82526986,
+                    "ending_index": 0.97993961
+                  },
+                  "curve": [
+                    {
+                      "date": "2026-09-15",
+                      "value": 1
+                    },
+                    {
+                      "date": "2026-09-16",
+                      "value": 0.99372285
+                    },
+                    {
+                      "date": "2026-09-17",
+                      "value": 0.98921842
+                    },
+                    {
+                      "date": "2026-09-18",
+                      "value": 0.99543763
+                    },
+                    {
+                      "date": "2026-09-21",
+                      "value": 0.98387411
+                    },
+                    {
+                      "date": "2026-09-22",
+                      "value": 0.98762863
+                    },
+                    {
+                      "date": "2026-09-23",
+                      "value": 0.97993961
+                    }
+                  ]
+                }
+              ],
+              "scenarios": [
+                {
+                  "plan_id": "CURRENT",
+                  "distribution": {
+                    "method": "block_bootstrap",
+                    "block_size": 3,
+                    "paths": 2000,
+                    "seed": 20260924,
+                    "horizon_days": 20,
+                    "sampling": "joint asset daily returns; identical block indices across Current/A/B/C",
+                    "p10": -0.0913528,
+                    "p50": -0.07048466,
+                    "p90": -0.04823071
+                  }
+                },
+                {
+                  "plan_id": "A",
+                  "distribution": {
+                    "method": "block_bootstrap",
+                    "block_size": 3,
+                    "paths": 2000,
+                    "seed": 20260924,
+                    "horizon_days": 20,
+                    "sampling": "joint asset daily returns; identical block indices across Current/A/B/C",
+                    "p10": -0.0913528,
+                    "p50": -0.07048466,
+                    "p90": -0.04823071
+                  }
+                },
+                {
+                  "plan_id": "B",
+                  "distribution": {
+                    "method": "block_bootstrap",
+                    "block_size": 3,
+                    "paths": 2000,
+                    "seed": 20260924,
+                    "horizon_days": 20,
+                    "sampling": "joint asset daily returns; identical block indices across Current/A/B/C",
+                    "p10": -0.08345959,
+                    "p50": -0.06455058,
+                    "p90": -0.04436988
+                  }
+                },
+                {
+                  "plan_id": "C",
+                  "distribution": {
+                    "method": "block_bootstrap",
+                    "block_size": 3,
+                    "paths": 2000,
+                    "seed": 20260924,
+                    "horizon_days": 20,
+                    "sampling": "joint asset daily returns; identical block indices across Current/A/B/C",
+                    "p10": -0.06499043,
+                    "p50": -0.05054828,
+                    "p90": -0.03462233
+                  }
+                }
+              ],
+              "limitation": "Historical replay and fixed-seed scenario simulation are not a prediction of future returns."
+            },
+            "data_as_of": "2026-09-23T08:00:00Z",
+            "warnings": [
+              "Synthetic replay data: seven observations only; not suitable for investment decisions."
+            ],
+            "trace_id": "trace-1f704db52146f8f1"
+          }
+        },
+        "audit_evidence": {
+          "audit_id": "audit-task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "contract_version": "investment-agent.v1",
+          "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5",
+          "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+          "events": [
+            {
+              "event_id": "event-5b03b9dc-71fc-4246-a125-6af5797bd11e",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "session.created",
+              "payload": {
+                "missing_fields": [],
+                "request_id": null
+              },
+              "timestamp": "2026-10-31T16:50:28.795Z"
+            },
+            {
+              "event_id": "event-eccf6efb-0fc7-489c-8df3-69a72be1e054",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "contract.received",
+              "payload": {
+                "contract_version": "investment-agent.v1",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.799Z"
+            },
+            {
+              "event_id": "event-0a775c7d-7aba-4257-98b7-573fda5eb788",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "checkpoint.invalidated",
+              "payload": {
+                "reason": "input changed",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.799Z"
+            },
+            {
+              "event_id": "event-dffe4b61-1236-480e-af4a-ee3995a38c39",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.started",
+              "payload": {
+                "stage": "VALIDATE_INPUT",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.799Z"
+            },
+            {
+              "event_id": "event-5a5f6461-3090-420e-b7d0-c244097ffea6",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.completed",
+              "payload": {
+                "stage": "VALIDATE_INPUT",
+                "attempt": 1,
+                "result_ref": "trace-47a06c109ce838e8",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.802Z"
+            },
+            {
+              "event_id": "event-e5b01932-f30d-44e8-a51c-5998d13d5e88",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.started",
+              "payload": {
+                "stage": "DIAGNOSE",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.802Z"
+            },
+            {
+              "event_id": "event-26a3d628-04e6-4cb7-b82c-8d94734473b3",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.completed",
+              "payload": {
+                "stage": "DIAGNOSE",
+                "attempt": 1,
+                "result_ref": "trace-806989342cd10329",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.803Z"
+            },
+            {
+              "event_id": "event-63d02a5a-8bb9-4fb7-809f-409894b96268",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.started",
+              "payload": {
+                "stage": "GENERATE_CANDIDATES",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.803Z"
+            },
+            {
+              "event_id": "event-557891bd-9c9c-4185-b459-c8699bc21bcd",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.completed",
+              "payload": {
+                "stage": "GENERATE_CANDIDATES",
+                "attempt": 1,
+                "result_ref": "trace-b859fe1a05c6b119",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.804Z"
+            },
+            {
+              "event_id": "event-aad2f1d7-e69d-45b8-822e-552b0e99b06e",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.started",
+              "payload": {
+                "stage": "SIMULATE",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.804Z"
+            },
+            {
+              "event_id": "event-5575b865-2668-4847-8bf6-5e4ecce00603",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.completed",
+              "payload": {
+                "stage": "SIMULATE",
+                "attempt": 1,
+                "result_ref": "trace-1f704db52146f8f1",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.827Z"
+            },
+            {
+              "event_id": "event-4f88c3ab-b5d3-4b20-87ad-f87498f5c796",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.handoff",
+              "payload": {
+                "owner": "Safety/Risk/Eval",
+                "reason": "Risk decision is outside Agent Core and Tools ownership.",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.827Z"
+            },
+            {
+              "event_id": "event-18f6b71f-f0a6-499e-a590-8b403bf7d777",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "contract.accepted",
+              "payload": {
+                "contract_version": "investment-agent.v1",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.827Z"
+            }
+          ]
+        },
+        "risk_handoff": {
+          "contract_version": "investment-agent.v1",
+          "handoff_id": "handoff-task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+          "status": "PENDING_REVIEW",
+          "decision": "REQUIRED",
+          "owner": "Safety/Risk/Eval",
+          "reason": "Risk decision is outside Agent Core and Tools ownership.",
+          "evidence": {
+            "portfolio_snapshot_id": "snapshot-de37f3dab3586cd6",
+            "health_report_id": "health-45f227c09db8cce7",
+            "proposal_ids": [
+              "proposal-a-74ef228729",
+              "proposal-b-53a1666dd2",
+              "proposal-c-45eb627fc2"
+            ],
+            "simulation_id": "simulation-199585da939d4269",
+            "audit_id": "audit-task-bf217584-3e1a-4d92-9523-52a32dd7a971"
+          },
+          "execution_allowed": false
+        }
+      }
+    },
+    {
+      "route": "/api/audit/task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+      "http_status": 200,
+      "payload": {
+        "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+        "task_state": {
+          "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+          "contract_version": "investment-agent.v1",
+          "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5",
+          "intent": "PORTFOLIO_HEALTH_CHECK",
+          "stage": "RISK_CHECK",
+          "status": "HANDOFF_REQUIRED",
+          "risk_profile": {
+            "investment_horizon_days": 365,
+            "max_drawdown": 0.1,
+            "liquidity_need": "medium"
+          },
+          "missing_fields": [],
+          "portfolio_snapshot_id": "snapshot-de37f3dab3586cd6",
+          "risk_profile_id": "risk-profile-89261580-d01d-46bd-9044-0a53f4fbabc8",
+          "tool_result_refs": [
+            "trace-47a06c109ce838e8",
+            "trace-806989342cd10329",
+            "trace-b859fe1a05c6b119",
+            "trace-1f704db52146f8f1"
+          ],
+          "proposed_action_ids": [
+            "proposal-a-74ef228729",
+            "proposal-b-53a1666dd2",
+            "proposal-c-45eb627fc2"
+          ],
+          "risk_decision_id": null,
+          "approval_id": null,
+          "error_state": null,
+          "checkpoint": {
+            "stage": "RISK_CHECK",
+            "completed": [
+              "VALIDATE_INPUT",
+              "DIAGNOSE",
+              "GENERATE_CANDIDATES",
+              "SIMULATE"
+            ],
+            "result_refs": {
+              "VALIDATE_INPUT": "trace-47a06c109ce838e8",
+              "DIAGNOSE": "trace-806989342cd10329",
+              "GENERATE_CANDIDATES": "trace-b859fe1a05c6b119",
+              "SIMULATE": "trace-1f704db52146f8f1"
+            },
+            "resume_token": "resume-926c3b13-dc67-4b81-82db-994e502366ba",
+            "last_tool_result_ref": "trace-1f704db52146f8f1"
+          },
+          "handoff": {
+            "owner": "Safety/Risk/Eval",
+            "reason": "Risk decision is outside Agent Core and Tools ownership."
+          }
+        },
+        "audit_evidence": {
+          "audit_id": "audit-task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "contract_version": "investment-agent.v1",
+          "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5",
+          "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+          "events": [
+            {
+              "event_id": "event-5b03b9dc-71fc-4246-a125-6af5797bd11e",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "session.created",
+              "payload": {
+                "missing_fields": [],
+                "request_id": null
+              },
+              "timestamp": "2026-10-31T16:50:28.795Z"
+            },
+            {
+              "event_id": "event-eccf6efb-0fc7-489c-8df3-69a72be1e054",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "contract.received",
+              "payload": {
+                "contract_version": "investment-agent.v1",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.799Z"
+            },
+            {
+              "event_id": "event-0a775c7d-7aba-4257-98b7-573fda5eb788",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "checkpoint.invalidated",
+              "payload": {
+                "reason": "input changed",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.799Z"
+            },
+            {
+              "event_id": "event-dffe4b61-1236-480e-af4a-ee3995a38c39",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.started",
+              "payload": {
+                "stage": "VALIDATE_INPUT",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.799Z"
+            },
+            {
+              "event_id": "event-5a5f6461-3090-420e-b7d0-c244097ffea6",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.completed",
+              "payload": {
+                "stage": "VALIDATE_INPUT",
+                "attempt": 1,
+                "result_ref": "trace-47a06c109ce838e8",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.802Z"
+            },
+            {
+              "event_id": "event-e5b01932-f30d-44e8-a51c-5998d13d5e88",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.started",
+              "payload": {
+                "stage": "DIAGNOSE",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.802Z"
+            },
+            {
+              "event_id": "event-26a3d628-04e6-4cb7-b82c-8d94734473b3",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.completed",
+              "payload": {
+                "stage": "DIAGNOSE",
+                "attempt": 1,
+                "result_ref": "trace-806989342cd10329",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.803Z"
+            },
+            {
+              "event_id": "event-63d02a5a-8bb9-4fb7-809f-409894b96268",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.started",
+              "payload": {
+                "stage": "GENERATE_CANDIDATES",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.803Z"
+            },
+            {
+              "event_id": "event-557891bd-9c9c-4185-b459-c8699bc21bcd",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.completed",
+              "payload": {
+                "stage": "GENERATE_CANDIDATES",
+                "attempt": 1,
+                "result_ref": "trace-b859fe1a05c6b119",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.804Z"
+            },
+            {
+              "event_id": "event-aad2f1d7-e69d-45b8-822e-552b0e99b06e",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.started",
+              "payload": {
+                "stage": "SIMULATE",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.804Z"
+            },
+            {
+              "event_id": "event-5575b865-2668-4847-8bf6-5e4ecce00603",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.completed",
+              "payload": {
+                "stage": "SIMULATE",
+                "attempt": 1,
+                "result_ref": "trace-1f704db52146f8f1",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.827Z"
+            },
+            {
+              "event_id": "event-4f88c3ab-b5d3-4b20-87ad-f87498f5c796",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "stage.handoff",
+              "payload": {
+                "owner": "Safety/Risk/Eval",
+                "reason": "Risk decision is outside Agent Core and Tools ownership.",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.827Z"
+            },
+            {
+              "event_id": "event-18f6b71f-f0a6-499e-a590-8b403bf7d777",
+              "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "actor": "harness",
+              "event_type": "contract.accepted",
+              "payload": {
+                "contract_version": "investment-agent.v1",
+                "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+              },
+              "timestamp": "2026-10-31T16:50:28.827Z"
+            }
+          ]
+        },
+        "events": [
+          {
+            "event_id": "event-5b03b9dc-71fc-4246-a125-6af5797bd11e",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "session.created",
+            "payload": {
+              "missing_fields": [],
+              "request_id": null
+            },
+            "timestamp": "2026-10-31T16:50:28.795Z"
+          },
+          {
+            "event_id": "event-eccf6efb-0fc7-489c-8df3-69a72be1e054",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "contract.received",
+            "payload": {
+              "contract_version": "investment-agent.v1",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.799Z"
+          },
+          {
+            "event_id": "event-0a775c7d-7aba-4257-98b7-573fda5eb788",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "checkpoint.invalidated",
+            "payload": {
+              "reason": "input changed",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.799Z"
+          },
+          {
+            "event_id": "event-dffe4b61-1236-480e-af4a-ee3995a38c39",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "stage.started",
+            "payload": {
+              "stage": "VALIDATE_INPUT",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.799Z"
+          },
+          {
+            "event_id": "event-5a5f6461-3090-420e-b7d0-c244097ffea6",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "stage.completed",
+            "payload": {
+              "stage": "VALIDATE_INPUT",
+              "attempt": 1,
+              "result_ref": "trace-47a06c109ce838e8",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.802Z"
+          },
+          {
+            "event_id": "event-e5b01932-f30d-44e8-a51c-5998d13d5e88",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "stage.started",
+            "payload": {
+              "stage": "DIAGNOSE",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.802Z"
+          },
+          {
+            "event_id": "event-26a3d628-04e6-4cb7-b82c-8d94734473b3",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "stage.completed",
+            "payload": {
+              "stage": "DIAGNOSE",
+              "attempt": 1,
+              "result_ref": "trace-806989342cd10329",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.803Z"
+          },
+          {
+            "event_id": "event-63d02a5a-8bb9-4fb7-809f-409894b96268",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "stage.started",
+            "payload": {
+              "stage": "GENERATE_CANDIDATES",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.803Z"
+          },
+          {
+            "event_id": "event-557891bd-9c9c-4185-b459-c8699bc21bcd",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "stage.completed",
+            "payload": {
+              "stage": "GENERATE_CANDIDATES",
+              "attempt": 1,
+              "result_ref": "trace-b859fe1a05c6b119",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.804Z"
+          },
+          {
+            "event_id": "event-aad2f1d7-e69d-45b8-822e-552b0e99b06e",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "stage.started",
+            "payload": {
+              "stage": "SIMULATE",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.804Z"
+          },
+          {
+            "event_id": "event-5575b865-2668-4847-8bf6-5e4ecce00603",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "stage.completed",
+            "payload": {
+              "stage": "SIMULATE",
+              "attempt": 1,
+              "result_ref": "trace-1f704db52146f8f1",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.827Z"
+          },
+          {
+            "event_id": "event-4f88c3ab-b5d3-4b20-87ad-f87498f5c796",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "stage.handoff",
+            "payload": {
+              "owner": "Safety/Risk/Eval",
+              "reason": "Risk decision is outside Agent Core and Tools ownership.",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.827Z"
+          },
+          {
+            "event_id": "event-18f6b71f-f0a6-499e-a590-8b403bf7d777",
+            "task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "actor": "harness",
+            "event_type": "contract.accepted",
+            "payload": {
+              "contract_version": "investment-agent.v1",
+              "request_id": "req-p0-health-6f5ea331-9209-4164-9c9b-1da35b2f36e5"
+            },
+            "timestamp": "2026-10-31T16:50:28.827Z"
+          }
+        ]
+      }
+    },
+    {
+      "route": "/api/funding-demo/plan",
+      "http_status": 200,
+      "payload": {
+        "plan_version": "funding-plan-demo.v1",
+        "plan_id": "funding-demo-97d0bbfb-503d-450f-8328-fb08827c2dfd",
+        "revision": 1,
+        "authority": "DEMO_USER_CONFIRMED_NOT_TRUSTED_MEMORY",
+        "synthetic": true,
+        "currency": "CNY",
+        "cash_minor": 1000000,
+        "protected_purposes": [
+          {
+            "purpose_id": "rent",
+            "label": "固定演示房租",
+            "amount_minor": 400000
+          }
+        ],
+        "allocations": [],
+        "revisions": [
+          {
+            "revision": 1,
+            "cash_minor": 1000000,
+            "protected_purposes": [
+              {
+                "purpose_id": "rent",
+                "label": "固定演示房租",
+                "amount_minor": 400000
+              }
+            ],
+            "confirmed_at": "2026-10-31T16:50:28.842Z"
+          }
+        ],
+        "protected_minor": 400000,
+        "allocated_minor": 0,
+        "available_minor": 600000,
+        "deficit_minor": 0,
+        "execution_allowed": false
+      }
+    },
+    {
+      "route": "/api/review",
+      "http_status": 503,
+      "payload": {
+        "review_version": "model-review.v1",
+        "contract_version": "model-review.v1",
+        "error": {
+          "code": "MODEL_NOT_CONFIGURED",
+          "message": "model API key is not configured",
+          "retryable": false,
+          "stage": "CONFIGURATION",
+          "recovery": "Set MODEL_API_KEY or OPENAI_API_KEY on the backend and retry.",
+          "details": null
+        },
+        "workflow": {
+          "workflow_version": "review-workflow.v1",
+          "schema_version": "model-review.v1",
+          "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+          "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+          "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+          "source_task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "data_mode": "SYNTHETIC_REPLAY",
+          "execution_mode": "PAPER",
+          "capability": "REVIEW_ONLY",
+          "portfolio_snapshot_id": null,
+          "risk_profile_version": "risk-profile.v1",
+          "plan_id": null,
+          "plan_hash": null,
+          "policy_version": "risk-policy.v1",
+          "idempotency_key": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+          "request_fingerprint": "308fe39cbb79a3b1540838f132043d151c66499b8de08bc94185a783b9cdf0a4",
+          "memory_consent": false,
+          "memory_write_status": "NOT_REQUESTED",
+          "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+          "reviewed_input": {
+            "schema_version": "model-review.v1",
+            "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+            "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+            "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+            "source_task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+            "source": "ui-demo-p0-20261101.v1",
+            "kind": "bill",
+            "text": "虚构固定账本现金10000元，下月房租预留4000元。我想安排8000元买基金，请核对是否挤占预留。",
+            "context": {
+              "demo_funding_snapshot": {
+                "guard_version": "funding-plan-demo.v1",
+                "plan_id": "funding-demo-97d0bbfb-503d-450f-8328-fb08827c2dfd",
+                "revision": 1,
+                "amount_minor": 800000,
+                "currency": "CNY",
+                "authority": "DEMO_USER_CONFIRMED_NOT_TRUSTED_MEMORY",
+                "cash_minor": 1000000,
+                "protected_purposes": [
+                  {
+                    "purpose_id": "rent",
+                    "label": "固定演示房租",
+                    "amount_minor": 400000
+                  }
+                ],
+                "check": {
+                  "guard_version": "funding-plan-demo.v1",
+                  "plan_id": "funding-demo-97d0bbfb-503d-450f-8328-fb08827c2dfd",
+                  "bound_revision": 1,
+                  "current_revision": 1,
+                  "requested_minor": 800000,
+                  "available_minor": 600000,
+                  "protected_minor": 400000,
+                  "allocated_minor": 0,
+                  "deficit_minor": 0,
+                  "execution_allowed": false,
+                  "status": "BLOCKED",
+                  "code": "FUNDING_CONFLICT",
+                  "shortfall_minor": 200000,
+                  "message": "本次金额会占用已预留或已被其他任务使用的钱。"
+                },
+                "instruction_authority": false
+              }
+            },
+            "action_parameters": {
+              "amount": 8000,
+              "currency": "CNY",
+              "synthetic": true,
+              "funding_plan_id": "funding-demo-97d0bbfb-503d-450f-8328-fb08827c2dfd",
+              "funding_plan_revision": 1
+            },
+            "requested_action": "只读检查虚构资金与支出预留的冲突",
+            "allow_rule_fallback": false,
+            "data_mode": "SYNTHETIC_REPLAY",
+            "execution_mode": "PAPER",
+            "capability": "REVIEW_ONLY",
+            "portfolio_snapshot_id": null,
+            "risk_profile_version": "risk-profile.v1",
+            "plan_id": null,
+            "plan_hash": null,
+            "policy_version": "risk-policy.v1",
+            "idempotency_key": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+            "memory_consent": false,
+            "scenario": "GENERAL_REVIEW",
+            "output_formats": [
+              "json"
+            ]
+          },
+          "status": "MODEL_FAILED",
+          "model": {
+            "status": "FAILED",
+            "response": {
+              "review_version": "model-review.v1",
+              "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+              "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+              "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+              "status": "FAILED",
+              "source": "model",
+              "created_at": "2026-10-31T16:50:28.845Z",
+              "schema_version": "model-review.v1",
+              "input": {
+                "schema_version": "model-review.v1",
+                "kind": "bill",
+                "source": "ui-demo-p0-20261101.v1",
+                "input_sha256": "7557e9d0e03255096b0dd0d266b2500884a870b6381cc32f65392df0de9a7fc1",
+                "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                "source_task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+                "data_mode": "SYNTHETIC_REPLAY",
+                "execution_mode": "PAPER",
+                "capability": "REVIEW_ONLY",
+                "scenario": "GENERAL_REVIEW",
+                "output_formats": [
+                  "json"
+                ],
+                "portfolio_snapshot_id": null,
+                "risk_profile_version": "risk-profile.v1",
+                "plan_id": null,
+                "plan_hash": null,
+                "policy_version": "risk-policy.v1"
+              },
+              "attempt_count": 1,
+              "retry_count": 0,
+              "error": {
+                "code": "MODEL_NOT_CONFIGURED",
+                "message": "model API key is not configured",
+                "retryable": false
+              },
+              "gateway": {
+                "gateway_version": "review-gateway.v1",
+                "status": "BLOCKED",
+                "decision": "MODEL_FAILED",
+                "execution_allowed": false
+              },
+              "audit": {
+                "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                "input_sha256": "7557e9d0e03255096b0dd0d266b2500884a870b6381cc32f65392df0de9a7fc1",
+                "events": [
+                  {
+                    "event_type": "review.received",
+                    "at": "2026-10-31T16:50:28.845Z"
+                  },
+                  {
+                    "event_type": "model.failed",
+                    "at": "2026-10-31T16:50:28.847Z",
+                    "code": "MODEL_NOT_CONFIGURED",
+                    "attempt_count": 1
+                  },
+                  {
+                    "event_type": "gateway.blocked",
+                    "at": "2026-10-31T16:50:28.847Z",
+                    "execution_allowed": false
+                  }
+                ]
+              }
+            }
+          },
+          "proposed_action": null,
+          "risk_handoff": {
+            "contract_version": "model-review.v1",
+            "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+            "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+            "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+            "owner": "Unified Risk",
+            "evidence": {
+              "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+              "model_response_id": null,
+              "proposal_sha256": null
+            },
+            "status": "BLOCKED",
+            "decision": "MODEL_FAILED",
+            "execution_allowed": false,
+            "reason": "模型调用失败，不能交给 Risk 或执行端。"
+          },
+          "risk_decision": null,
+          "approval": {
+            "approval_id": "approval-6d395c3e-075a-4584-b53a-f6d1cc4e5e9a",
+            "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+            "proposal_sha256": null,
+            "required": true,
+            "status": "BLOCKED",
+            "decision": null,
+            "expires_at": null
+          },
+          "execution": {
+            "execution_id": null,
+            "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+            "status": "BLOCKED",
+            "simulation_allowed": false,
+            "execution_allowed": false,
+            "receipt": null
+          },
+          "audit": {
+            "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+            "workflow_version": "review-workflow.v1",
+            "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+            "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+            "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+            "events": [
+              {
+                "event_id": "event-35355991-d150-4506-89a7-59a1f7377525",
+                "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                "actor": "core-agent",
+                "event_type": "task.created",
+                "payload": {
+                  "stage": "MODEL",
+                  "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                  "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                  "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                  "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                  "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                  "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+                  "trace": {
+                    "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                    "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                    "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                    "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                    "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                    "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1"
+                  }
+                },
+                "timestamp": "2026-10-31T16:50:28.845Z"
+              },
+              {
+                "event_id": "event-3b57246c-c497-4e91-a119-61161f534f5e",
+                "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                "actor": "core-agent",
+                "event_type": "model.failed",
+                "payload": {
+                  "code": "MODEL_NOT_CONFIGURED",
+                  "message": "model API key is not configured",
+                  "retryable": false,
+                  "attempt_count": 1,
+                  "retry_count": 0,
+                  "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                  "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                  "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                  "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                  "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                  "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+                  "trace": {
+                    "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                    "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                    "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                    "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                    "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                    "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1"
+                  }
+                },
+                "timestamp": "2026-10-31T16:50:28.847Z"
+              },
+              {
+                "event_id": "event-90097ba1-511e-40aa-99a8-12dd0c1752bc",
+                "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                "actor": "risk-gateway",
+                "event_type": "risk.blocked",
+                "payload": {
+                  "reason": "model_failed",
+                  "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                  "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                  "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                  "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                  "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                  "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+                  "trace": {
+                    "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                    "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                    "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                    "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                    "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                    "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1"
+                  }
+                },
+                "timestamp": "2026-10-31T16:50:28.847Z"
+              },
+              {
+                "event_id": "event-b995545d-56e5-43c5-a0d2-8b707b026f26",
+                "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                "actor": "execution-gateway",
+                "event_type": "execution.blocked",
+                "payload": {
+                  "reason": "model_failed",
+                  "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                  "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                  "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                  "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                  "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                  "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+                  "trace": {
+                    "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                    "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                    "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                    "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                    "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                    "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1"
+                  }
+                },
+                "timestamp": "2026-10-31T16:50:28.847Z"
+              }
+            ]
+          },
+          "error": {
+            "code": "MODEL_NOT_CONFIGURED",
+            "message": "model API key is not configured",
+            "retryable": false
+          }
+        },
+        "error_contract_version": "core-agent-error.v1",
+        "source_contract_version": "model-review.v1",
+        "operation": "MODEL_REVIEW",
+        "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+        "trace": {
+          "contract_version": "model-review.v1",
+          "error_contract_version": "core-agent-error.v1",
+          "source_contract_version": "model-review.v1",
+          "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+          "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+          "session_id": null,
+          "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+          "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+          "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1"
+        }
+      }
+    },
+    {
+      "route": "/api/review/task/review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+      "http_status": 200,
+      "payload": {
+        "workflow_version": "review-workflow.v1",
+        "schema_version": "model-review.v1",
+        "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+        "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+        "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+        "source_task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+        "data_mode": "SYNTHETIC_REPLAY",
+        "execution_mode": "PAPER",
+        "capability": "REVIEW_ONLY",
+        "portfolio_snapshot_id": null,
+        "risk_profile_version": "risk-profile.v1",
+        "plan_id": null,
+        "plan_hash": null,
+        "policy_version": "risk-policy.v1",
+        "idempotency_key": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+        "request_fingerprint": "308fe39cbb79a3b1540838f132043d151c66499b8de08bc94185a783b9cdf0a4",
+        "memory_consent": false,
+        "memory_write_status": "NOT_REQUESTED",
+        "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+        "reviewed_input": {
+          "schema_version": "model-review.v1",
+          "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+          "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+          "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+          "source_task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+          "source": "ui-demo-p0-20261101.v1",
+          "kind": "bill",
+          "text": "虚构固定账本现金10000元，下月房租预留4000元。我想安排8000元买基金，请核对是否挤占预留。",
+          "context": {
+            "demo_funding_snapshot": {
+              "guard_version": "funding-plan-demo.v1",
+              "plan_id": "funding-demo-97d0bbfb-503d-450f-8328-fb08827c2dfd",
+              "revision": 1,
+              "amount_minor": 800000,
+              "currency": "CNY",
+              "authority": "DEMO_USER_CONFIRMED_NOT_TRUSTED_MEMORY",
+              "cash_minor": 1000000,
+              "protected_purposes": [
+                {
+                  "purpose_id": "rent",
+                  "label": "固定演示房租",
+                  "amount_minor": 400000
+                }
+              ],
+              "check": {
+                "guard_version": "funding-plan-demo.v1",
+                "plan_id": "funding-demo-97d0bbfb-503d-450f-8328-fb08827c2dfd",
+                "bound_revision": 1,
+                "current_revision": 1,
+                "requested_minor": 800000,
+                "available_minor": 600000,
+                "protected_minor": 400000,
+                "allocated_minor": 0,
+                "deficit_minor": 0,
+                "execution_allowed": false,
+                "status": "BLOCKED",
+                "code": "FUNDING_CONFLICT",
+                "shortfall_minor": 200000,
+                "message": "本次金额会占用已预留或已被其他任务使用的钱。"
+              },
+              "instruction_authority": false
+            }
+          },
+          "action_parameters": {
+            "amount": 8000,
+            "currency": "CNY",
+            "synthetic": true,
+            "funding_plan_id": "funding-demo-97d0bbfb-503d-450f-8328-fb08827c2dfd",
+            "funding_plan_revision": 1
+          },
+          "requested_action": "只读检查虚构资金与支出预留的冲突",
+          "allow_rule_fallback": false,
+          "data_mode": "SYNTHETIC_REPLAY",
+          "execution_mode": "PAPER",
+          "capability": "REVIEW_ONLY",
+          "portfolio_snapshot_id": null,
+          "risk_profile_version": "risk-profile.v1",
+          "plan_id": null,
+          "plan_hash": null,
+          "policy_version": "risk-policy.v1",
+          "idempotency_key": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+          "memory_consent": false,
+          "scenario": "GENERAL_REVIEW",
+          "output_formats": [
+            "json"
+          ]
+        },
+        "status": "MODEL_FAILED",
+        "model": {
+          "status": "FAILED",
+          "response": {
+            "review_version": "model-review.v1",
+            "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+            "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+            "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+            "status": "FAILED",
+            "source": "model",
+            "created_at": "2026-10-31T16:50:28.845Z",
+            "schema_version": "model-review.v1",
+            "input": {
+              "schema_version": "model-review.v1",
+              "kind": "bill",
+              "source": "ui-demo-p0-20261101.v1",
+              "input_sha256": "7557e9d0e03255096b0dd0d266b2500884a870b6381cc32f65392df0de9a7fc1",
+              "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+              "source_task_id": "task-bf217584-3e1a-4d92-9523-52a32dd7a971",
+              "data_mode": "SYNTHETIC_REPLAY",
+              "execution_mode": "PAPER",
+              "capability": "REVIEW_ONLY",
+              "scenario": "GENERAL_REVIEW",
+              "output_formats": [
+                "json"
+              ],
+              "portfolio_snapshot_id": null,
+              "risk_profile_version": "risk-profile.v1",
+              "plan_id": null,
+              "plan_hash": null,
+              "policy_version": "risk-policy.v1"
+            },
+            "attempt_count": 1,
+            "retry_count": 0,
+            "error": {
+              "code": "MODEL_NOT_CONFIGURED",
+              "message": "model API key is not configured",
+              "retryable": false
+            },
+            "gateway": {
+              "gateway_version": "review-gateway.v1",
+              "status": "BLOCKED",
+              "decision": "MODEL_FAILED",
+              "execution_allowed": false
+            },
+            "audit": {
+              "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+              "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+              "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+              "input_sha256": "7557e9d0e03255096b0dd0d266b2500884a870b6381cc32f65392df0de9a7fc1",
+              "events": [
+                {
+                  "event_type": "review.received",
+                  "at": "2026-10-31T16:50:28.845Z"
+                },
+                {
+                  "event_type": "model.failed",
+                  "at": "2026-10-31T16:50:28.847Z",
+                  "code": "MODEL_NOT_CONFIGURED",
+                  "attempt_count": 1
+                },
+                {
+                  "event_type": "gateway.blocked",
+                  "at": "2026-10-31T16:50:28.847Z",
+                  "execution_allowed": false
+                }
+              ]
+            }
+          }
+        },
+        "proposed_action": null,
+        "risk_handoff": {
+          "contract_version": "model-review.v1",
+          "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+          "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+          "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+          "owner": "Unified Risk",
+          "evidence": {
+            "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+            "model_response_id": null,
+            "proposal_sha256": null
+          },
+          "status": "BLOCKED",
+          "decision": "MODEL_FAILED",
+          "execution_allowed": false,
+          "reason": "模型调用失败，不能交给 Risk 或执行端。"
+        },
+        "risk_decision": null,
+        "approval": {
+          "approval_id": "approval-6d395c3e-075a-4584-b53a-f6d1cc4e5e9a",
+          "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+          "proposal_sha256": null,
+          "required": true,
+          "status": "BLOCKED",
+          "decision": null,
+          "expires_at": null
+        },
+        "execution": {
+          "execution_id": null,
+          "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+          "status": "BLOCKED",
+          "simulation_allowed": false,
+          "execution_allowed": false,
+          "receipt": null
+        },
+        "audit": {
+          "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+          "workflow_version": "review-workflow.v1",
+          "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+          "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+          "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+          "events": [
+            {
+              "event_id": "event-35355991-d150-4506-89a7-59a1f7377525",
+              "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+              "actor": "core-agent",
+              "event_type": "task.created",
+              "payload": {
+                "stage": "MODEL",
+                "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+                "trace": {
+                  "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                  "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                  "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                  "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                  "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                  "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1"
+                }
+              },
+              "timestamp": "2026-10-31T16:50:28.845Z"
+            },
+            {
+              "event_id": "event-3b57246c-c497-4e91-a119-61161f534f5e",
+              "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+              "actor": "core-agent",
+              "event_type": "model.failed",
+              "payload": {
+                "code": "MODEL_NOT_CONFIGURED",
+                "message": "model API key is not configured",
+                "retryable": false,
+                "attempt_count": 1,
+                "retry_count": 0,
+                "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+                "trace": {
+                  "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                  "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                  "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                  "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                  "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                  "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1"
+                }
+              },
+              "timestamp": "2026-10-31T16:50:28.847Z"
+            },
+            {
+              "event_id": "event-90097ba1-511e-40aa-99a8-12dd0c1752bc",
+              "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+              "actor": "risk-gateway",
+              "event_type": "risk.blocked",
+              "payload": {
+                "reason": "model_failed",
+                "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+                "trace": {
+                  "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                  "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                  "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                  "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                  "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                  "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1"
+                }
+              },
+              "timestamp": "2026-10-31T16:50:28.847Z"
+            },
+            {
+              "event_id": "event-b995545d-56e5-43c5-a0d2-8b707b026f26",
+              "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+              "actor": "execution-gateway",
+              "event_type": "execution.blocked",
+              "payload": {
+                "reason": "model_failed",
+                "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1",
+                "trace": {
+                  "request_id": "req-p0-review-685e59ad-52b3-4f49-8704-463e6ad8dee8",
+                  "task_id": "review-task-a5a88e43-8a1a-47df-9be5-6419a0a58fba",
+                  "session_id": "session-3048c6b4-4869-4c41-9bab-6156d798b781",
+                  "run_id": "review-ef4039a4-76ff-433e-8df3-c29b122ffd81",
+                  "audit_id": "audit-1c967046-f5b1-42dc-a08b-7ee120fdf230",
+                  "handoff_id": "handoff-0b97f969-fe01-4f20-902d-8c40d8b1b2b1"
+                }
+              },
+              "timestamp": "2026-10-31T16:50:28.847Z"
+            }
+          ]
+        },
+        "error": {
+          "code": "MODEL_NOT_CONFIGURED",
+          "message": "model API key is not configured",
+          "retryable": false
+        }
+      }
+    },
+    {
+      "route": "/api/funding-demo/plan/funding-demo-97d0bbfb-503d-450f-8328-fb08827c2dfd",
+      "http_status": 200,
+      "payload": {
+        "plan_version": "funding-plan-demo.v1",
+        "plan_id": "funding-demo-97d0bbfb-503d-450f-8328-fb08827c2dfd",
+        "revision": 1,
+        "authority": "DEMO_USER_CONFIRMED_NOT_TRUSTED_MEMORY",
+        "synthetic": true,
+        "currency": "CNY",
+        "cash_minor": 1000000,
+        "protected_purposes": [
+          {
+            "purpose_id": "rent",
+            "label": "固定演示房租",
+            "amount_minor": 400000
+          }
+        ],
+        "allocations": [],
+        "revisions": [
+          {
+            "revision": 1,
+            "cash_minor": 1000000,
+            "protected_purposes": [
+              {
+                "purpose_id": "rent",
+                "label": "固定演示房租",
+                "amount_minor": 400000
+              }
+            ],
+            "confirmed_at": "2026-10-31T16:50:28.842Z"
+          }
+        ],
+        "protected_minor": 400000,
+        "allocated_minor": 0,
+        "available_minor": 600000,
+        "deficit_minor": 0,
+        "execution_allowed": false
+      }
+    }
+  ],
+  "result": "PASS_EXPECTED_BLOCK",
+  "full_demo": "NO-GO",
+  "boundary": "Health calculation and funding arithmetic are real local APIs. Model is unconfigured; no Risk decision,本人审批 or SIMULATED receipt was produced."
+}
