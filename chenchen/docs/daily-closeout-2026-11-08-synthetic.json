@@ -65,12 +65,12 @@
     "trace": {
       "contract_version": "investment-agent.v1",
       "request_id": "req-daily-20261108-health",
-      "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "session_id": "session-12327708-6f9e-4123-a4e4-85e459a78c9c"
+      "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "session_id": "session-f44323d7-6856-4f9e-966a-09b692da2c80"
     },
     "task_state": {
-      "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "session_id": "session-12327708-6f9e-4123-a4e4-85e459a78c9c",
+      "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "session_id": "session-f44323d7-6856-4f9e-966a-09b692da2c80",
       "contract_version": "investment-agent.v1",
       "request_id": "req-daily-20261108-health",
       "intent": "PORTFOLIO_HEALTH_CHECK",
@@ -83,7 +83,7 @@
       },
       "missing_fields": [],
       "portfolio_snapshot_id": "snapshot-de37f3dab3586cd6",
-      "risk_profile_id": "risk-profile-76754a71-d349-4552-9310-e406c39e09a5",
+      "risk_profile_id": "risk-profile-330a625b-bd7c-49d8-98ba-e0d9fd47d420",
       "tool_result_refs": [
         "trace-47a06c109ce838e8",
         "trace-806989342cd10329",
@@ -112,7 +112,7 @@
           "GENERATE_CANDIDATES": "trace-b859fe1a05c6b119",
           "SIMULATE": "trace-1f704db52146f8f1"
         },
-        "resume_token": "resume-e5897260-0c35-4e1b-8fd9-91e95f42121b",
+        "resume_token": "resume-4dd11db6-a140-44d9-bf9f-516c9b43e847",
         "last_tool_result_ref": "trace-1f704db52146f8f1"
       },
       "handoff": {
@@ -1374,59 +1374,59 @@
       }
     },
     "audit_evidence": {
-      "audit_id": "audit-task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+      "audit_id": "audit-task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
       "contract_version": "investment-agent.v1",
       "request_id": "req-daily-20261108-health",
-      "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "session_id": "session-12327708-6f9e-4123-a4e4-85e459a78c9c",
+      "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "session_id": "session-f44323d7-6856-4f9e-966a-09b692da2c80",
       "events": [
         {
-          "event_id": "event-5b9515d8-c43d-42bd-83dc-d33788062a75",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-86bd6223-46e3-4787-9eee-c5f8322b880a",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "session.created",
           "payload": {
             "missing_fields": [],
             "request_id": null
           },
-          "timestamp": "2026-11-09T14:59:07.829Z"
+          "timestamp": "2026-11-08T14:52:41.202Z"
         },
         {
-          "event_id": "event-2127d118-ba67-4940-bc0b-de24cf59a569",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-42957d5c-1254-48da-9d23-ed68941ddf7d",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "contract.received",
           "payload": {
             "contract_version": "investment-agent.v1",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.831Z"
+          "timestamp": "2026-11-08T14:52:41.203Z"
         },
         {
-          "event_id": "event-a77e41aa-0be5-454a-89fb-b548d7ecf6a1",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-2807b067-73f7-4d78-8576-6f30aff274da",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "checkpoint.invalidated",
           "payload": {
             "reason": "input changed",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.832Z"
+          "timestamp": "2026-11-08T14:52:41.203Z"
         },
         {
-          "event_id": "event-af1e05c7-12f3-4453-84e6-c23360a70394",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-392f8665-332e-4f57-90c8-f9ded5ab92b6",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.started",
           "payload": {
             "stage": "VALIDATE_INPUT",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.832Z"
+          "timestamp": "2026-11-08T14:52:41.204Z"
         },
         {
-          "event_id": "event-bacd91f9-53b9-4f29-a2d6-6514eb8d2cf3",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-b01916e4-480e-4908-8654-9255a247456a",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.completed",
           "payload": {
@@ -1435,22 +1435,22 @@
             "result_ref": "trace-47a06c109ce838e8",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.833Z"
+          "timestamp": "2026-11-08T14:52:41.205Z"
         },
         {
-          "event_id": "event-460f79c6-9d35-4029-9f3d-8119f8cd1b74",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-1ca28bb4-2e58-4773-bc17-501f7b256e80",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.started",
           "payload": {
             "stage": "DIAGNOSE",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.833Z"
+          "timestamp": "2026-11-08T14:52:41.205Z"
         },
         {
-          "event_id": "event-267aaed4-3f8c-4a7a-ade0-92e450ed16ae",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-2ac615b6-8768-45ec-86eb-e5c82efd4237",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.completed",
           "payload": {
@@ -1459,22 +1459,22 @@
             "result_ref": "trace-806989342cd10329",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.835Z"
+          "timestamp": "2026-11-08T14:52:41.207Z"
         },
         {
-          "event_id": "event-aeb45658-4bc9-4605-b96e-8b6865d76144",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-742983a1-91c0-4ad1-94a8-5fd987624cc7",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.started",
           "payload": {
             "stage": "GENERATE_CANDIDATES",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.835Z"
+          "timestamp": "2026-11-08T14:52:41.207Z"
         },
         {
-          "event_id": "event-b273f530-4f11-40bd-b44d-2d575f34adb8",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-f5f0c88e-6e24-4c0c-b647-c8ffcef70485",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.completed",
           "payload": {
@@ -1483,22 +1483,22 @@
             "result_ref": "trace-b859fe1a05c6b119",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.838Z"
+          "timestamp": "2026-11-08T14:52:41.209Z"
         },
         {
-          "event_id": "event-f13beb7a-e3b8-41e4-904f-bdcdaa98bcb4",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-8b2a2c81-c52b-4658-9f25-19c4b10c895f",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.started",
           "payload": {
             "stage": "SIMULATE",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.838Z"
+          "timestamp": "2026-11-08T14:52:41.209Z"
         },
         {
-          "event_id": "event-43792374-9287-4478-8410-6e3345fb1bf2",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-5ce9f046-8bd4-4d76-ad9b-bfbee666806b",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.completed",
           "payload": {
@@ -1507,11 +1507,11 @@
             "result_ref": "trace-1f704db52146f8f1",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.866Z"
+          "timestamp": "2026-11-08T14:52:41.227Z"
         },
         {
-          "event_id": "event-bcfa4eb5-d65f-4401-aec7-85205f1ff2c1",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-1c4e4fdc-2f49-428d-8b81-398c76bd45f8",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.handoff",
           "payload": {
@@ -1519,26 +1519,26 @@
             "reason": "Risk decision is outside Agent Core and Tools ownership.",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.866Z"
+          "timestamp": "2026-11-08T14:52:41.227Z"
         },
         {
-          "event_id": "event-475a410e-90d5-480d-8bf7-8217a1444e31",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-88352ad1-ff16-4c71-8b08-859971e49fdd",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "contract.accepted",
           "payload": {
             "contract_version": "investment-agent.v1",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.867Z"
+          "timestamp": "2026-11-08T14:52:41.227Z"
         }
       ]
     },
     "risk_handoff": {
       "contract_version": "investment-agent.v1",
-      "handoff_id": "handoff-task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "session_id": "session-12327708-6f9e-4123-a4e4-85e459a78c9c",
+      "handoff_id": "handoff-task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "session_id": "session-f44323d7-6856-4f9e-966a-09b692da2c80",
       "status": "PENDING_REVIEW",
       "decision": "REQUIRED",
       "owner": "Safety/Risk/Eval",
@@ -1552,7 +1552,7 @@
           "proposal-c-45eb627fc2"
         ],
         "simulation_id": "simulation-199585da939d4269",
-        "audit_id": "audit-task-c9051978-a015-45c8-b2f9-d816b9aadf4f"
+        "audit_id": "audit-task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11"
       },
       "execution_allowed": false
     }
@@ -1565,8 +1565,8 @@
       "actor": "agent",
       "environment": "demo",
       "data_mode": "SYNTHETIC_REPLAY",
-      "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "session_id": "session-12327708-6f9e-4123-a4e4-85e459a78c9c"
+      "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "session_id": "session-f44323d7-6856-4f9e-966a-09b692da2c80"
     },
     "input": {
       "risk_profile": {
@@ -1623,12 +1623,12 @@
     "trace": {
       "contract_version": "investment-agent.v1",
       "request_id": "req-daily-20261108-reuse",
-      "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "session_id": "session-12327708-6f9e-4123-a4e4-85e459a78c9c"
+      "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "session_id": "session-f44323d7-6856-4f9e-966a-09b692da2c80"
     },
     "task_state": {
-      "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "session_id": "session-12327708-6f9e-4123-a4e4-85e459a78c9c",
+      "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "session_id": "session-f44323d7-6856-4f9e-966a-09b692da2c80",
       "contract_version": "investment-agent.v1",
       "request_id": "req-daily-20261108-reuse",
       "intent": "PORTFOLIO_HEALTH_CHECK",
@@ -1641,7 +1641,7 @@
       },
       "missing_fields": [],
       "portfolio_snapshot_id": "snapshot-de37f3dab3586cd6",
-      "risk_profile_id": "risk-profile-76754a71-d349-4552-9310-e406c39e09a5",
+      "risk_profile_id": "risk-profile-330a625b-bd7c-49d8-98ba-e0d9fd47d420",
       "tool_result_refs": [
         "trace-47a06c109ce838e8",
         "trace-806989342cd10329",
@@ -1670,7 +1670,7 @@
           "GENERATE_CANDIDATES": "trace-b859fe1a05c6b119",
           "SIMULATE": "trace-1f704db52146f8f1"
         },
-        "resume_token": "resume-e5897260-0c35-4e1b-8fd9-91e95f42121b",
+        "resume_token": "resume-4dd11db6-a140-44d9-bf9f-516c9b43e847",
         "last_tool_result_ref": "trace-1f704db52146f8f1"
       },
       "handoff": {
@@ -2932,59 +2932,59 @@
       }
     },
     "audit_evidence": {
-      "audit_id": "audit-task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+      "audit_id": "audit-task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
       "contract_version": "investment-agent.v1",
       "request_id": "req-daily-20261108-reuse",
-      "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "session_id": "session-12327708-6f9e-4123-a4e4-85e459a78c9c",
+      "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "session_id": "session-f44323d7-6856-4f9e-966a-09b692da2c80",
       "events": [
         {
-          "event_id": "event-5b9515d8-c43d-42bd-83dc-d33788062a75",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-86bd6223-46e3-4787-9eee-c5f8322b880a",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "session.created",
           "payload": {
             "missing_fields": [],
             "request_id": null
           },
-          "timestamp": "2026-11-09T14:59:07.829Z"
+          "timestamp": "2026-11-08T14:52:41.202Z"
         },
         {
-          "event_id": "event-2127d118-ba67-4940-bc0b-de24cf59a569",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-42957d5c-1254-48da-9d23-ed68941ddf7d",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "contract.received",
           "payload": {
             "contract_version": "investment-agent.v1",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.831Z"
+          "timestamp": "2026-11-08T14:52:41.203Z"
         },
         {
-          "event_id": "event-a77e41aa-0be5-454a-89fb-b548d7ecf6a1",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-2807b067-73f7-4d78-8576-6f30aff274da",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "checkpoint.invalidated",
           "payload": {
             "reason": "input changed",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.832Z"
+          "timestamp": "2026-11-08T14:52:41.203Z"
         },
         {
-          "event_id": "event-af1e05c7-12f3-4453-84e6-c23360a70394",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-392f8665-332e-4f57-90c8-f9ded5ab92b6",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.started",
           "payload": {
             "stage": "VALIDATE_INPUT",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.832Z"
+          "timestamp": "2026-11-08T14:52:41.204Z"
         },
         {
-          "event_id": "event-bacd91f9-53b9-4f29-a2d6-6514eb8d2cf3",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-b01916e4-480e-4908-8654-9255a247456a",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.completed",
           "payload": {
@@ -2993,22 +2993,22 @@
             "result_ref": "trace-47a06c109ce838e8",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.833Z"
+          "timestamp": "2026-11-08T14:52:41.205Z"
         },
         {
-          "event_id": "event-460f79c6-9d35-4029-9f3d-8119f8cd1b74",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-1ca28bb4-2e58-4773-bc17-501f7b256e80",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.started",
           "payload": {
             "stage": "DIAGNOSE",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.833Z"
+          "timestamp": "2026-11-08T14:52:41.205Z"
         },
         {
-          "event_id": "event-267aaed4-3f8c-4a7a-ade0-92e450ed16ae",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-2ac615b6-8768-45ec-86eb-e5c82efd4237",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.completed",
           "payload": {
@@ -3017,22 +3017,22 @@
             "result_ref": "trace-806989342cd10329",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.835Z"
+          "timestamp": "2026-11-08T14:52:41.207Z"
         },
         {
-          "event_id": "event-aeb45658-4bc9-4605-b96e-8b6865d76144",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-742983a1-91c0-4ad1-94a8-5fd987624cc7",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.started",
           "payload": {
             "stage": "GENERATE_CANDIDATES",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.835Z"
+          "timestamp": "2026-11-08T14:52:41.207Z"
         },
         {
-          "event_id": "event-b273f530-4f11-40bd-b44d-2d575f34adb8",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-f5f0c88e-6e24-4c0c-b647-c8ffcef70485",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.completed",
           "payload": {
@@ -3041,22 +3041,22 @@
             "result_ref": "trace-b859fe1a05c6b119",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.838Z"
+          "timestamp": "2026-11-08T14:52:41.209Z"
         },
         {
-          "event_id": "event-f13beb7a-e3b8-41e4-904f-bdcdaa98bcb4",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-8b2a2c81-c52b-4658-9f25-19c4b10c895f",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.started",
           "payload": {
             "stage": "SIMULATE",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.838Z"
+          "timestamp": "2026-11-08T14:52:41.209Z"
         },
         {
-          "event_id": "event-43792374-9287-4478-8410-6e3345fb1bf2",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-5ce9f046-8bd4-4d76-ad9b-bfbee666806b",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.completed",
           "payload": {
@@ -3065,11 +3065,11 @@
             "result_ref": "trace-1f704db52146f8f1",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.866Z"
+          "timestamp": "2026-11-08T14:52:41.227Z"
         },
         {
-          "event_id": "event-bcfa4eb5-d65f-4401-aec7-85205f1ff2c1",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-1c4e4fdc-2f49-428d-8b81-398c76bd45f8",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "stage.handoff",
           "payload": {
@@ -3077,48 +3077,48 @@
             "reason": "Risk decision is outside Agent Core and Tools ownership.",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.866Z"
+          "timestamp": "2026-11-08T14:52:41.227Z"
         },
         {
-          "event_id": "event-475a410e-90d5-480d-8bf7-8217a1444e31",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-88352ad1-ff16-4c71-8b08-859971e49fdd",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "contract.accepted",
           "payload": {
             "contract_version": "investment-agent.v1",
             "request_id": "req-daily-20261108-health"
           },
-          "timestamp": "2026-11-09T14:59:07.867Z"
+          "timestamp": "2026-11-08T14:52:41.227Z"
         },
         {
-          "event_id": "event-170911a5-a6ec-449a-acd6-9e637f896825",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-80098c9a-2f2a-443f-aaae-916cec2b4be7",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "contract.received",
           "payload": {
             "contract_version": "investment-agent.v1",
             "request_id": "req-daily-20261108-reuse"
           },
-          "timestamp": "2026-11-09T14:59:07.868Z"
+          "timestamp": "2026-11-08T14:52:41.228Z"
         },
         {
-          "event_id": "event-360769a5-ec36-419f-a66a-3a06c1789821",
-          "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
+          "event_id": "event-970fd962-fb51-4cc0-878b-183e347a021a",
+          "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
           "actor": "harness",
           "event_type": "contract.accepted",
           "payload": {
             "contract_version": "investment-agent.v1",
             "request_id": "req-daily-20261108-reuse"
           },
-          "timestamp": "2026-11-09T14:59:07.869Z"
+          "timestamp": "2026-11-08T14:52:41.228Z"
         }
       ]
     },
     "risk_handoff": {
       "contract_version": "investment-agent.v1",
-      "handoff_id": "handoff-task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "task_id": "task-c9051978-a015-45c8-b2f9-d816b9aadf4f",
-      "session_id": "session-12327708-6f9e-4123-a4e4-85e459a78c9c",
+      "handoff_id": "handoff-task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "task_id": "task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11",
+      "session_id": "session-f44323d7-6856-4f9e-966a-09b692da2c80",
       "status": "PENDING_REVIEW",
       "decision": "REQUIRED",
       "owner": "Safety/Risk/Eval",
@@ -3132,7 +3132,7 @@
           "proposal-c-45eb627fc2"
         ],
         "simulation_id": "simulation-199585da939d4269",
-        "audit_id": "audit-task-c9051978-a015-45c8-b2f9-d816b9aadf4f"
+        "audit_id": "audit-task-92efeb51-3f88-45f2-86c0-8c3f30dc4d11"
       },
       "execution_allowed": false
     }
@@ -3146,10 +3146,10 @@
       "error_contract_version": "core-agent-error.v1",
       "source_contract_version": "investment-agent.v1",
       "request_id": "req-daily-20261108-failure",
-      "task_id": "task-47c4ee21-46ff-4b5b-a1fd-851cca867a2e",
-      "session_id": "session-d1cfbfcf-c3b7-4e53-afb8-040039be1ca5",
+      "task_id": "task-ae602c33-db4c-4905-a41d-12a4fc899010",
+      "session_id": "session-162419f3-0d57-4d32-ae3b-66ad7a0d5d83",
       "run_id": null,
-      "audit_id": "audit-task-47c4ee21-46ff-4b5b-a1fd-851cca867a2e",
+      "audit_id": "audit-task-ae602c33-db4c-4905-a41d-12a4fc899010",
       "handoff_id": null
     },
     "error": {
