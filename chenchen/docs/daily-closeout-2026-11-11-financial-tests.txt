@@ -1,0 +1,12 @@
+✔ market brief fixture validates and flags abnormal moves without inventing attribution (2.4261ms)
+✔ Core Agent carries market context to Risk while preserving Quant outputs (50.5982ms)
+✔ duplicate market observations stop at the Core Agent input boundary (0.9433ms)
+✔ 2026-10-09 market brief replays with source conflict evidence and no Quant drift (41.4608ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 204.8045
