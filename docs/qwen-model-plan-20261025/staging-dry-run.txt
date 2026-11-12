@@ -1,0 +1,24 @@
+
+ ⛅️ wrangler 4.151.3
+────────────────────
+✨ Read 3 files from the assets directory <WORKSPACE>\chenchen\integration\public-chat\public
+Total Upload: 216.77 KiB / gzip: 56.95 KiB
+Your Worker has access to the following bindings:
+Binding                                                                          Resource
+env.CHAT_SESSIONS (ChatSession)                                                  Durable Object
+env.CHAT_GATE (ChatGate)                                                         Durable Object
+env.AMOUNT_RISK (personal-ai-fund-chat-risk-staging)                             Worker
+env.AI                                                                           AI
+env.ASSETS                                                                       Assets
+env.PUBLIC_ORIGIN ("https://personal-ai-fund-chat-staging...")                   Environment Variable
+env.MODEL_ENABLED ("true")                                                       Environment Variable
+env.MODEL_NAME ("@cf/meta/llama-3.3-70b-instruct-fp8-f...")                      Environment Variable
+env.LLM_GATEWAY_MODE ("cloudflare")                                              Environment Variable
+env.LLM_PAID_PROVIDER_APPROVED ("false")                                         Environment Variable
+env.DEMO_START_AT ("2026-10-24T00:00:00+08:00")                                  Environment Variable
+env.DEMO_END_AT ("2026-11-09T00:00:00+08:00")                                    Environment Variable
+env.DEMO_BUDGET_CENTS ("100")                                                    Environment Variable
+env.DAILY_BUDGET_CENTS ("50")                                                    Environment Variable
+env.RELEASE_ID ("staging-dynamic-budget-20261024-llm-v1")                        Environment Variable
+
+--dry-run: exiting now.

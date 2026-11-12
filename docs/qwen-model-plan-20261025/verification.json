@@ -1,0 +1,48 @@
+{
+  "date_beijing": "2026-10-25",
+  "mode": "LOCAL_ONLY_TEST_DOUBLES_NOT_LIVE",
+  "repository": "https://github.com/realchenchenluo/agent",
+  "branch": "codex/team-api-handoff-20261024",
+  "parent_commit": "44dd836ebd5c7778c2d5e3bd32b925f2a40e2aa7",
+  "remote_main_observed_before_delivery": "00d31a0720b5ced70ec896df22236c29de62dbd8",
+  "remote_main_changes_merged": false,
+  "candidate": {
+    "provider": "bailian",
+    "model": "qwen3.8-flash",
+    "access_region": "cn-beijing",
+    "actual_workspace_host": null,
+    "enable_thinking": false,
+    "secret_name_proposed_not_created": "LLM_A_API_KEY",
+    "balance_verified": false,
+    "price_currency": "CNY",
+    "input_per_million": 0.8,
+    "output_per_million": 2.7,
+    "price_checked_date": "2026-10-25",
+    "price_source": "https://help.aliyun.com/zh/model-studio/model-pricing",
+    "backup_configured": false
+  },
+  "authorization": {
+    "paid_test": "DECLINED_LOCAL_ONLY",
+    "production_deploy": "NOT_APPROVED",
+    "production_budget_increase": "NOT_APPROVED"
+  },
+  "evidence": {
+    "qwen_checks": {"tests": 20, "pass": 20, "fail": 0, "skip": 0, "log": "qwen-tests.txt"},
+    "full_node_checks": {"tests": 399, "pass": 398, "fail": 0, "skip": 1, "log": "full-node-tests.txt"},
+    "skip_reason": "Private team Risk fixture is not part of this handoff package",
+    "build": {"status": "PASS", "static_files": 3},
+    "wrangler_dry_run": {"status": "PASS", "version": "4.151.3", "upload_kib": 216.77, "gzip_kib": 56.95, "deployed": false, "log": "staging-dry-run.txt"},
+    "local_workerd": {"status": "PASS", "model": "TEST_DOUBLE_NOT_LIVE", "receipts": 8, "log": "local-runtime.json"},
+    "synthetic_holdings_yuan": [60000, 20000, 20000],
+    "deterministic_total_yuan": 100000,
+    "deterministic_weights_pct": [60, 20, 20],
+    "risk_block_bad_signature_unavailable_all_stop": true,
+    "duplicate_does_not_repeat_model_or_save": true
+  },
+  "real_model_calls": 0,
+  "paid_api_calls": 0,
+  "staging_deployed": false,
+  "production_changed": false,
+  "ledger_reset": false,
+  "real_provider_acceptance": "NOT_RUN"
+}
