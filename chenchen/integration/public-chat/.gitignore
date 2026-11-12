@@ -1,0 +1,6 @@
+.dev.vars
+.dev.vars.*
+.secrets*
+public/
+.wrangler/
+build-manifest.json
