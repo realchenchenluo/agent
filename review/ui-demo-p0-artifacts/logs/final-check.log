@@ -1,0 +1,4 @@
+git diff --check baseline..candidate: PASS
+git diff --cached --check: PASS
+git apply --check review/ui-demo-p0-standalone-assets.patch: PASS (not applied)
+Raw CRLF and whitespace-only TAP case names are preserved with scoped attributes.
