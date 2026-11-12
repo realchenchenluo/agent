@@ -1,0 +1,307 @@
+{
+  "contract_version": "mot.v1",
+  "data_mode": "SYNTHETIC_ONLY",
+  "transport": "isolated local Node HTTP",
+  "requests": [
+    {
+      "method": "GET",
+      "route": "/api/mot/overview",
+      "request": null,
+      "status": 200,
+      "response": {
+        "schema_version": "mot.v1",
+        "owner_id": "mot-local-demo",
+        "revision": 0,
+        "as_of": null,
+        "evaluated_at": "2026-11-01T09:35:51.051Z",
+        "stores": 0,
+        "terminals": 0,
+        "accounts": 0,
+        "total_verified_minor": null,
+        "pool_account_ids": [],
+        "pool_balance_minor": null,
+        "reserved_minor": 0,
+        "available_minor": null,
+        "pending_settlement_minor": 0,
+        "balance_fresh": false,
+        "execution_allowed": false,
+        "mode": "SIMULATION_ONLY"
+      }
+    },
+    {
+      "method": "POST",
+      "route": "/api/mot/demo/ingest",
+      "request": {
+        "idempotency_key": "evidence-demo-v1"
+      },
+      "status": 200,
+      "response": {
+        "imported": 8,
+        "duplicates": 0,
+        "revision": 1,
+        "replayed": false
+      }
+    },
+    {
+      "method": "POST",
+      "route": "/api/mot/check",
+      "request": {
+        "idempotency_key": "evidence-check-v1"
+      },
+      "status": 200,
+      "response": {
+        "check_id": "mot-check-8b3509ac-cd78-4ddb-901a-2b73e3df985d",
+        "owner_id": "mot-local-demo",
+        "trigger": "manual",
+        "at": "2026-11-01T09:35:51.073Z",
+        "findings": 2,
+        "tasks_created": [
+          "mot-task-75c423c4-3bb1-4212-b94e-c31f7f8a1ccb",
+          "mot-task-a350c542-932c-4602-ad93-3284aad052b1"
+        ],
+        "new_receipts": 3,
+        "new_payments": 1,
+        "ledger_revision": 2,
+        "replayed": false
+      }
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/overview",
+      "request": null,
+      "status": 200,
+      "response": {
+        "schema_version": "mot.v1",
+        "owner_id": "mot-local-demo",
+        "revision": 2,
+        "as_of": "2026-11-01T09:35:51.064Z",
+        "evaluated_at": "2026-11-01T09:35:51.081Z",
+        "stores": 2,
+        "terminals": 5,
+        "accounts": 3,
+        "total_verified_minor": 1500000,
+        "pool_account_ids": [
+          "bank-main"
+        ],
+        "pool_balance_minor": 800000,
+        "reserved_minor": 0,
+        "available_minor": 800000,
+        "pending_settlement_minor": 55000,
+        "balance_fresh": true,
+        "execution_allowed": false,
+        "mode": "SIMULATION_ONLY"
+      }
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/tasks",
+      "request": null,
+      "status": 200,
+      "response": {
+        "contract_version": "mot.v1",
+        "owner_id": "mot-local-demo",
+        "revision": 2,
+        "items": [
+          {
+            "task_id": "mot-task-75c423c4-3bb1-4212-b94e-c31f7f8a1ccb",
+            "owner_id": "mot-local-demo",
+            "source": "manual",
+            "finding_key": "SETTLEMENT_MISMATCH:POS_A:sale-101",
+            "kind": "SETTLEMENT_MISMATCH",
+            "severity": "HIGH",
+            "state": "NEEDS_ATTENTION",
+            "created_at": "2026-11-01T09:35:51.073Z",
+            "updated_at": "2026-11-01T09:35:51.073Z",
+            "ledger_revision": 1,
+            "evidence": [
+              {
+                "at": "2026-11-01T09:35:51.073Z",
+                "state": "CHECKING",
+                "finding": {
+                  "source_transaction_id": "POS_A:sale-101",
+                  "expected_minor": 30000,
+                  "settled_minor": 29000
+                }
+              },
+              {
+                "at": "2026-11-01T09:35:51.073Z",
+                "state": "NEEDS_ATTENTION",
+                "finding": {
+                  "source_transaction_id": "POS_A:sale-101",
+                  "expected_minor": 30000,
+                  "settled_minor": 29000
+                },
+                "core_risk": "UNAVAILABLE"
+              }
+            ],
+            "approval": null,
+            "review": {
+              "status": "UNAVAILABLE",
+              "execution_allowed": false
+            }
+          },
+          {
+            "task_id": "mot-task-a350c542-932c-4602-ad93-3284aad052b1",
+            "owner_id": "mot-local-demo",
+            "source": "manual",
+            "finding_key": "FUNDING_SHORTFALL:POOL",
+            "kind": "FUNDING_SHORTFALL",
+            "severity": "HIGH",
+            "state": "NEEDS_ATTENTION",
+            "created_at": "2026-11-01T09:35:51.073Z",
+            "updated_at": "2026-11-01T09:35:51.073Z",
+            "ledger_revision": 1,
+            "evidence": [
+              {
+                "at": "2026-11-01T09:35:51.073Z",
+                "state": "CHECKING",
+                "finding": {
+                  "due_minor": 1350000,
+                  "available_minor": 800000,
+                  "shortfall_minor": 550000,
+                  "payment_ids": [
+                    "rent-next"
+                  ]
+                }
+              },
+              {
+                "at": "2026-11-01T09:35:51.073Z",
+                "state": "NEEDS_ATTENTION",
+                "finding": {
+                  "due_minor": 1350000,
+                  "available_minor": 800000,
+                  "shortfall_minor": 550000,
+                  "payment_ids": [
+                    "rent-next"
+                  ]
+                },
+                "core_risk": "UNAVAILABLE"
+              }
+            ],
+            "approval": null,
+            "review": {
+              "status": "UNAVAILABLE",
+              "execution_allowed": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/inbox",
+      "request": null,
+      "status": 200,
+      "response": {
+        "contract_version": "mot.v1",
+        "owner_id": "mot-local-demo",
+        "revision": 2,
+        "items": [
+          {
+            "inbox_id": "mot-inbox-fe8e7552-3f22-4bc8-9b68-ecdad047f4d0",
+            "task_id": "mot-task-75c423c4-3bb1-4212-b94e-c31f7f8a1ccb",
+            "owner_id": "mot-local-demo",
+            "status": "OPEN",
+            "created_at": "2026-11-01T09:35:51.073Z",
+            "updated_at": "2026-11-01T09:35:51.073Z",
+            "audit_id": "mot-audit-d29556a5-57c3-4d39-ae1f-5a5b2f20d580"
+          },
+          {
+            "inbox_id": "mot-inbox-d72b9bce-4138-4ab7-b067-088120c3879f",
+            "task_id": "mot-task-a350c542-932c-4602-ad93-3284aad052b1",
+            "owner_id": "mot-local-demo",
+            "status": "OPEN",
+            "created_at": "2026-11-01T09:35:51.073Z",
+            "updated_at": "2026-11-01T09:35:51.073Z",
+            "audit_id": "mot-audit-44ac4e2a-ca69-46b9-a8b0-c15c3ab89eaa"
+          }
+        ]
+      }
+    },
+    {
+      "method": "POST",
+      "route": "/api/mot/reservations/propose",
+      "request": {
+        "amount_minor": 10000,
+        "account_ids": [
+          "bank-main"
+        ],
+        "request_key": "evidence-reserve-v1"
+      },
+      "status": 201,
+      "response": {
+        "task_id": "mot-task-9e1f5d10-f8b5-46d1-970a-5351d251efa7",
+        "owner_id": "mot-local-demo",
+        "source": "user_proposal",
+        "kind": "RESERVATION_PROPOSAL",
+        "state": "BLOCKED",
+        "created_at": "2026-11-01T09:35:51.090Z",
+        "updated_at": "2026-11-01T09:35:51.090Z",
+        "ledger_revision": 3,
+        "evidence": [
+          {
+            "at": "2026-11-01T09:35:51.090Z",
+            "state": "CHECKING",
+            "available_minor": 800000,
+            "ledger_revision": 2
+          },
+          {
+            "at": "2026-11-01T09:35:51.090Z",
+            "state": "BLOCKED",
+            "reason": "CORE_RISK_UNAVAILABLE"
+          }
+        ],
+        "approval": null,
+        "review": {
+          "status": "UNAVAILABLE",
+          "core": "UNAVAILABLE",
+          "risk": "UNAVAILABLE",
+          "execution_allowed": false
+        },
+        "proposal": {
+          "amount_minor": 10000,
+          "account_ids": [
+            "bank-main"
+          ],
+          "request_key": "evidence-reserve-v1",
+          "mode": "SIMULATION_ONLY"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "route": "/api/mot/tasks/mot-task-9e1f5d10-f8b5-46d1-970a-5351d251efa7/approval",
+      "request": {
+        "decision": "APPROVE"
+      },
+      "status": 409,
+      "response": {
+        "contract_version": "mot.v1",
+        "error": {
+          "code": "APPROVAL_NOT_READY",
+          "message": "APPROVAL_NOT_READY"
+        },
+        "execution_allowed": false
+      }
+    },
+    {
+      "method": "GET",
+      "route": "/api/mot/health",
+      "request": null,
+      "status": 200,
+      "response": {
+        "service": "mot",
+        "contract_version": "mot.v1",
+        "status": "ok",
+        "mode": "LOCAL_DEMO",
+        "persistence": "LOCAL_ATOMIC_FILE",
+        "scheduler_interval_seconds": 900,
+        "scheduler_enabled": false,
+        "scheduler_last_error": null,
+        "external_notifications": false,
+        "core_risk": "UNAVAILABLE",
+        "execution_allowed": false
+      }
+    }
+  ]
+}

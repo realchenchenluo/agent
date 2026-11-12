@@ -1,0 +1,38 @@
+✔ one app entry redirects legacy product routes (111.8024ms)
+✔ server owned conversations, tool answers, idempotency and isolation (97.5094ms)
+✔ merchant and investment adapters return sourced results; transfer remains blocked (74.1475ms)
+✔ MOT coordinator keeps one conversation and exposes persistent monitor controls (37.0785ms)
+✔ persistent threshold monitor runs without a browser and deduplicates Inbox (62.9173ms)
+✔ one MOT conversation returns sourced substeps and exposes unavailable Risk (12.1497ms)
+✔ ten-thousand cash with four-thousand rent hold blocks eight-thousand and gates three-thousand (34.0537ms)
+✔ three demo prompts share one verified sample without inventing profit or payment (20.0002ms)
+✔ isolated synthetic approval completes one paper payment and preserves audit (41.7776ms)
+✔ paper payment approval expires and unavailable Risk never debits (29.5727ms)
+✔ synthetic import, duplicate replay, verified multi-account balances and internal transfer (27.2127ms)
+✔ conflicting external transaction and stale account snapshots fail closed (10.0708ms)
+✔ small source clock skew is tolerated while a later future snapshot stays unknown (13.5695ms)
+✔ checks detect settlement mismatch and known payment shortfall without duplicate tasks (18.9137ms)
+✔ pool configuration supports one or three verified accounts and resolves cleared shortfall (30.2396ms)
+✔ distinct POS identifiers with matching amount and minute raise suspicious duplicate (18.5344ms)
+✔ scheduled tick persists one task per anomaly and recovers after restart (24.0107ms)
+✔ unknown balances, unknown Risk and unverified approval block reservation simulation (26.5748ms)
+✔ transfer intent creates one traceable blocked proposal without moving funds (21.6133ms)
+✔ lost Core/Risk acknowledgement remains UNKNOWN and the same proposal is not dispatched twice (16.9174ms)
+✔ test-only verified adapter permits human approval and one paper reservation under concurrency (24.0864ms)
+✔ changed ledger invalidates prior approval and failed persistence cannot return success (18.0509ms)
+✔ memory stores confirmed rules but never acts as account-balance authority (9.9648ms)
+✔ isolated HTTP payment uses real MOT routes, verified synthetic adapter, one receipt and one debit (164.0354ms)
+✔ Worker uses existing ReviewService Durable Object, owner isolation and restart recovery (52.7894ms)
+✔ Worker scheduled trigger has a separate secret and never duplicates an Inbox task (5.8095ms)
+✔ Worker monitor survives restart and writes one owner-scoped Inbox alert (13.8866ms)
+✔ Worker storage failure returns unavailable and does not fabricate a task (2.3951ms)
+✔ MOT staging entry rejects unrelated public review routes (1.4272ms)
+✔ Staging app uses signed session, one owner and durable conversation history (33.8923ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 430.5354

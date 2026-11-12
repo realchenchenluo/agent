@@ -1,0 +1,77 @@
+{
+  "scope": "isolated local Node HTTP, synthetic data",
+  "source_head": "980c2d7437fb0d02da4bab56142b7616a8c56881",
+  "mode": "LOCAL_DEMO",
+  "core_risk": "UNAVAILABLE",
+  "seed": "POST /api/mot/demo/ingest, key closeout-seed-20261101",
+  "conversation_id": "c1137368-ed5f-4572-b40a-b15872ec4f36",
+  "stories": [
+    {
+      "input": "帮我看两家店现在有多少钱，资金池里有多少，还有多少没到账。",
+      "pool_balance_minor": 800000,
+      "source": "MOT_LEDGER",
+      "status": "READY",
+      "total_verified_minor": 1500000,
+      "pending_settlement_minor": 55000
+    },
+    {
+      "input": "核对今天的收款和到账，哪几笔对不上？内部调拨不要算营业收入。",
+      "internal_transfers_count": 2,
+      "scope": "LOADED_SAMPLE_ONLY",
+      "source": "MOT_LEDGER",
+      "pending_minor": 55000,
+      "status": "PARTIAL",
+      "pairs": [
+        {
+          "source_id": "POS_A:sale-100",
+          "source_system": "POS_A",
+          "expected_minor": 20000,
+          "settled_minor": 20000,
+          "difference_minor": 0,
+          "settlement_ids": [
+            "BANK_A:settle-100"
+          ],
+          "status": "MATCHED",
+          "as_of": "2026-11-01T13:49:25.785Z"
+        },
+        {
+          "source_id": "POS_A:sale-101",
+          "source_system": "POS_A",
+          "expected_minor": 30000,
+          "settled_minor": 29000,
+          "difference_minor": 1000,
+          "settlement_ids": [
+            "BANK_A:settle-101"
+          ],
+          "status": "MISMATCH",
+          "as_of": "2026-11-01T13:49:25.785Z"
+        }
+      ]
+    },
+    {
+      "input": "帮我支付 13,500 元房租。",
+      "status": "BLOCKED",
+      "source": "MOT_LEDGER",
+      "payment_decision": {
+        "kind": "payment_decision",
+        "status": "BLOCKED",
+        "amount_minor": 1350000,
+        "account_id": "bank-main",
+        "pool_available_minor": 800000,
+        "shortfall_minor": 550000,
+        "bill_source_id": "ERP_A:rent-next",
+        "ledger_revision": 1,
+        "as_of": "2026-11-01T13:49:25.785Z",
+        "data_mode": "SYNTHETIC_ONLY",
+        "execution_allowed": false
+      }
+    }
+  ],
+  "after": {
+    "revision": 1,
+    "pending_settlement_minor": 55000,
+    "pool_balance_minor": 800000,
+    "total_verified_minor": 1500000
+  },
+  "note": "Read-only and blocked stories; no fund mutation. Not public Staging acceptance."
+}

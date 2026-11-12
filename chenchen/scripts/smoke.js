@@ -3,8 +3,17 @@
 const fs = require("node:fs"), path = require("node:path");
 const base = "http://127.0.0.1:" + (process.env.PORT || 4175);
 (async()=>{
+  for (const [route,location] of Object.entries({
+    "/mot":"/app?agent=mot", "/merchant":"/app?agent=merchant",
+    "/investment":"/app?agent=investment", "/investment-v0.10":"/app?agent=investment",
+    "/risk-workbench":"/app?agent=risk", "/catalog":"/app?agent=mot"
+  })) {
+    const response=await fetch(base+route,{redirect:"manual",signal:AbortSignal.timeout(5000)});
+    if(response.status!==302||response.headers.get("location")!==location)
+      throw new Error(route+" must redirect to "+location+"; stop the old server and restart npm start.");
+  }
   for (const [route,file] of [
-    ["/","versions/investment.html"],["/investment","versions/investment.html"],["/investment-v0.10","versions/investment-legacy.html"],["/merchant","versions/merchant.html"],
+    ["/","versions/app.html"],["/app","versions/app.html"],["/index.html","versions/app.html"],
     ["/contracts/investment-agent.v1.schema.json","contracts/investment-agent.v1.schema.json"],
     ["/contracts/model-review.v1.schema.json","contracts/model-review.v1.schema.json"],
     ["/contracts/examples/health-check.request.json","contracts/examples/health-check.request.json"],
@@ -16,9 +25,8 @@ const base = "http://127.0.0.1:" + (process.env.PORT || 4175);
     ["/contracts/examples/simulation.request.json","contracts/examples/simulation.request.json"],
     ["/data/market-brief-2026-10-08.json","data/market-brief-2026-10-08.json"],
     ["/data/market-brief-2026-10-09.json","data/market-brief-2026-10-09.json"],
-    ["/risk-workbench","versions/risk-workbench.html"],
     ["/data/risk-workbench-demo.json","data/risk-workbench-demo.json"],
-    ...["style.css","product-overrides.css","common.js","presentation.mjs","investment.js","investment-legacy.js","merchant.js","risk-workbench.js"].map(file=>["/versions/"+file,"versions/"+file])
+    ...["app.css","app.js","style.css","product-overrides.css","common.js","presentation.mjs","investment.js","investment-legacy.js","merchant.js","risk-workbench.js"].map(file=>["/versions/"+file,"versions/"+file])
   ]) {
     const response=await fetch(base+route,{signal:AbortSignal.timeout(5000)});
     if(!response.ok)throw new Error(route+" HTTP "+response.status+"; stop the old server and restart npm start.");
@@ -27,5 +35,5 @@ const base = "http://127.0.0.1:" + (process.env.PORT || 4175);
     const actual=await response.text(), expected=fs.readFileSync(path.join(__dirname,"..",file),"utf8");
     if(actual.replace(/\r\n/g,"\n")!==expected.replace(/\r\n/g,"\n"))throw new Error(route+" does not match this checkout");
   }
-  console.log("Running server pages and assets verified at "+base);
+  console.log("Running unified app, legacy redirects and assets verified at "+base);
 })().catch(error=>{console.error("Smoke check failed:",error.message);process.exitCode=1;});

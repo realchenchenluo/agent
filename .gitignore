@@ -1,3 +1,15 @@
+.dev.vars*
 .wrangler/
 .wrangler-dry-run/
 chenchen/.wrangler-dry-run/
+chenchen/unified-test-fail.tap
+.env
+.env.*
+!.env.example
+chenchen/.env
+chenchen/.env.*
+node_modules/
+local-data/
+chenchen/local-data/
+*.sqlite
+*.sqlite-*

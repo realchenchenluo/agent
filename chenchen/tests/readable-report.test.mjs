@@ -66,7 +66,8 @@ test("investment page serves the real report module and exports readable text", 
   const base = "http://127.0.0.1:" + server.address().port;
   const module = await fetch(base + "/versions/investment-report.mjs");
   assert.equal(module.status, 200); assert.match(module.headers.get("content-type"), /javascript/);
-  const page = await fetch(base + "/investment").then(r => r.text());
+  assert.equal((await fetch(base + "/investment", { redirect: "manual" })).headers.get("location"), "/app?agent=investment");
+  const page = await fetch(base + "/versions/investment.html").then(r => r.text());
   assert.match(page, /下载易读报告 TXT/);
   assert.match(page, /<details class="panel" id="plans-panel">/);
   assert.match(page, /id="dashboard-overview"/);
