@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-14",
+  "business_code_changes": false,
+  "execution_allowed": false,
+  "docx_render": "incomplete: soffice.exe unavailable",
+  "traceability": [
+    "request_id",
+    "task_id",
+    "session_id",
+    "contract_version",
+    "audit_evidence"
+  ]
+}
