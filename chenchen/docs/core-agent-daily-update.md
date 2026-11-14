@@ -867,10 +867,1378 @@ Word 日报与手册已生成，架构和时序以可读图像嵌入，完成 OO
 ## Word 版式验收
 
 日报和联调手册均嵌入架构、时序图；ZIP、文本、图片数量和宽度结构检查通过。已尝试 canonical render_docx.py，bundled 环境缺少 LibreOffice soffice.exe，未生成页面 PNG，逐页版式验收未完成。不能标记版式通过；日志 daily-closeout-2026-10-20-render.txt。
+Core Agent Daily Update 2026 10 21
+
+今日真实产出：Core 与 Risk 的独立 Cloudflare 联调后端已部署，14 项公网检查通过；这是独立后端联调版，不是完整产品联合验收。模型入口仍为 423 MODEL_CALLS_DISABLED，真实模型调用、人工审批和交易执行均为 0，execution_allowed=false。
+
+A 已完成的核心接口
+
+- investment-agent.v1：Backend/Core Agent -> Harness/UI/Risk；request_id、task_id、session_id、task_state、artifacts、tool_results、audit_evidence、risk_handoff 可追踪，运行时 Schema 未改。
+- risk-handoff.v1 / risk-callback.v1：Core -> Risk；Risk -> Backend。机器身份、固定 reviewer、签名、任务和方案指纹门禁已部署；正式业务回调仍未联合验收。
+- core-agent-error.v1：401、403、404、409、423 边界已公网验证。
+- Cloud bridge 2026-10-21：/api/status 200；/api/assess 仅程序资金核对；/api/review 423，不生成正式任务、不执行。
+- Durable Object Audit Evidence：检查编号、事件编号、哈希链和状态可查询，联调环境独立。
+
+B 可验证的集成进度
+
+- 团队 Core 分支 npm run check 通过；npm test -- --test-reporter=tap 304/304。个人 Core 工作区 check 通过；测试 294/294。日志见 daily-closeout-2026-10-21-check.txt 与 tests.txt。
+- git diff --check 两仓库通过。
+- Cloudflare 公网检查 14/14：health 200；无凭据 401；Risk -> Core 200；资金案例 BLOCK 缺口 2000；重复复用；改内容 409；记录查询 200；模型入口 423；Origin 403；错签名 401；错 reviewer 403；不存在任务 404。
+- 本地云适配专项 9/9；原 Core 全量 304/304；PR27 Python 16/16、Node 258/258、静态样例 4/4、金额向量 12/12。模型均为测试替身，真实模型调用 0。
+
+金融数据与职责边界
+
+Core 只消费既有 Quant diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，未重算或修改 Quant。Memory consent、范围、生命周期、清理规则未改。价格与新闻冲突只记录 REVIEW_REQUIRED。request/task/session/Contract version/audit_evidence 在样例中可追踪；前端 approval 不是交易授权，execution_allowed=false。
+
+C 需要其他 Owner 配合的阻塞项
+
+- Risk/Backend：正式接收地址、可信身份、回调回写、provider_response_id 缺失、幂等/重试和冲突协议。
+- 模型/费用 Owner：预算与提供方确认后才能打开模型入口，当前 423。
+- UI/Backend：服务端代理、本人隔离及 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 与 401/403/409/423 恢复展示。
+- Memory、Quant、Data：可信引用、结果版本、时效和冲突样例。
+- 安全/执行 Owner：人工审批身份、Safety Action Gateway、执行前检查和真实用户隔离。
+
+下一步：先冻结 Risk/Backend 回调和模型预算，再以同一 request/task/session/audit 做真实模型到 Risk Handoff 联合验收；继续保持 PAPER 与真实执行阻断。
+
+Word 版式：已生成 dated DOCX 并嵌入架构、时序图；OOXML 结构检查通过。render_docx.py 因缺少 LibreOffice soffice.exe 未生成页面 PNG，逐页验收未完成。
+
+Core Agent Daily Update 2026 10 21
+
+今日真实产出：Core 与 Risk 的独立 Cloudflare 联调后端已部署，14 项公网检查通过；这是独立后端联调版，不是完整产品联合验收。模型入口仍为 423 MODEL_CALLS_DISABLED，真实模型调用、人工审批和交易执行均为 0，execution_allowed=false。
+
+A 已完成的核心接口
+
+- investment-agent.v1：Backend/Core Agent -> Harness/UI/Risk；request_id、task_id、session_id、task_state、artifacts、tool_results、audit_evidence、risk_handoff 可追踪，运行时 Schema 未改。
+- risk-handoff.v1 / risk-callback.v1：Core -> Risk；Risk -> Backend。机器身份、固定 reviewer、签名、任务和方案指纹门禁已部署；正式业务回调仍未联合验收。
+- core-agent-error.v1：401、403、404、409、423 边界已公网验证。
+- Cloud bridge 2026-10-21：/api/status 200；/api/assess 仅程序资金核对；/api/review 423，不生成正式任务、不执行。
+- Durable Object Audit Evidence：检查编号、事件编号、哈希链和状态可查询，联调环境独立。
+
+B 可验证的集成进度
+
+- 团队 Core 分支 npm run check 通过；npm test -- --test-reporter=tap 304/304。个人 Core 工作区 check 通过；测试 294/294。日志见 daily-closeout-2026-10-21-check.txt 与 tests.txt。
+- git diff --check 两仓库通过。
+- Cloudflare 公网检查 14/14：health 200；无凭据 401；Risk -> Core 200；资金案例 BLOCK 缺口 2000；重复复用；改内容 409；记录查询 200；模型入口 423；Origin 403；错签名 401；错 reviewer 403；不存在任务 404。
+- 本地云适配专项 9/9；原 Core 全量 304/304；PR27 Python 16/16、Node 258/258、静态样例 4/4、金额向量 12/12。模型均为测试替身，真实模型调用 0。
+
+金融数据与职责边界
+
+Core 只消费既有 Quant diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，未重算或修改 Quant。Memory consent、范围、生命周期、清理规则未改。价格与新闻冲突只记录 REVIEW_REQUIRED。request/task/session/Contract version/audit_evidence 在样例中可追踪；前端 approval 不是交易授权，execution_allowed=false。
+
+C 需要其他 Owner 配合的阻塞项
+
+- Risk/Backend：正式接收地址、可信身份、回调回写、provider_response_id 缺失、幂等/重试和冲突协议。
+- 模型/费用 Owner：预算与提供方确认后才能打开模型入口，当前 423。
+- UI/Backend：服务端代理、本人隔离及 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 与 401/403/409/423 恢复展示。
+- Memory、Quant、Data：可信引用、结果版本、时效和冲突样例。
+- 安全/执行 Owner：人工审批身份、Safety Action Gateway、执行前检查和真实用户隔离。
+
+下一步：先冻结 Risk/Backend 回调和模型预算，再以同一 request/task/session/audit 做真实模型到 Risk Handoff 联合验收；继续保持 PAPER 与真实执行阻断。
+
+Word 版式：已生成 dated DOCX 并嵌入架构、时序图；OOXML 结构检查通过。render_docx.py 因缺少 LibreOffice soffice.exe 未生成页面 PNG，逐页验收未完成。
+
+---
+
+# Core Agent Daily Update 2026 10 22
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更：截至本轮检查，两份 origin/main 的北京时间 10 月 22 日提交列表均为空。本次只交付文档、图和检查证据，未搬运开发分支或未提交业务改动。主链路已实现请求到 Handoff 的只读交接，正式 Risk 审核闭环仍待 Owner 联合验收，真实执行保持关闭。
+
+## 今日真实产出
+
+两份 main 独立运行 check、284 项回归及 32 项严格 Schema/语义追踪检查；生成本日健康成功、同进程 Checkpoint 复用、失败信封证据。更新架构、模块时序和统一 Contract 联调手册，生成日报及手册 Word，嵌入可读图像。
+
+今日新增的核验结论：团队 main 3ef1790、个人 main 22afc0f 只有已合入的文档和原有业务基线；团队开发分支 9e6bed1 不是任一 main 的祖先，固定 reviewer/可信身份门禁及云适配实现尚未进入 main。10 月 21 日 14/14 公网结果是留存部署证据；昨天 304/294 测试口径来自分支或工作区，不能代表 main。今日两份 main 实测均为 284/284。证据见本日 verification.json。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 当前字段状态与证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Risk/UI | 已实现且本轮验证 request_id、trace、task_state、artifacts、tool_results、audit_evidence、risk_handoff；contracts/investment-agent.v1.schema.json 与本日 trace.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现模型记录；session_id 可选，健康四字段仍无版本化同名映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 本轮通过；回调必填 request/task/run/audit/handoff 五编号及 hash，session 从存储关联；contracts/risk-handoff.v1.schema.json；正式可信接收与业务回写待确认 |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；contracts/core-agent-error.v1.schema.json；本轮失败信封通过 |
+
+字段生产方拥有版本、原始结果、编号和审计，消费方只能原样引用。必填字段、不可修改边界和异常状态见本日联调手册；本次未更改运行时 Schema。
+
+## B 可验证的集成进度
+
+- 两份 main 在 chenchen 运行 npm run check，exit 0；npm test -- --test-reporter=tap，各 284/284，失败和跳过均为 0；证据 daily-closeout-2026-10-22-check.txt、tests.txt。
+- 两仓库在 chenchen 运行 python docs/daily-closeout-check-2026-10-22.py，各 32/32；7 个正向对象通过完整 Draft 2020-12 Schema；新健康成功、同进程复用及失败信封的 request/task/session/version/audit、四阶段 result_refs 通过语义追踪。10 月 17 日留存合成模型记录的 9 条事件、六编号与提议 hash 对齐；不是今日真实模型请求。证据本日 trace.json、synthetic.json、trace.txt。
+- 复现需 Node >=22、Python jsonschema 4.26.0。本机用 bundled Python/Node，PYTHONPATH 指向自动化 python-deps，CORE_AGENT_NODE 指向 bundled node.exe；完整路径与基线见 verification.json。项目依赖未改。
+- git merge-base --is-ancestor 9e6bed1 HEAD 在两仓库均 exit 1，说明该开发分支提交尚未合入 main；并记录关键实现文件的存在性。本日未重新调用公网、模型、Risk 派发或交易接口，费用调用为 0。
+- 提交前执行 git diff --check 与 git diff --cached --check；本日 main 提交列表和远程编号核验见 verification.json 与 git-check.txt。
+
+## 金融数据测试与职责边界
+
+全量回归含 tests/market-brief.test.js：固定 2026-10-08/09 市场数据、价格新闻冲突及 Quant no-drift 通过，未检验今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，未修改或重新计算 Quant。Memory consent、范围、生命周期及清理规则未改。
+
+健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 边界并停止；导出通过不代表独立 Risk 已审核。模型 session_id 可选，Handoff session_id 必填可 null；健康 Session/Checkpoint 为进程内，不能声称跨重启恢复。audit_evidence 与模型 audit.events 无统一版本化映射。前端 approval 不是交易授权，execution_allowed=false。价格新闻冲突只保留 REVIEW_REQUIRED，不自动产生交易动作。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Backend 与 Risk：可信回调和云适配实现停留在开发分支，main 缺完整对应实现；请给出审核合入的提交与同一真实业务任务接收、签名回写、幂等/冲突/过期回执，并冻结 provider_response_id 缺失协议。预期产出为可复现联合验收记录，不能把昨日机器鉴权 404 测试称作成功业务回调。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内；请提供字段映射版本、持久化和跨实例幂等 Contract，避免 UI 拼接两种响应。
+- Risk 与 Backend：可信人工审批及 Safety Action Gateway 未联合验收；请提供受保护审批身份和执行前再检查协议，真实执行保持关闭。
+- UI 与 Backend：云入口尚非现有用户页面的正式后端，模型入口留存状态为 423；请确认服务端代理、本人隔离与 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED、401/403/409/423 恢复样例及正式交付提交。
+- Memory：缺既有授权下可信 memory_id、来源版本与撤回样例；请提供引用和 consent 证据，不扩展既有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实快照来源、时效与冲突样例；请提供可审计数据及版本/日期，不能用固定夹具证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 审核开发分支并明确实际交付基线，冻结跨链字段映射；模型费用 Owner 确认提供方和预算后再安排受限真实模型到 Risk 的联合验收。UI 补代理与恢复回执，Memory/Quant/Data 提供可信样例。继续保持 PAPER 与真实执行阻断。
+
+## Word 版式验收
+
+日报与手册均含两幅可读图像，完成 ZIP、正文、图片数量和页面可用宽度结构检查。已尝试 render_docx.py；当前 bundled 运行环境未提供 soffice.exe，若日志报依赖缺失同样视为渲染失败；未生成逐页 PNG，逐页版式验收未完成，不能标称版式通过。详情见本日 render.txt。
+
+---
+
+# Core Agent Daily Update 2026-10-23
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更：两份 origin/main 在北京时间 10 月 23 日均无新的业务提交。本次完成主链路资料续维护、main 基线回归与 DOCX 交付；Core Agent 仍在请求校验、Session/Context、Harness、Tools/Quant 到 Risk Handoff 的只读交接阶段，Risk 正式审核闭环与真实执行保持关闭。
+
+## 今日真实产出
+
+基于两份独立 origin/main 快照，复跑 check 与全量回归，确认 284/284 通过；复核并沿用 10 月 22 日架构与时序图（图像未变），更新本日统一 Contract 联调手册和日报 Word。新增本日文件仅为 chenchen/docs 下的日报、可复现检查记录及嵌图 Word；未修改 Quant、Memory、Risk 或 UI 实现。
+
+## A 已完成的核心接口
+
+| 接口 / Contract | 版本 | 生产方 → 消费方 | 当前字段状态与证据 |
+| --- | --- | --- | --- |
+| Agent request/response | investment-agent.v1 | Caller/Backend → Core/Harness → UI/Risk | request_id、task_id、session_id、task_state、artifacts、tool_results、audit_evidence、risk_handoff 可追踪；contracts/investment-agent.v1.schema.json；本日 trace.json、synthetic.json |
+| Model/review workflow | model-review.v1 / review-workflow.v1 | Caller → Backend → Risk/UI | 模型记录与审计字段可验证；session_id 可选；跨路径四字段待映射；contracts/model-review.v1.schema.json；本日 trace.json |
+| Risk Handoff/callback | risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | contracts/risk-handoff.v1.schema.json；本日完整导出 Schema 通过；正式可信接收与回写待 Owner 确认 |
+| Error envelope | core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配 ID 可 null；contracts/core-agent-error.v1.schema.json；本日失败信封通过 |
+
+生产方拥有版本、原始结果、编号和审计证据；消费方只能原样引用。Caller/Backend 生产 request_id，Harness/Store 生产 task/session，Harness 推进 task_state/checkpoint，Tools/Quant 生产 tool_results，Core 组织 artifacts/risk_handoff/audit，Risk 独立生产回调决策；UI 不得改写编号、hash、风险结论或授权。完整必填字段见本日手册。
+
+## B 可验证的集成进度
+
+- 团队 main：`npm run check` exit 0；`npm test -- --test-reporter=tap` 284/284，0 failed/0 skipped。
+- 个人 main 独立执行 `npm run check` exit 0、`npm test -- --test-reporter=tap` 284/284，0 failed/0 skipped。两仓库提交前执行 `git diff --check` 与 staged 检查，结果见 git-check.txt。
+- 复现方式：进入各自 `chenchen`，运行 `npm run check` 与 `npm test -- --test-reporter=tap`；本日分别运行 `python docs/daily-closeout-check-2026-10-23.py`，均 32/32（7 个完整 Draft 2020-12 正向对象）：新生成健康成功、同进程 Session/Checkpoint 复用及失败信封；10 月 17 日模型合成记录的 9 条审计事件与六编号/hash 为留存回放，不是本日模型调用。本日未重新调用公网、付费模型、Risk 派发或交易接口，费用调用为 0。
+- DOCX 已嵌入架构图和时序图，并完成 ZIP/OOXML、正文和图片结构检查；`render_docx.py` 因环境缺少 LibreOffice `soffice.exe` 未生成页面 PNG，逐页版式验收未完成。
+
+## 金融数据与职责边界
+
+Core 只消费既有 Quant `diagnosePortfolio.metrics`、`generateCandidates.target_weights`、`runSimulation.comparisons`，未重算或修改 Quant。Memory consent、范围、生命周期和清理规则未改。固定 2026-10-08/09 夹具中的价格/新闻冲突继续记录 `REVIEW_REQUIRED`，未生成交易动作；未声称 10 月 23 日实时行情。本日健康样例 request_id、task_id、session_id、Contract version 与 audit_evidence 绑定通过；模型 WorkflowRecord.session_id 仍可选、Handoff session_id 必填可 null，回调只必填 request/task/run/audit/handoff 五编号。健康 Session/Checkpoint 仅进程内，不能声称跨重启恢复；task_state/artifacts/tool_results/audit_evidence 与模型记录尚无统一版本化映射。前端 approval 不是交易授权，`execution_allowed=false`。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Backend/Risk：请审核并合入可信接收、签名回写、同 task 的幂等/重试/冲突与 `provider_response_id` 缺失协议，给出可复现联合验收记录。
+- Backend：请冻结 model-review 与 investment-agent 之间 session/task_state/artifacts/tool_results/audit_evidence 的版本化映射和跨实例持久化。
+- UI：请确认服务端代理、本人隔离及 `PENDING_RISK`/`FAILED`/`EXPIRED`/`REVIEW_REQUIRED` 与 401/403/409/423 恢复样例。
+- Memory、Quant、Data：请提供授权 memory_id、来源版本、结果版本、快照时效和冲突样例；不得扩大既有规则。
+- 安全/执行 Owner：可信人工审批身份与 Safety Action Gateway 未联合验收，真实执行继续关闭。
+
+## 下一步
+
+先冻结 Backend/Risk 跨路径字段和回调验收，再补同一 request/task/session/audit 的受限联调；模型预算、UI 恢复、Memory 可信引用及 Quant/Data provenance 由对应 Owner 提供。继续保持 PAPER 与真实执行阻断。
+
+## Word 版式验收
+
+已完成结构检查并嵌入两幅可读图像；本环境缺少 `soffice.exe`，未生成页面 PNG，逐页验收未完成，不能标称版式通过。
+
+## 检查基线与复现环境
+
+本轮 main 快照：704c7ffcf70ee623b3a24634e02d4e9e48ff3701。原始工作区开发分支及未提交改动全部保留，本轮仅提交 docs。Node 为本机 node（支持 Node >=22）；Schema 检查使用 bundled Python，PYTHONPATH 指向自动化 python-deps（jsonschema 4.26.0），CORE_AGENT_NODE 指向 bundled node.exe。默认 Python 3.14 加载该依赖失败，改用 bundled Python 后复跑成功；项目依赖未修改。证据文件为 daily-closeout-2026-10-23-check.txt、tests.txt、trace.txt、trace.json、synthetic.json、verification.json。
+
+
+# Core Agent Daily Update 2026-10-24
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更：截至北京时间 10 月 24 日，两份 origin/main 均无新的业务提交。基于两份独立 remote-main 快照完成主链路资料续维护、接口字段追踪、离线 Contract/语义检查和回归测试；Core Agent 仍处于请求校验、Session/Context、Harness、Tools/Quant 到 Risk Handoff 的只读交接阶段，Risk 正式审核闭环与真实执行保持关闭。
+
+## 今日真实产出
+
+新增本日 Markdown、DOCX、检查脚本与检查证据，沿用并重新嵌入可读架构图和模块时序图；没有修改业务实现、Quant、Memory、Risk、UI 或运行时 Schema。验证基线为团队 origin/main `46041e5526f97c0956798315d5caceb653615208`，个人 origin/main `2735ade933d123281dd583174697e0560a735afe`。
+
+## A 已完成的核心接口
+
+| 接口 / Contract | 版本 | 生产方 → 消费方 | 当前字段状态与证据 |
+| --- | --- | --- | --- |
+| Agent request/response | investment-agent.v1 | Caller/Backend → Core/Harness → UI/Risk | request_id、task_id、session_id、task_state、artifacts、tool_results、audit_evidence、risk_handoff 可追踪；Schema 与本日 trace/synthetic 证据 |
+| Model/review workflow | model-review.v1 / review-workflow.v1 | Caller → Backend → Risk/UI | 模型记录可验证；session_id 仍可选；跨路径字段映射与持久化待 Backend 冻结 |
+| Risk Handoff/callback | risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | Handoff Schema 可离线校验；可信接收、签名回写、同 task 幂等与联合验收待 Risk/Backend |
+| Error envelope | core-agent-error.v1 | Backend/Core → Caller/UI | source/version、operation、request_id、trace、error 字段可验证；失败信封保留停止点 |
+
+生产方拥有版本、原始结果、编号和审计证据；消费方只能原样引用。Caller/Backend 生产 request_id，Harness/Store 生产 task/session，Harness 推进 task_state/checkpoint，Tools/Quant 生产 tool_results，Core 组织 artifacts/risk_handoff/audit，Risk 独立生产回调决策；UI 不得改写编号、hash、风险结论或授权。
+
+## B 可验证的集成进度
+
+- 团队与个人 remote-main：`npm run check` exit 0；`npm test -- --test-reporter=tap` 均 284/284，0 failed、0 skipped。
+- 复现命令：进入各自 `chenchen`，执行 `npm run check`、`npm test -- --test-reporter=tap`；再执行 `python docs/daily-closeout-check-2026-10-24.py`。本日 checker 生成健康成功、同进程 Session/Checkpoint 复用、失败信封和 Handoff，验证 32/32（7 个完整 Draft 2020-12 正向对象）。
+- 本日未重新调用公网、付费模型、Risk 派发或交易接口，费用调用为 0；10 月 17 日模型九事件记录仅作留存回放。DOCX 已嵌入两幅图并通过 ZIP/OOXML、正文、图片数量和宽度结构检查。`render_docx.py` 因环境缺少 `soffice.exe` 未生成页面 PNG，逐页版式验收未完成。
+
+## 金融数据与职责边界
+
+Core 只消费既有 Quant `diagnosePortfolio.metrics`、`generateCandidates.target_weights`、`runSimulation.comparisons`，没有重算或修改 Quant。Memory consent、范围、生命周期和清理规则未改。固定 2026-10-08/09 夹具中的价格/新闻冲突继续记录 `REVIEW_REQUIRED`，不生成交易动作；没有声称 10 月 24 日实时行情。request_id、task_id、session_id、Contract version 与 audit_evidence 在健康样例中可追踪；健康 Session/Checkpoint 仅进程内，不能声称跨重启恢复。前端 approval 不是交易授权，`execution_allowed=false`。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Backend/Risk：请合入并联合验收可信接收、签名回写、同 task 幂等/重试/冲突和 `provider_response_id` 缺失协议。
+- Backend：请冻结 model-review 与 investment-agent 的 session/task_state/artifacts/tool_results/audit_evidence 版本映射、持久化和跨实例幂等。
+- UI：请确认服务端代理、本人隔离及 `PENDING_RISK`、`FAILED`、`EXPIRED`、`REVIEW_REQUIRED` 与 401/403/409/423 恢复样例。
+- Memory、Quant、Data：请提供授权 memory_id、来源版本、结果版本、快照时效和冲突样例，不扩大既有规则或用固定夹具代替今日行情。
+- 安全/执行 Owner：可信人工审批身份与 Safety Action Gateway 未联合验收，真实执行继续关闭。
+
+## 下一步
+
+先冻结 Backend/Risk 跨路径字段和回调验收，再补同一 request/task/session/audit 的受限联调；模型预算、UI 恢复、Memory 可信引用及 Quant/Data provenance 由对应 Owner 提供。继续保持 PAPER 与真实执行阻断。
+
+## Word 版式验收
+
+DOCX 已完成结构检查并嵌入两幅可读图像；本环境缺少 `soffice.exe`，未生成页面 PNG，逐页验收未完成，不能标称版式通过。
+
+---
+
+# Core Agent Daily Update 2026 10 25
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更：截至本轮检查，两份 origin/main 的北京时间 10 月 25 日提交列表均为空。本次只交付文档、图和检查证据，未搬运开发分支或未提交业务改动。主链路已实现请求到 Handoff 的只读交接，正式 Risk 审核闭环仍待 Owner 联合验收，真实执行保持关闭。
+
+## 今日真实产出
+
+两份 main 独立运行 check、284 项回归及 32 项严格 Schema/语义追踪检查；生成本日健康成功、同进程 Checkpoint 复用、失败信封证据。更新架构、模块时序和统一 Contract 联调手册，生成日报及手册 Word，嵌入可读图像。
+
+今日新增的核验结论：团队 main 3ef1790、个人 main 22afc0f 只有已合入的文档和原有业务基线；团队开发分支 9e6bed1 不是任一 main 的祖先，固定 reviewer/可信身份门禁及云适配实现尚未进入 main。10 月 21 日 14/14 公网结果是留存部署证据；昨天 304/294 测试口径来自分支或工作区，不能代表 main。今日两份 main 实测均为 284/284。证据见本日 verification.json。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 当前字段状态与证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Risk/UI | 已实现且本轮验证 request_id、trace、task_state、artifacts、tool_results、audit_evidence、risk_handoff；contracts/investment-agent.v1.schema.json 与本日 trace.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现模型记录；session_id 可选，健康四字段仍无版本化同名映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 本轮通过；回调必填 request/task/run/audit/handoff 五编号及 hash，session 从存储关联；contracts/risk-handoff.v1.schema.json；正式可信接收与业务回写待确认 |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；contracts/core-agent-error.v1.schema.json；本轮失败信封通过 |
+
+字段生产方拥有版本、原始结果、编号和审计，消费方只能原样引用。必填字段、不可修改边界和异常状态见本日联调手册；本次未更改运行时 Schema。
+
+## B 可验证的集成进度
+
+- 两份 main 在 chenchen 运行 npm run check，exit 0；npm test -- --test-reporter=tap，各 284/284，失败和跳过均为 0；证据 daily-closeout-2026-10-25-check.txt、tests.txt。
+- 两仓库在 chenchen 运行 python docs/daily-closeout-check-2026-10-25.py，各 32/32；7 个正向对象通过完整 Draft 2020-12 Schema；新健康成功、同进程复用及失败信封的 request/task/session/version/audit、四阶段 result_refs 通过语义追踪。10 月 17 日留存合成模型记录的 9 条事件、六编号与提议 hash 对齐；不是今日真实模型请求。证据本日 trace.json、synthetic.json、trace.txt。
+- 复现需 Node >=22、Python jsonschema 4.26.0。本机用 bundled Python/Node，PYTHONPATH 指向自动化 python-deps，CORE_AGENT_NODE 指向 bundled node.exe；完整路径与基线见 verification.json。项目依赖未改。
+- git merge-base --is-ancestor 9e6bed1 HEAD 在两仓库均 exit 1，说明该开发分支提交尚未合入 main；并记录关键实现文件的存在性。本日未重新调用公网、模型、Risk 派发或交易接口，费用调用为 0。
+- 提交前执行 git diff --check 与 git diff --cached --check；本日 main 提交列表和远程编号核验见 verification.json 与 git-check.txt。
+
+## 金融数据测试与职责边界
+
+全量回归含 tests/market-brief.test.js：固定 2026-10-08/09 市场数据、价格新闻冲突及 Quant no-drift 通过，未检验今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，未修改或重新计算 Quant。Memory consent、范围、生命周期及清理规则未改。
+
+健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 边界并停止；导出通过不代表独立 Risk 已审核。模型 session_id 可选，Handoff session_id 必填可 null；健康 Session/Checkpoint 为进程内，不能声称跨重启恢复。audit_evidence 与模型 audit.events 无统一版本化映射。前端 approval 不是交易授权，execution_allowed=false。价格新闻冲突只保留 REVIEW_REQUIRED，不自动产生交易动作。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Backend 与 Risk：可信回调和云适配实现停留在开发分支，main 缺完整对应实现；请给出审核合入的提交与同一真实业务任务接收、签名回写、幂等/冲突/过期回执，并冻结 provider_response_id 缺失协议。预期产出为可复现联合验收记录，不能把昨日机器鉴权 404 测试称作成功业务回调。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内；请提供字段映射版本、持久化和跨实例幂等 Contract，避免 UI 拼接两种响应。
+- Risk 与 Backend：可信人工审批及 Safety Action Gateway 未联合验收；请提供受保护审批身份和执行前再检查协议，真实执行保持关闭。
+- UI 与 Backend：云入口尚非现有用户页面的正式后端，模型入口留存状态为 423；请确认服务端代理、本人隔离与 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED、401/403/409/423 恢复样例及正式交付提交。
+- Memory：缺既有授权下可信 memory_id、来源版本与撤回样例；请提供引用和 consent 证据，不扩展既有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实快照来源、时效与冲突样例；请提供可审计数据及版本/日期，不能用固定夹具证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 审核开发分支并明确实际交付基线，冻结跨链字段映射；模型费用 Owner 确认提供方和预算后再安排受限真实模型到 Risk 的联合验收。UI 补代理与恢复回执，Memory/Quant/Data 提供可信样例。继续保持 PAPER 与真实执行阻断。
+
+## Word 版式验收
+
+日报与手册均含两幅可读图像，完成 ZIP、正文、图片数量和页面可用宽度结构检查。已尝试 render_docx.py；当前 bundled 运行环境未提供 soffice.exe，若日志报依赖缺失同样视为渲染失败；未生成逐页 PNG，逐页版式验收未完成，不能标称版式通过。详情见本日 render.txt。
+
+---
+
+# Core Agent Daily Update 2026 10 26
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更：截至本轮检查，两份 origin/main 的北京时间 10 月 26 日提交列表均为空。本次只交付文档、图和检查证据，未搬运开发分支或未提交业务改动。主链路已实现请求到 Handoff 的只读交接，正式 Risk 审核闭环仍待 Owner 联合验收，真实执行保持关闭。
+
+## 今日真实产出
+
+两份 main 独立运行 check、284 项回归及 32 项严格 Schema/语义追踪检查；生成本日健康成功、同进程 Checkpoint 复用、失败信封证据。更新架构、模块时序和统一 Contract 联调手册，生成日报及手册 Word，嵌入可读图像。
+
+本日复核结论：团队基线 4f01447、个人基线 5609a8b 均无今日业务提交。新生成的健康成功、同任务同会话 Checkpoint 复用及失败信封通过严格校验；失效 result_refs 虽结构合法，语义校验仍拒绝。团队开发提交 9e6bed1 仍非任一 main 的祖先。10 月 21 日公网结果仅为历史分支证据，本日未重新调用；两份 main 本日实测均为 284/284。完整证据见本日 verification.json 与 trace.json。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 当前字段状态与证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Risk/UI | 已实现且本轮验证 request_id、trace、task_state、artifacts、tool_results、audit_evidence、risk_handoff；contracts/investment-agent.v1.schema.json 与本日 trace.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现模型记录；session_id 可选，健康四字段仍无版本化同名映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 本轮通过；回调必填 request/task/run/audit/handoff 五编号及 hash，session 从存储关联；contracts/risk-handoff.v1.schema.json；正式可信接收与业务回写待确认 |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；contracts/core-agent-error.v1.schema.json；本轮失败信封通过 |
+
+字段生产方拥有版本、原始结果、编号和审计，消费方只能原样引用。必填字段、不可修改边界和异常状态见本日联调手册；本次未更改运行时 Schema。
+
+## B 可验证的集成进度
+
+- 两份 main 在 chenchen 运行 npm run check，exit 0；npm test -- --test-reporter=tap，各 284/284，失败和跳过均为 0；证据 daily-closeout-2026-10-26-check.txt、tests.txt。
+- 两仓库在 chenchen 运行 python docs/daily-closeout-check-2026-10-26.py，各 32/32；7 个正向对象通过完整 Draft 2020-12 Schema；新健康成功、同进程复用及失败信封的 request/task/session/version/audit、四阶段 result_refs 通过语义追踪。10 月 17 日留存合成模型记录的 9 条事件、六编号与提议 hash 对齐；不是今日真实模型请求。证据本日 trace.json、synthetic.json、trace.txt。
+- 复现需 Node >=22、Python jsonschema 4.26.0。本机用 bundled Python/Node，PYTHONPATH 指向自动化 python-deps，CORE_AGENT_NODE 指向 bundled node.exe；完整路径与基线见 verification.json。项目依赖未改。
+- git merge-base --is-ancestor 9e6bed1 HEAD 在两仓库均 exit 1，说明该开发分支提交尚未合入 main；并记录关键实现文件的存在性。本日未重新调用公网、模型、Risk 派发或交易接口，费用调用为 0。
+- 提交前执行 git diff --check 与 git diff --cached --check；本日 main 提交列表和远程编号核验见 verification.json 与 git-check.txt。
+
+## 金融数据测试与职责边界
+
+全量回归含 tests/market-brief.test.js：固定 2026-10-08/09 市场数据、价格新闻冲突及 Quant no-drift 通过，未检验今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，未修改或重新计算 Quant。Memory consent、范围、生命周期及清理规则未改。
+
+健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 边界并停止；导出通过不代表独立 Risk 已审核。模型 session_id 可选，Handoff session_id 必填可 null；健康 Session/Checkpoint 为进程内，不能声称跨重启恢复。audit_evidence 与模型 audit.events 无统一版本化映射。前端 approval 不是交易授权，execution_allowed=false。价格新闻冲突只保留 REVIEW_REQUIRED，不自动产生交易动作。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Backend 与 Risk：可信回调和云适配实现停留在开发分支，main 缺完整对应实现；请给出审核合入的提交与同一真实业务任务接收、签名回写、幂等/冲突/过期回执，并冻结 provider_response_id 缺失协议。预期产出为可复现联合验收记录，不能把历史机器鉴权或缺失任务测试称作成功业务回调。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内；请提供字段映射版本、持久化和跨实例幂等 Contract，避免 UI 拼接两种响应。
+- Risk 与 Backend：可信人工审批及 Safety Action Gateway 未联合验收；请提供受保护审批身份和执行前再检查协议，真实执行保持关闭。
+- UI 与 Backend：云入口尚非现有用户页面的正式后端，模型入口留存状态为 423；请确认服务端代理、本人隔离与 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED、401/403/409/423 恢复样例及正式交付提交。
+- Memory：缺既有授权下可信 memory_id、来源版本与撤回样例；请提供引用和 consent 证据，不扩展既有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实快照来源、时效与冲突样例；请提供可审计数据及版本/日期，不能用固定夹具证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 审核开发分支并明确实际交付基线，冻结跨链字段映射；模型费用 Owner 确认提供方和预算后再安排受限真实模型到 Risk 的联合验收。UI 补代理与恢复回执，Memory/Quant/Data 提供可信样例。继续保持 PAPER 与真实执行阻断。
+
+## Word 版式验收
+
+日报与手册均含两幅可读图像，完成 ZIP、正文、图片数量和页面可用宽度结构检查。已尝试 render_docx.py；当前 bundled 运行环境未提供 soffice.exe，若日志报依赖缺失同样视为渲染失败；未生成逐页 PNG，逐页版式验收未完成，不能标称版式通过。详情见本日 render.txt。
+
+---
+
+# Core Agent Daily Update 2026 10 27
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更：截至本轮检查，两份 origin/main 的北京时间 10 月 27 日提交列表均为空。本次只交付文档、图和检查证据，未搬运开发分支或未提交业务改动。主链路已实现请求到 Handoff 的只读交接，正式 Risk 审核闭环仍待 Owner 联合验收，真实执行保持关闭。
+
+## 今日真实产出
+
+两份 main 独立运行 check、284 项回归及 32 项严格 Schema/语义追踪检查；生成本日健康成功、同进程 Checkpoint 复用、失败信封证据。更新架构、模块时序和统一 Contract 联调手册，生成日报及手册 Word，嵌入可读图像。
+
+本日复核结论：团队基线 fa53166、个人基线 b88cfd2 均无今日业务提交。新生成的健康成功、同任务同会话 Checkpoint 复用及失败信封通过严格校验；失效 result_refs 虽结构合法，语义校验仍拒绝。团队开发提交 9e6bed1 仍非任一 main 的祖先。10 月 21 日公网结果仅为历史分支证据，本日未重新调用；两份 main 本日实测均为 284/284。完整证据见本日 verification.json 与 trace.json。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 当前字段状态与证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Risk/UI | 已实现且本轮验证 request_id、trace、task_state、artifacts、tool_results、audit_evidence、risk_handoff；contracts/investment-agent.v1.schema.json 与本日 trace.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现模型记录；session_id 可选，健康四字段仍无版本化同名映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 本轮通过；回调必填 request/task/run/audit/handoff 五编号及 hash，session 从存储关联；contracts/risk-handoff.v1.schema.json；正式可信接收与业务回写待确认 |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；contracts/core-agent-error.v1.schema.json；本轮失败信封通过 |
+
+字段生产方拥有版本、原始结果、编号和审计，消费方只能原样引用。必填字段、不可修改边界和异常状态见本日联调手册；本次未更改运行时 Schema。
+
+## B 可验证的集成进度
+
+- 两份 main 在 chenchen 运行 npm run check，exit 0；npm test -- --test-reporter=tap，各 284/284，失败和跳过均为 0；证据 daily-closeout-2026-10-27-check.txt、tests.txt。
+- 两仓库在 chenchen 运行 python docs/daily-closeout-check-2026-10-27.py，各 32/32；7 个正向对象通过完整 Draft 2020-12 Schema；新健康成功、同进程复用及失败信封的 request/task/session/version/audit、四阶段 result_refs 通过语义追踪。10 月 17 日留存合成模型记录的 9 条事件、六编号与提议 hash 对齐；不是今日真实模型请求。证据本日 trace.json、synthetic.json、trace.txt。
+- 复现需 Node >=22、Python jsonschema 4.26.0。本机用 bundled Python/Node，PYTHONPATH 指向自动化 python-deps，CORE_AGENT_NODE 指向 bundled node.exe；完整路径与基线见 verification.json。项目依赖未改。
+- git merge-base --is-ancestor 9e6bed1 HEAD 在两仓库均 exit 1，说明该开发分支提交尚未合入 main；并记录关键实现文件的存在性。本日未重新调用公网、模型、Risk 派发或交易接口，费用调用为 0。
+- 提交前执行 git diff --check 与 git diff --cached --check；本日 main 提交列表和远程编号核验见 verification.json 与 git-check.txt。
+
+## 金融数据测试与职责边界
+
+全量回归含 tests/market-brief.test.js：固定 2026-10-08/09 市场数据、价格新闻冲突及 Quant no-drift 通过，未检验今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，未修改或重新计算 Quant。Memory consent、范围、生命周期及清理规则未改。
+
+健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 边界并停止；导出通过不代表独立 Risk 已审核。模型 session_id 可选，Handoff session_id 必填可 null；健康 Session/Checkpoint 为进程内，不能声称跨重启恢复。audit_evidence 与模型 audit.events 无统一版本化映射。前端 approval 不是交易授权，execution_allowed=false。价格新闻冲突只保留 REVIEW_REQUIRED，不自动产生交易动作。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Backend 与 Risk：可信回调和云适配实现停留在开发分支，main 缺完整对应实现；请给出审核合入的提交与同一真实业务任务接收、签名回写、幂等/冲突/过期回执，并冻结 provider_response_id 缺失协议。预期产出为可复现联合验收记录，不能把历史机器鉴权或缺失任务测试称作成功业务回调。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内；请提供字段映射版本、持久化和跨实例幂等 Contract，避免 UI 拼接两种响应。
+- Risk 与 Backend：可信人工审批及 Safety Action Gateway 未联合验收；请提供受保护审批身份和执行前再检查协议，真实执行保持关闭。
+- UI 与 Backend：云入口尚非现有用户页面的正式后端，模型入口留存状态为 423；请确认服务端代理、本人隔离与 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED、401/403/409/423 恢复样例及正式交付提交。
+- Memory：缺既有授权下可信 memory_id、来源版本与撤回样例；请提供引用和 consent 证据，不扩展既有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实快照来源、时效与冲突样例；请提供可审计数据及版本/日期，不能用固定夹具证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 审核开发分支并明确实际交付基线，冻结跨链字段映射；模型费用 Owner 确认提供方和预算后再安排受限真实模型到 Risk 的联合验收。UI 补代理与恢复回执，Memory/Quant/Data 提供可信样例。继续保持 PAPER 与真实执行阻断。
+
+## Word 版式验收
+
+日报与手册均含两幅可读图像，完成 ZIP、正文、图片数量和页面可用宽度结构检查。已尝试 render_docx.py；当前 bundled 运行环境未提供 soffice.exe，若日志报依赖缺失同样视为渲染失败；未生成逐页 PNG，逐页版式验收未完成，不能标称版式通过。详情见本日 render.txt。
+
+---
+
+# Core Agent Daily Update 2026 10 28
+
+状态标注：已实现 = main 已有接口；已验证 = 本日离线检查通过；待 Owner 确认 = 正式可信 Risk 业务回写、跨链字段映射及持久化，均未验收。
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更：截至本轮检查，两份 origin/main 的北京时间 10 月 28 日提交列表均为空。本次只交付文档、图和检查证据，未搬运开发分支或未提交业务改动。主链路已实现请求到 Handoff 的只读交接，正式 Risk 审核闭环仍待 Owner 联合验收，真实执行保持关闭。
+
+## 今日真实产出
+
+两份 main 独立运行 check、284 项回归及 32 项严格 Schema/语义追踪检查；生成本日健康成功、同进程 Checkpoint 复用、失败信封证据。更新架构、模块时序和统一 Contract 联调手册，生成日报及手册 Word，嵌入可读图像。
+
+本日复核结论：团队基线 b47fd74、个人基线 48f51bd 均无今日业务提交。新生成的健康成功、同任务同会话 Checkpoint 复用及失败信封通过严格校验；失效 result_refs 虽结构合法，语义校验仍拒绝。今日合成健康请求统一使用 req-daily-20261028 前缀，留存模型证据仍明确标注为 10 月 17 日回放。团队开发提交 9e6bed1 仍非任一 main 的祖先；10 月 21 日公网结果仅为历史分支证据。两份 main 本日实测均为 284/284。完整证据见本日 verification.json 与 trace.json。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 当前字段状态与证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Risk/UI | 已实现且本轮验证 request_id、trace、task_state、artifacts、tool_results、audit_evidence、risk_handoff；contracts/investment-agent.v1.schema.json 与本日 trace.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现模型记录；session_id 可选，健康四字段仍无版本化同名映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 本轮通过；回调必填 request/task/run/audit/handoff 五编号及 hash，session 从存储关联；contracts/risk-handoff.v1.schema.json；正式可信接收与业务回写待确认 |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；contracts/core-agent-error.v1.schema.json；本轮失败信封通过 |
+
+字段生产方拥有版本、原始结果、编号和审计，消费方只能原样引用。必填字段、不可修改边界和异常状态见本日联调手册；本次未更改运行时 Schema。
+
+## B 可验证的集成进度
+
+- 两份 main 在 chenchen 运行 npm run check，exit 0；npm test -- --test-reporter=tap，各 284/284，失败和跳过均为 0；证据 daily-closeout-2026-10-28-check.txt、tests.txt。
+- 两仓库在 chenchen 运行 python docs/daily-closeout-check-2026-10-28.py，各 32/32；7 个正向对象通过完整 Draft 2020-12 Schema；新健康成功、同进程复用及失败信封的 request/task/session/version/audit、四阶段 result_refs 通过语义追踪。10 月 17 日留存合成模型记录的 9 条事件、六编号与提议 hash 对齐；不是今日真实模型请求。证据本日 trace.json、synthetic.json、trace.txt。
+- 复现需 Node >=22、Python jsonschema 4.26.0。本机用 bundled Python/Node，PYTHONPATH 指向自动化 python-deps，CORE_AGENT_NODE 指向 bundled node.exe；完整路径与基线见 verification.json。项目依赖未改。
+- git merge-base --is-ancestor 9e6bed1 HEAD 在两仓库均 exit 1，说明该开发分支提交尚未合入 main；并记录关键实现文件的存在性。本日未重新调用公网、模型、Risk 派发或交易接口，费用调用为 0。
+- 提交前执行 git diff --check 与 git diff --cached --check；本日 main 提交列表和远程编号核验见 verification.json 与 git-check.txt。
+
+## 金融数据测试与职责边界
+
+全量回归含 tests/market-brief.test.js：固定 2026-10-08/09 市场数据、价格新闻冲突及 Quant no-drift 通过，未检验今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，未修改或重新计算 Quant。Memory consent、范围、生命周期及清理规则未改。
+
+健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 边界并停止；导出通过不代表独立 Risk 已审核。模型 session_id 可选，Handoff session_id 必填可 null；健康 Session/Checkpoint 为进程内，不能声称跨重启恢复。audit_evidence 与模型 audit.events 无统一版本化映射。前端 approval 不是交易授权，execution_allowed=false。价格新闻冲突只保留 REVIEW_REQUIRED，不自动产生交易动作。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Backend 与 Risk：可信回调和云适配实现停留在开发分支，main 缺完整对应实现；请给出审核合入的提交与同一真实业务任务接收、签名回写、幂等/冲突/过期回执，并冻结 provider_response_id 缺失协议。预期产出为可复现联合验收记录，不能把历史机器鉴权或缺失任务测试称作成功业务回调。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内；请提供字段映射版本、持久化和跨实例幂等 Contract，避免 UI 拼接两种响应。
+- Risk 与 Backend：可信人工审批及 Safety Action Gateway 未联合验收；请提供受保护审批身份和执行前再检查协议，真实执行保持关闭。
+- UI 与 Backend：云入口尚非现有用户页面的正式后端，模型入口留存状态为 423；请确认服务端代理、本人隔离与 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED、401/403/409/423 恢复样例及正式交付提交。
+- Memory：缺既有授权下可信 memory_id、来源版本与撤回样例；请提供引用和 consent 证据，不扩展既有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实快照来源、时效与冲突样例；请提供可审计数据及版本/日期，不能用固定夹具证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 审核开发分支并明确实际交付基线，冻结跨链字段映射；模型费用 Owner 确认提供方和预算后再安排受限真实模型到 Risk 的联合验收。UI 补代理与恢复回执，Memory/Quant/Data 提供可信样例。继续保持 PAPER 与真实执行阻断。
+
+## Word 版式验收
+
+日报与手册均含两幅可读图像，完成 ZIP、正文、图片数量和页面可用宽度结构检查。已尝试 render_docx.py；当前 bundled 运行环境未提供 soffice.exe，若日志报依赖缺失同样视为渲染失败；未生成逐页 PNG，逐页版式验收未完成，不能标称版式通过。详情见本日 render.txt。
 
 
 ---
 
+# Core Agent Daily Update 2026-10-29
+
+## 今日结论与主链路阶段
+
+两个远程 main 均停留在 2026-10-28 日报提交，没有 2026-10-29 已合并业务代码。团队 Risk 分支与个人中国区部署分支存在今日提交但未进入 main，不能作为 main 已完成能力。今日真实产出：在最新 main 隔离工作树复跑主链路检查，更新架构图、模块时序图、统一 Contract 联调手册与本日日报。主链路仍停在 Risk Handoff/PENDING_REVIEW，真实执行继续关闭。
+
+## 今日真实产出
+
+- 登记 2026-10-29 架构图、模块调用时序图，图像嵌入本日日报与联调手册。
+- 更新历史日报、本日日报和联调手册，明确已实现、已验证、待 Owner 确认及字段归属。
+- 两个 origin/main 隔离工作树运行 npm run check、npm test -- --test-reporter=tap、git diff --check，原始输出见 daily-closeout-2026-10-29-*。
+- 未修改业务代码、Quant 逻辑、Memory consent/范围/生命周期/清理规则、Risk 或 UI 实现。
+
+## A. 已完成的核心接口
+
+| 接口 / Contract | 生产方 → 消费方 | 当前字段状态 | 证据 |
+| --- | --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Core/Harness → Risk/UI | request_id、task_id、session_id、task_state、artifacts、tool_results、risk_handoff、audit_evidence 可追踪；错误路径有 error envelope | investment-agent.v1.schema.json、本日回归日志 |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | request/task/session/run/audit 可关联；跨链路映射、持久化和正式 Risk 回写待确认 | model-review.v1.schema.json、历史联调手册 |
+| risk-handoff.v1 / callback | Core → Risk → Backend | Handoff 证据、提议哈希和审计绑定已验证；正式接收身份、签名回写、幂等/冲突/过期联合验收待确认 | risk-handoff.v1.schema.json、历史回归 |
+| core-agent-error.v1 | Core/Backend → Caller/UI | 版本、operation、request_id、trace、error 固定；任务错误可带 task/session/audit | core-agent-error.v1.schema.json、本日测试日志 |
+| core-agent-capabilities.v1 | Backend → UI | 只读能力状态区分配置、探针、Risk、审批、网关；不表示 Risk 已审核或可执行 | 历史 capabilities 证据 |
+
+字段版本由生产方维护，消费方不得改写。request_id、task_id、session_id、Contract version、audit_evidence 可追踪；跨模型/健康双链路映射和跨实例持久化仍有限制。
+
+## B. 可验证的集成进度
+
+- 团队 origin/main：npm run check exit 0；npm test -- --test-reporter=tap 284/284 通过，失败/跳过 0；git diff --check exit 0。
+- 个人 origin/main：同样 check exit 0；测试 284/284 通过，失败/跳过 0；git diff --check exit 0。
+- 复现位置均为 chenchen；无新的公网模型调用、Risk 派发或人审闭环，不把本地回归冒称生产联调。
+- 当日分支观察：团队 origin/codex/unified-risk-runtime-v1 有 Risk 权限收敛提交，个人 origin/codex/submission-china-domestic-v1 有中国区部署候选提交；两者均未合并到 main。
+
+## 金融数据与职责边界
+
+沿用固定金融夹具、价格/新闻冲突 REVIEW_REQUIRED、Quant no-drift 回归；未宣称 2026-10-29 实时行情验证。Core 只消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，不重算、不修改 Quant。Memory 规则未改动；主链路经过 Risk Handoff 后停止，前端 approval 不构成交易授权，execution_allowed=false。价格与新闻冲突只记录 REVIEW_REQUIRED，不自动生成交易动作。
+
+## C. 需要其他 Owner 配合的阻塞项
+
+- Risk：正式接收端点、可信服务身份/签名、回写与幂等/冲突/过期样例，当前仍是 PENDING_REVIEW。
+- Backend：健康链路与模型链路字段映射、跨实例 Session/TaskState/Checkpoint/audit 持久化、error envelope 版本策略。
+- UI：PENDING_RISK、FAILED、EXPIRED、REVIEW_REQUIRED、409/503 展示与恢复，不修改证据和审批身份。
+- Memory：授权 memory_id、来源/版本及撤回证据，不改变既有规则。
+- Quant/Data：结果版本、日期、持仓/资金来源、时效与冲突样例，Core 不自行补算。
+- 当前无外部 Owner 阻塞：不适用；以上跨模块确认仍是正式闭环前置条件。
+
+## 下一步
+
+先让 Risk/Backend 对齐正式 Handoff 接收与跨链路字段映射，再由 UI、Memory、Quant/Data 提供可审计回执和版本/时效样例；继续保持 PAPER、execution_allowed=false 与 Risk 停止点。
+
+## Word 版式验收
+
+已生成带架构图、时序图的 Word 日报和联调手册，完成 OOXML/ZIP、文本、嵌入图片和可用宽度结构检查。已尝试 canonical render_docx.py；若本机无 LibreOffice soffice.exe，页面 PNG 无法生成，逐页版式验收记录为未完成。
+
+
+---
+
+# Core Agent Daily Update 2026-10-29
+
+## 今日结论与主链路阶段
+
+两个远程 main 均停留在 2026-10-28 日报提交，没有 2026-10-29 已合并业务代码。团队 Risk 分支与个人中国区部署分支存在今日提交但未进入 main，不能作为 main 已完成能力。今日真实产出：在最新 main 隔离工作树复跑主链路检查，更新架构图、模块时序图、统一 Contract 联调手册与本日日报。主链路仍停在 Risk Handoff/PENDING_REVIEW，真实执行继续关闭。
+
+## 今日真实产出
+
+- 登记 2026-10-29 架构图、模块调用时序图，图像嵌入本日日报与联调手册。
+- 更新历史日报、本日日报和联调手册，明确已实现、已验证、待 Owner 确认及字段归属。
+- 两个 origin/main 隔离工作树运行 npm run check、npm test -- --test-reporter=tap、git diff --check，原始输出见 daily-closeout-2026-10-29-*。
+- 未修改业务代码、Quant 逻辑、Memory consent/范围/生命周期/清理规则、Risk 或 UI 实现。
+
+## A. 已完成的核心接口
+
+| 接口 / Contract | 生产方 → 消费方 | 当前字段状态 | 证据 |
+| --- | --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Core/Harness → Risk/UI | request_id、task_id、session_id、task_state、artifacts、tool_results、risk_handoff、audit_evidence 可追踪；错误路径有 error envelope | investment-agent.v1.schema.json、本日回归日志 |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | request/task/session/run/audit 可关联；跨链路映射、持久化和正式 Risk 回写待确认 | model-review.v1.schema.json、历史联调手册 |
+| risk-handoff.v1 / callback | Core → Risk → Backend | Handoff 证据、提议哈希和审计绑定已验证；正式接收身份、签名回写、幂等/冲突/过期联合验收待确认 | risk-handoff.v1.schema.json、历史回归 |
+| core-agent-error.v1 | Core/Backend → Caller/UI | 版本、operation、request_id、trace、error 固定；任务错误可带 task/session/audit | core-agent-error.v1.schema.json、本日测试日志 |
+| core-agent-capabilities.v1 | Backend → UI | 只读能力状态区分配置、探针、Risk、审批、网关；不表示 Risk 已审核或可执行 | 历史 capabilities 证据 |
+
+字段版本由生产方维护，消费方不得改写。request_id、task_id、session_id、Contract version、audit_evidence 可追踪；跨模型/健康双链路映射和跨实例持久化仍有限制。
+
+## B. 可验证的集成进度
+
+- 团队 origin/main：npm run check exit 0；npm test -- --test-reporter=tap 284/284 通过，失败/跳过 0；git diff --check exit 0。
+- 个人 origin/main：同样 check exit 0；测试 284/284 通过，失败/跳过 0；git diff --check exit 0。
+- 复现位置均为 chenchen；无新的公网模型调用、Risk 派发或人审闭环，不把本地回归冒称生产联调。
+- 当日分支观察：团队 origin/codex/unified-risk-runtime-v1 有 Risk 权限收敛提交，个人 origin/codex/submission-china-domestic-v1 有中国区部署候选提交；两者均未合并到 main。
+
+## 金融数据与职责边界
+
+沿用固定金融夹具、价格/新闻冲突 REVIEW_REQUIRED、Quant no-drift 回归；未宣称 2026-10-29 实时行情验证。Core 只消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，不重算、不修改 Quant。Memory 规则未改动；主链路经过 Risk Handoff 后停止，前端 approval 不构成交易授权，execution_allowed=false。价格与新闻冲突只记录 REVIEW_REQUIRED，不自动生成交易动作。
+
+## C. 需要其他 Owner 配合的阻塞项
+
+- Risk：正式接收端点、可信服务身份/签名、回写与幂等/冲突/过期样例，当前仍是 PENDING_REVIEW。
+- Backend：健康链路与模型链路字段映射、跨实例 Session/TaskState/Checkpoint/audit 持久化、error envelope 版本策略。
+- UI：PENDING_RISK、FAILED、EXPIRED、REVIEW_REQUIRED、409/503 展示与恢复，不修改证据和审批身份。
+- Memory：授权 memory_id、来源/版本及撤回证据，不改变既有规则。
+- Quant/Data：结果版本、日期、持仓/资金来源、时效与冲突样例，Core 不自行补算。
+- 当前无外部 Owner 阻塞：不适用；以上跨模块确认仍是正式闭环前置条件。
+
+## 下一步
+
+先让 Risk/Backend 对齐正式 Handoff 接收与跨链路字段映射，再由 UI、Memory、Quant/Data 提供可审计回执和版本/时效样例；继续保持 PAPER、execution_allowed=false 与 Risk 停止点。
+
+## Word 版式验收
+
+已生成带架构图、时序图的 Word 日报和联调手册，完成 OOXML/ZIP、文本、嵌入图片和可用宽度结构检查。已尝试 canonical render_docx.py；若本机无 LibreOffice soffice.exe，页面 PNG 无法生成，逐页版式验收记录为未完成。
+
+
+---
+
+# Core Agent Daily Update 2026-10-30
+
+## 今日结论与主链路阶段
+
+两个远程 origin/main 均停留在 2026-10-29 日报提交，没有 2026-10-30 已合并业务代码。今日真实产出是：在两个最新 origin/main 隔离工作树完成主链路回归，登记并复制架构图、模块调用时序图，更新统一 Contract 联调手册、本日日报和可复现检查证据。主链路仍停在 Risk Handoff/PENDING_REVIEW，真实执行继续关闭。
+
+## 今日真实产出
+
+- 今日无业务代码变更；只更新 chenchen/docs 文档、图和检查证据。
+- 登记 2026-10-30 架构图与模块调用时序图：Core Agent、Backend、Harness、Session、Context、TaskState、Tools、Quant、Memory、Risk、UI 的职责、数据流、边界和停止点沿用已验证主链路。
+- 更新统一 Contract 联调手册，保留已实现、已验证、待 Owner 确认、字段生产/消费/不可修改边界。
+- 在两个 origin/main 隔离工作树运行 check、284 项测试和 git diff --check；原始输出见本日 daily-closeout-2026-10-30-* 文件。
+
+## A. 已完成的核心接口
+
+| 接口 / Contract | 版本 | 生产方 → 消费方 | 当前字段状态 | 证据 |
+| --- | --- | --- | --- | --- |
+| investment-agent | v1 | Caller/Backend → Core/Harness → Risk/UI | request_id、task_id、session_id、task_state、artifacts、tool_results、risk_handoff、audit_evidence 可追踪；错误路径有 error envelope | investment-agent.v1.schema.json、本日测试日志 |
+| model-review / review-workflow | v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | request/task/session/run/audit 可关联；跨链路映射、持久化和正式 Risk 回写待确认 | 对应 Schema、联调手册 |
+| risk-handoff / callback | v1 | Core → Risk → Backend | Handoff 证据、提议哈希和审计绑定已验证；正式接收身份、签名回写、幂等/冲突/过期联合验收待确认 | risk-handoff.v1.schema.json、历史回归 |
+| core-agent-error | v1 | Core/Backend → Caller/UI | 版本、operation、request_id、trace、error 固定；任务错误可带 task/session/audit | core-agent-error.v1.schema.json、本日测试日志 |
+| core-agent-capabilities | v1 | Backend → UI | 只读能力状态区分配置、探针、Risk、审批、网关；不表示 Risk 已审核或可执行 | 历史 capabilities 证据 |
+
+字段版本由生产方维护，消费方不得改写。request_id、task_id、session_id、Contract version、audit_evidence 可追踪；跨模型/健康双链路映射和跨实例持久化仍有限制。
+
+## B. 可验证的集成进度
+
+- 团队 origin/main：npm run check exit 0；npm test -- --test-reporter=tap 284/284 通过，失败/跳过 0；git diff --check exit 0。
+- 个人 origin/main：同样 check exit 0；测试 284/284 通过，失败/跳过 0；git diff --check exit 0。
+- 复现命令：在各仓库 chenchen 目录运行 npm run check、npm test -- --test-reporter=tap、git diff --check；完整输出分别保存于 daily-closeout-2026-10-30-check.txt、tests.txt、git-check.txt。
+- 今日没有新的公网模型调用、Risk 派发或人审闭环；本地回归不冒称生产联调。
+
+## 金融数据与职责边界
+
+沿用固定金融夹具、价格/新闻冲突 REVIEW_REQUIRED、Quant no-drift 回归；未宣称 2026-10-30 实时行情验证。Core 只消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，不重算、不修改 Quant。Memory consent、范围、生命周期和清理规则未改动。主链路经过 Risk Handoff 后停止，前端 approval 不构成交易授权，execution_allowed=false。价格与新闻冲突只记录 REVIEW_REQUIRED，不自动生成交易动作。
+
+## C. 需要其他 Owner 配合的阻塞项
+
+- Risk：正式接收端点、可信服务身份/签名、回写与幂等/冲突/过期样例，当前仍是 PENDING_REVIEW。
+- Backend：健康链路与模型链路字段映射、跨实例 Session/TaskState/Checkpoint/audit 持久化、error envelope 版本策略。
+- UI：PENDING_RISK、FAILED、EXPIRED、REVIEW_REQUIRED、409/503 展示与恢复，不修改证据和审批身份。
+- Memory：授权 memory_id、来源/版本及撤回证据，不改变既有规则。
+- Quant/Data：结果版本、日期、持仓/资金来源、时效与冲突样例，Core 不自行补算。
+- 当前存在上述跨模块确认阻塞；不能标称 Risk 已完成审核闭环。
+
+## 下一步
+
+先让 Risk/Backend 对齐正式 Handoff 接收与跨链路字段映射，再由 UI、Memory、Quant/Data 提供可审计回执和版本/时效样例；继续保持 PAPER、execution_allowed=false 与 Risk 停止点。
+
+## Word 版式验收
+
+已生成带架构图、时序图的 Word 日报，完成 OOXML/ZIP、正文和嵌入图片结构检查。本次 canonical render_docx.py 实际在导入 pdf2image 时失败（ModuleNotFoundError）；未生成页面 PNG，逐页版式验收未完成。
+
+
+### 本日严格追踪检查
+
+两仓库本日严格 Draft 2020-12 Schema 与语义追踪检查均为 32/32（7 个正向对象）；生成 10 月 30 日健康成功/同进程复用/失败信封。10 月 17 日模型 9 条审计事件是留存合成回放，不是今日模型调用。失效 checkpoint result_refs 被语义校验拒绝。复现：在 chenchen 用 Python jsonschema 4.26.0 运行 docs/daily-closeout-check-2026-10-30.py；本机使用 bundled Python，PYTHONPATH 指向自动化 python-deps（系统 Python 首次缺 rpds 二进制，换 bundled 后通过）。
+
+---
+
+# Core Agent Daily Update 2026 10 31
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 今天在本轮检查前均无提交；团队基线 576504f193035482acb7216d20640d6a4ae457d2，个人基线 bfa0afcb60febb02d7129f0eed9b3867e089aa81。原始开发分支和未提交工作完整保留。本次只更新文档与检查证据，未修改业务实现或运行时 Schema。
+
+已实现：请求到只读 Risk Handoff 的主链路。已验证：今天两仓库独立 check、284 项回归、32 项 Schema 与语义追踪检查。待 Owner 确认：正式 Risk 业务接收、可信回写及联合验收。不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+新增本日健康成功、同任务同会话 Checkpoint 复用、工具失败信封的合成证据；复核 7 个正向对象的完整 Draft 2020-12 Schema，并确认错误 checkpoint 引用被语义校验拒绝。维护架构图、模块调用顺序图与统一 Contract 联调手册，重新生成含可读图像的日报和手册 Word。清理本日手册中的跨日期叙述，以本日基线和请求前缀 req-daily-20261031 为准；保留历史文档原文。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并验证 request_id、trace、task_state、artifacts、tool_results、risk_handoff、audit_evidence；contracts/investment-agent.v1.schema.json 与本日 synthetic.json、trace.json |
+| model-review.v1 与 review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；留存合成记录结构及审计复验通过；session_id 可选，健康四字段无统一版本映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 与 risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 通过；回调五编号及 proposal hash 必填，session 回查存储；正式可信接收回写待确认；contracts/risk-handoff.v1.schema.json |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；本日工具失败信封通过；contracts/core-agent-error.v1.schema.json |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable、状态和归属详见本日联调手册；不存在已经冻结的健康/模型统一映射，不能把手册当作新增运行时 Contract。
+
+## B 可验证的集成进度
+
+- 在两份干净 main 快照的 chenchen 目录分别运行 npm run check：exit 0；npm test -- --test-reporter=tap：各 284/284，失败和跳过均为 0。证据 daily-closeout-2026-10-31-check.txt、daily-closeout-2026-10-31-tests.txt。
+- 在 chenchen 运行 python docs/daily-closeout-check-2026-10-31.py：各 32/32，7 个正向对象完整 Draft 2020-12 Schema 通过。新生成健康成功/复用/失败，request_id、task_id、session_id、Contract version、audit_evidence 与四阶段 result_refs 可追踪。失败信封也保留已分配的 task/session/audit。
+- 同一检查复验 10 月 17 日留存的合成模型记录：9 条 audit.events、六编号和提议 hash 对齐。这是历史回放，不是今日真实模型调用或 Risk 接收。本日不发起公网、模型、付费、Risk 派发或交易调用。
+- 复现依赖 Node >=22、Python jsonschema 4.26.0；本机 bundled Python/Node 和自动化 python-deps 的完整路径见本日 verification.json。未改变项目依赖。执行 git diff --check 和 git diff --cached --check，原始结果见本日 git-check.txt。
+
+## 金融数据测试与边界
+
+tests/market-brief.test.js 的 4 项固定夹具回归已在本日全量测试通过：2026-10-08/09 市场上下文、价格新闻冲突和 Quant no-drift。未验证今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons；没有改写 Quant 算法或另建计算逻辑，离线测试仅调用既有工具。
+
+Memory 的 consent、范围、生命周期和清理规则未改；健康链路不自动读 Memory。健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 并停止，模型留存记录仍为 PENDING_RISK。前端 approval 不是交易授权；execution_allowed=false。价格和新闻方向冲突只记录 REVIEW_REQUIRED，不自动产生交易动作。
+
+追踪限制：健康 Session/Checkpoint 仍为进程内，本日只验证同进程复用；WorkflowRecord.session_id 可选，HandoffPackage.session_id 必填但可 null；模型 audit.events 与健康 audit_evidence 无版本化映射。结构校验不能替代语义校验或 Owner 审核。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：main 尚无正式可信业务接收/回写联合验收。需要 Owner 给出审核合入基线、同任务签名回调、身份、幂等、冲突、过期与存储未决回执；预期产出为可复现联合验收记录。留存云分支 9e6bed1 未合入任一 main，不能用旧鉴权测试代替业务闭环。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内。需要字段映射版本、持久化与跨实例幂等 Contract，并确认 provider_response_id 缺失时的拒绝与恢复协议。
+- Risk 与 Backend：可信人工审批和 Safety Action Gateway 未验收。需要受保护审批身份及执行前再检查协议，真实执行继续关闭。
+- UI 与 Backend：需要确认正式服务端代理、本人隔离、PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 恢复行为。预期产出为指定 main 基线的集成回执；本日没有新浏览器验收。
+- Memory：缺既有 consent 下可信 memory_id、来源版本和撤回样例。需要引用及授权证据，不扩展原有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实数据来源、时效和冲突样例。需要带版本及数据日期的可审计样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 确定审核合入基线和同任务回写验收，再冻结健康/模型字段映射与恢复协议。UI 补正式代理及恢复样例，Memory/Quant/Data 提供可信引用和版本化样例。模型提供方与预算获确认后，再安排受限真实模型至 Risk 联调。
+
+## Word 版式验收
+
+日报和手册均嵌入架构与时序图，已做 ZIP、OOXML、正文、图片数量和宽度结构检查。已尝试标准 render_docx.py；当前运行环境缺少 LibreOffice soffice.exe，未生成逐页 PNG，逐页版式验收未完成。不得将结构通过表述为版式通过，详见本日 render.txt。
+
+---
+
+# Core Agent Daily Update 2026 11 01
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 今天在本轮检查前均无提交；团队基线 282b0890d726dca03476d8afa189bf127b8f8a5c，个人基线 ced1ccad50319ba69385d7cbbe9c12114c840062。原始开发分支和未提交工作完整保留。本次只更新文档与检查证据，未修改业务实现或运行时 Schema。
+
+已实现：请求到只读 Risk Handoff 的主链路。已验证：今天两仓库独立 check、284 项回归、32 项 Schema 与语义追踪检查。待 Owner 确认：正式 Risk 业务接收、可信回写及联合验收。不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+新增本日健康成功、同任务同会话 Checkpoint 复用、工具失败信封的合成证据；复核 7 个正向对象的完整 Draft 2020-12 Schema，并确认错误 checkpoint 引用被语义校验拒绝。维护架构图、模块调用顺序图与统一 Contract 联调手册，重新生成含可读图像的日报和手册 Word。新增两仓库四份核心 Schema 的逐文件 SHA-256 对齐报告，明确相同版本的接口定义未漂移；本日请求前缀 req-daily-20261101，历史证据仍标明来源日期。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并验证 request_id、trace、task_state、artifacts、tool_results、risk_handoff、audit_evidence；contracts/investment-agent.v1.schema.json 与本日 synthetic.json、trace.json |
+| model-review.v1 与 review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；留存合成记录结构及审计复验通过；session_id 可选，健康四字段无统一版本映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 与 risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 通过；回调五编号及 proposal hash 必填，session 回查存储；正式可信接收回写待确认；contracts/risk-handoff.v1.schema.json |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；本日工具失败信封通过；contracts/core-agent-error.v1.schema.json |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable、状态和归属详见本日联调手册；不存在已经冻结的健康/模型统一映射，不能把手册当作新增运行时 Contract。
+
+## B 可验证的集成进度
+
+- 两仓库 investment-agent.v1、model-review.v1、risk-handoff.v1、core-agent-error.v1 的 Schema SHA-256 各自一致，4/4；复现命令与完整摘要见 daily-closeout-2026-11-01-interface-alignment.json，源检查脚本为 daily-interface-alignment-2026-11-01.py。这是定义对齐，不代表跨 Owner 业务联调通过。
+- 在两份干净 main 快照的 chenchen 目录分别运行 npm run check：exit 0；npm test -- --test-reporter=tap：各 284/284，失败和跳过均为 0。证据 daily-closeout-2026-11-01-check.txt、daily-closeout-2026-11-01-tests.txt。
+- 在 chenchen 运行 python docs/daily-closeout-check-2026-11-01.py：各 32/32，7 个正向对象完整 Draft 2020-12 Schema 通过。新生成健康成功/复用/失败，request_id、task_id、session_id、Contract version、audit_evidence 与四阶段 result_refs 可追踪。失败信封也保留已分配的 task/session/audit。
+- 同一检查复验 10 月 17 日留存的合成模型记录：9 条 audit.events、六编号和提议 hash 对齐。这是历史回放，不是今日真实模型调用或 Risk 接收。本日不发起公网、模型、付费、Risk 派发或交易调用。
+- 复现依赖 Node >=22、Python jsonschema 4.26.0；本机 bundled Python/Node 和自动化 python-deps 的完整路径见本日 verification.json。未改变项目依赖。执行 git diff --check 和 git diff --cached --check，原始结果见本日 git-check.txt。
+
+## 金融数据测试与边界
+
+tests/market-brief.test.js 的 4 项固定夹具回归已在本日全量测试通过：2026-10-08/09 市场上下文、价格新闻冲突和 Quant no-drift。未验证今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons；没有改写 Quant 算法或另建计算逻辑，离线测试仅调用既有工具。
+
+Memory 的 consent、范围、生命周期和清理规则未改；健康链路不自动读 Memory。健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 并停止，模型留存记录仍为 PENDING_RISK。前端 approval 不是交易授权；execution_allowed=false。价格和新闻方向冲突只记录 REVIEW_REQUIRED，不自动产生交易动作。
+
+追踪限制：健康 Session/Checkpoint 仍为进程内，本日只验证同进程复用；WorkflowRecord.session_id 可选，HandoffPackage.session_id 必填但可 null；模型 audit.events 与健康 audit_evidence 无版本化映射。结构校验不能替代语义校验或 Owner 审核。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：main 尚无正式可信业务接收/回写联合验收。需要 Owner 给出审核合入基线、同任务签名回调、身份、幂等、冲突、过期与存储未决回执；预期产出为可复现联合验收记录。留存云分支 9e6bed1 未合入任一 main，不能用旧鉴权测试代替业务闭环。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内。需要字段映射版本、持久化与跨实例幂等 Contract，并确认 provider_response_id 缺失时的拒绝与恢复协议。
+- Risk 与 Backend：可信人工审批和 Safety Action Gateway 未验收。需要受保护审批身份及执行前再检查协议，真实执行继续关闭。
+- UI 与 Backend：需要确认正式服务端代理、本人隔离、PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 恢复行为。预期产出为指定 main 基线的集成回执；本日没有新浏览器验收。
+- Memory：缺既有 consent 下可信 memory_id、来源版本和撤回样例。需要引用及授权证据，不扩展原有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实数据来源、时效和冲突样例。需要带版本及数据日期的可审计样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 确定审核合入基线和同任务回写验收，再冻结健康/模型字段映射与恢复协议。UI 补正式代理及恢复样例，Memory/Quant/Data 提供可信引用和版本化样例。模型提供方与预算获确认后，再安排受限真实模型至 Risk 联调。
+
+## Word 版式验收
+
+日报和手册均嵌入架构与时序图，已做 ZIP、OOXML、正文、图片数量和宽度结构检查。已尝试标准 render_docx.py；当前运行环境缺少 LibreOffice soffice.exe，未生成逐页 PNG，逐页版式验收未完成。不得将结构通过表述为版式通过，详见本日 render.txt。
+
+
+# Core Agent Daily Update 2026 11 02
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 均无 2026-11-02 主分支业务提交；团队基线 272f05f839cd68a1ae6a17b2eb410c1ddfc2bf7d，个人基线 25be827a2363a3274df94819eae1fa166e92883f。原始工作区中的协作者和个人未提交改动保留未动。本次只更新 chenchen/docs、检查证据与日报 DOCX。主链路仍到只读 Risk Handoff 后停止，正式 Risk 审核闭环未完成，execution_allowed=false。
+
+## 今日真实产出
+
+完成两仓库四份核心 Schema 的逐文件 SHA-256 对齐复核（4/4），并生成本日离线语义追踪证据：健康成功、同任务同会话 Checkpoint 复用、工具失败信封。更新本日 Markdown 与含架构图、时序图的 Word 日报；保留统一 Contract、字段归属和停止点说明。
+
+## A 已完成的核心接口
+
+| 接口/版本 | 生产方 → 消费方 | 字段状态与证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Risk/UI | request_id、trace、task_state、artifacts、tool_results、risk_handoff、audit_evidence 已验证；contracts/investment-agent.v1.schema.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/Store → Risk/UI | request/task/session/run/audit 可追踪；session_id 仍可选，未形成健康链路统一映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk → Backend | Schema 与回调编号/hash 约束已检查；正式可信接收、签名回写和联合验收待 Owner；contracts/risk-handoff.v1.schema.json |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；失败信封通过；contracts/core-agent-error.v1.schema.json |
+
+字段编号、版本、原始工具结果和审计由生产方维护，消费方不得改写。
+
+## B 可验证的集成进度
+
+- 两仓库分别运行 \`npm run check\`：exit 0；\`npm test -- --test-reporter=tap\`：各 284/284，失败、跳过均为 0。
+- 两仓库运行 \`python docs/daily-closeout-check-2026-11-02.py\`（Python jsonschema 4.26.0，使用自动化独立依赖）：各 32/32，7 个正向对象通过完整 Draft 2020-12 与语义追踪检查。
+- 运行 \`python docs/daily-interface-alignment-2026-11-02.py TEAM_ROOT PERSONAL_ROOT\`：4/4 Schema SHA-256 一致；该结果只证明定义未漂移，不代表跨 Owner 运行时互操作或 Risk 验收。
+- 执行 \`git diff --check\` 与 staged diff 检查通过。未发起公网、模型、付费、Risk 派发或交易调用；原始日志见本日 check/tests/interface-alignment/trace 文件。
+
+## 金融数据测试与边界
+
+固定 2026-10-08/09 市场夹具、价格与新闻冲突 REVIEW_REQUIRED、Quant no-drift 回归随全量测试通过；未验证 2026-11-02 实时行情。Core 仅消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，未重算或修改 Quant。Memory consent、范围、生命周期、清理规则未改，健康链路不自动读 Memory。经过 Risk Handoff 后停止；前端 approval 不是交易授权，execution_allowed=false。request_id、task_id、session_id、Contract version、audit_evidence 在本日合成追踪中可关联；健康 Session/Checkpoint 仍为进程内，模型 session 映射仍待 Backend。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk/Backend：提供正式可信接收、同任务签名回调、身份、幂等、冲突/过期/未决回执及联合验收。
+- Backend：冻结健康与模型字段映射、持久化、跨实例幂等，并确认 provider_response_id 缺失协议。
+- UI/Backend：确认正式代理、本人隔离及 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 恢复。
+- Memory：提供既有 consent 下 memory_id、来源版本和撤回证据。
+- Quant/Data：提供结果版本、数据日期、真实来源及时效冲突样例。
+
+## 下一步
+
+先完成 Risk/Backend 同任务回写联合验收和跨链字段映射，再由 UI、Memory、Quant/Data 提供可审计联调样例；继续保持 PAPER 与真实执行阻断。
+
+## Word 版式验收
+
+日报 DOCX 已嵌入架构与时序图，并完成 ZIP、OOXML、正文和图片结构检查。标准 render_docx.py 因环境缺少 LibreOffice soffice.exe 未生成逐页 PNG，版式验收未完成，未标记为通过。
+
+
+---
+
+# Core Agent Daily Update 2026 11 03
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 均无 2026-11-03 主分支业务提交；团队基线 $teamHash，个人基线 $persHash。本次只更新 chenchen/docs、检查证据与日报 DOCX。Core Agent 主链路仍在只读 Risk Handoff 后停止，正式 Risk 审核闭环未完成，execution_allowed=false。
+
+## 今日真实产出
+
+完成两仓库主链路回归复核：JavaScript 检查、全量 Node 测试、Contract/Schema 语义检查和跨仓库接口定义对齐；生成本日可审阅 Markdown、Word 日报及原始检查证据。架构图、模块时序图和统一 Contract 继续作为联调基线，字段归属、追踪键和停止点保持明确。
+
+## A 已完成的核心接口
+
+| 接口/版本 | 生产方 → 消费方 | 字段状态与证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Risk/UI | request_id、task_id、session_id、task_state、artifacts、tool_results、risk_handoff、audit_evidence 可追踪；contracts/investment-agent.v1.schema.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/Store → Risk/UI | request/task/session/run/audit 可追踪；session_id 与健康链路统一映射仍待 Backend；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk → Backend | 版本、任务、审计和幂等字段已定义；可信接收、签名回写和联合验收待 Risk/Backend；contracts/risk-handoff.v1.schema.json |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source、operation、request_id、trace、error envelope 必填；失败状态可审阅；contracts/core-agent-error.v1.schema.json |
+
+字段由生产方维护，消费方不得改写原始工具结果、Risk 决策或审计证据。
+
+## B 可验证的集成进度
+
+- 两仓库 
+pm run check 均 exit 0；
+pm test -- --test-reporter=tap 均 284/284，失败、跳过均为 0。
+- 两仓库 git diff --check 通过；本日未发起公网、模型、付费、Risk 派发或交易调用。
+- 复核既有 daily-closeout-check-2026-11-02.py 的 32/32 语义/Draft 2020-12 结果和 4/4 核心 Schema SHA-256 对齐证据；该结果是已保存证据复核，不宣称新 Owner 验收。
+- 本日证据文件：daily-closeout-2026-11-03-check.txt、daily-closeout-2026-11-03-tests.txt、daily-closeout-2026-11-03-interface-alignment.txt、daily-closeout-2026-11-03-render.txt。
+
+## 金融数据测试与边界
+
+固定 2026-10-08/09 市场夹具、价格与新闻冲突 REVIEW_REQUIRED、Quant no-drift 回归随全量测试通过；未验证 2026-11-03 实时行情。Core 仅消费现有 Quant metrics、target_weights、comparisons，未重算或修改 Quant。Memory consent、范围、生命周期、清理规则未改；未绕过 Risk，前端 approval 不是交易授权，execution_allowed=false。request_id、task_id、session_id、Contract version、audit_evidence 在既有合成追踪中可关联；健康 Session/Checkpoint 持久化和跨链映射仍有限制。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk/Backend：正式可信接收、同任务签名回调、身份、幂等、冲突/过期/未决回执及联合验收。
+- Backend：冻结健康与模型字段映射、持久化、跨实例幂等，并确认 provider_response_id 缺失协议。
+- UI/Backend：确认正式代理、本人隔离及 PENDING_RISK、FAILED、EXPIRED、REVIEW_REQUIRED 恢复。
+- Memory：提供既有 consent 下 memory_id、来源版本和撤回证据。
+- Quant/Data：提供结果版本、数据日期、真实来源及时效冲突样例。
+
+## 下一步
+
+先完成 Risk/Backend 同任务回写联合验收和跨链字段映射，再由 UI、Memory、Quant/Data 提供可审计联调样例；继续保持 PAPER 与真实执行阻断。
+
+## Word 版式验收
+
+日报 DOCX 已嵌入架构与时序图，并完成 ZIP、OOXML、正文和图片结构检查。标准 render_docx.py 因环境缺少 LibreOffice soffice.exe 未生成逐页 PNG，版式验收未完成，未标记为通过。
+
+## 2026-11-04
+
+### 今日结论与主链路阶段
+今日无业务代码变更。两份 origin/main 最新提交均为 2026-11-03 日报文档提交；本轮只更新 chenchen/docs、检查证据与日报 DOCX。Core Agent 主链路仍在只读 Risk Handoff 后停止，正式 Risk 审核闭环未完成，execution_allowed=false。
+
+### 今日真实产出
+完成两仓库 origin/main 隔离基线的主链路回归复核：JavaScript 检查、全量 Node 测试、Contract/Schema 既有证据复核、字段追踪边界和 git diff 检查；生成本日 Markdown、Word 日报及原始检查证据。未修改 Quant 逻辑、Memory consent/范围/生命周期/清理规则、Risk 或 UI 实现。
+
+### A. 已完成的核心接口
+- investment-agent.v1：Caller/Backend → Harness/Core → Risk/UI；request_id、task_id、session_id、task_state、artifacts、tool_results、risk_handoff、audit_evidence 可追踪。
+- model-review.v1 / review-workflow.v1：Caller → Backend/Store → Risk/UI；request/task/session/run/audit 可关联，健康 Session/Checkpoint 与模型映射仍待 Backend。
+- risk-handoff.v1 / risk-callback.v1：Core → Risk → Backend；版本、任务、审计、幂等字段已定义，可信接收、签名回写和联合验收待 Risk/Backend。
+- core-agent-error.v1：Backend/Core → Caller/UI；error envelope、request_id、trace 和异常状态可审阅。
+
+### B. 可验证的集成进度
+- 两仓库 origin/main 隔离工作树执行 Push-Location chenchen; npm run check：均 exit 0。
+- 两仓库执行 Push-Location chenchen; npm test -- --test-reporter=tap：均 284/284，失败、跳过、todo 均为 0。
+- 两仓库执行 git diff --check：通过。
+- 本日未发起公网、模型、付费、Risk 派发或交易调用；证据文件为 daily-closeout-2026-11-04-check.txt、daily-closeout-2026-11-04-tests.txt、daily-closeout-2026-11-04-git-check.txt。
+
+### 金融数据测试与边界
+固定 2026-10-08/09 市场夹具、价格与新闻冲突 REVIEW_REQUIRED、Quant no-drift 回归通过；未验证 2026-11-04 实时行情。Core 仅消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，未重算或修改 Quant。Memory 规则未改；未绕过 Risk，前端 approval 不是交易授权，execution_allowed=false。市场价格与新闻冲突只保留 REVIEW_REQUIRED，不生成交易动作。
+
+### C. 需要其他 Owner 配合的阻塞项
+- Risk/Backend：正式可信接收、签名回调、身份、幂等、冲突/过期/未决回执及联合验收。
+- Backend：冻结健康与模型字段映射、持久化、跨实例幂等及 provider_response_id 缺失协议。
+- UI/Backend：确认代理、本人隔离及 PENDING_RISK、FAILED、EXPIRED、REVIEW_REQUIRED 恢复。
+- Memory：提供既有 consent 下 memory_id、来源版本和撤回证据。
+- Quant/Data：提供结果版本、数据日期、真实来源及时效冲突样例。
+
+### 下一步
+先完成 Risk/Backend 同任务回写联合验收和跨链字段映射，再由 UI、Memory、Quant/Data 提供可审计联调样例；继续保持 PAPER 与真实执行阻断。
+
+### Word 版式验收
+DOCX 已嵌入架构与模块时序图，并完成 OOXML/ZIP、正文和图片结构检查。标准 render_docx.py 因环境缺少 LibreOffice soffice.exe 未生成逐页 PNG，版式验收未完成，未标记为通过。
+
+---
+
+# Core Agent Daily Update 2026 11 05
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 今天在本轮检查前均无提交；团队基线 4a5a5285740b4685d302be87bfeea7da8f2704ac，个人基线 5d37f6abb328f8f90b7d8e3bf3975dd7ec0fdc24。原始开发分支和未提交工作完整保留。本次只更新文档与检查证据，未修改业务实现或运行时 Schema。
+
+已实现：请求到只读 Risk Handoff 的主链路。已验证：今天两仓库独立 check、284 项回归、32 项 Schema 与语义追踪检查。待 Owner 确认：正式 Risk 业务接收、可信回写及联合验收。不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+新增本日健康成功、同任务同会话 Checkpoint 复用、工具失败信封的合成证据；复核 7 个正向对象的完整 Draft 2020-12 Schema，并确认错误 checkpoint 引用被语义校验拒绝。维护架构图、模块调用顺序图与统一 Contract 联调手册，重新生成含可读图像的日报和手册 Word。新增两仓库四份核心 Schema 的逐文件 SHA-256 对齐报告，明确相同版本的接口定义未漂移；本日请求前缀 req-daily-20261105，历史证据仍标明来源日期。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并验证 request_id、trace、task_state、artifacts、tool_results、risk_handoff、audit_evidence；contracts/investment-agent.v1.schema.json 与本日 synthetic.json、trace.json |
+| model-review.v1 与 review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；留存合成记录结构及审计复验通过；session_id 可选，健康四字段无统一版本映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 与 risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 通过；回调五编号及 proposal hash 必填，session 回查存储；正式可信接收回写待确认；contracts/risk-handoff.v1.schema.json |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；本日工具失败信封通过；contracts/core-agent-error.v1.schema.json |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable、状态和归属详见本日联调手册；不存在已经冻结的健康/模型统一映射，不能把手册当作新增运行时 Contract。
+
+## B 可验证的集成进度
+
+- 两仓库 investment-agent.v1、model-review.v1、risk-handoff.v1、core-agent-error.v1 的 Schema SHA-256 各自一致，4/4；复现命令与完整摘要见 daily-closeout-2026-11-05-interface-alignment.json，源检查脚本为 daily-interface-alignment-2026-11-05.py。这是定义对齐，不代表跨 Owner 业务联调通过。
+- 在两份干净 main 快照的 chenchen 目录分别运行 npm run check：exit 0；npm test -- --test-reporter=tap：各 284/284，失败和跳过均为 0。证据 daily-closeout-2026-11-05-check.txt、daily-closeout-2026-11-05-tests.txt。
+- 在 chenchen 运行 python docs/daily-closeout-check-2026-11-05.py：各 32/32，7 个正向对象完整 Draft 2020-12 Schema 通过。新生成健康成功/复用/失败，request_id、task_id、session_id、Contract version、audit_evidence 与四阶段 result_refs 可追踪。失败信封也保留已分配的 task/session/audit。
+- 同一检查复验 10 月 17 日留存的合成模型记录：9 条 audit.events、六编号和提议 hash 对齐。这是历史回放，不是今日真实模型调用或 Risk 接收。本日不发起公网、模型、付费、Risk 派发或交易调用。
+- 复现依赖 Node >=22、Python jsonschema 4.26.0；本机 bundled Python/Node 和自动化 python-deps 的完整路径见本日 verification.json。未改变项目依赖。执行 git diff --check 和 git diff --cached --check，原始结果见本日 git-check.txt。
+
+## 金融数据测试与边界
+
+tests/market-brief.test.js 的 4 项固定夹具回归已在本日全量测试通过：2026-10-08/09 市场上下文、价格新闻冲突和 Quant no-drift。未验证今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons；没有改写 Quant 算法或另建计算逻辑，离线测试仅调用既有工具。
+
+Memory 的 consent、范围、生命周期和清理规则未改；健康链路不自动读 Memory。健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 并停止，模型留存记录仍为 PENDING_RISK。前端 approval 不是交易授权；execution_allowed=false。价格和新闻方向冲突只记录 REVIEW_REQUIRED，不自动产生交易动作。
+
+追踪限制：健康 Session/Checkpoint 仍为进程内，本日只验证同进程复用；WorkflowRecord.session_id 可选，HandoffPackage.session_id 必填但可 null；模型 audit.events 与健康 audit_evidence 无版本化映射。结构校验不能替代语义校验或 Owner 审核。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：main 尚无正式可信业务接收/回写联合验收。需要 Owner 给出审核合入基线、同任务签名回调、身份、幂等、冲突、过期与存储未决回执；预期产出为可复现联合验收记录。留存云分支 9e6bed1 未合入任一 main，不能用旧鉴权测试代替业务闭环。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内。需要字段映射版本、持久化与跨实例幂等 Contract，并确认 provider_response_id 缺失时的拒绝与恢复协议。
+- Risk 与 Backend：可信人工审批和 Safety Action Gateway 未验收。需要受保护审批身份及执行前再检查协议，真实执行继续关闭。
+- UI 与 Backend：需要确认正式服务端代理、本人隔离、PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 恢复行为。预期产出为指定 main 基线的集成回执；本日没有新浏览器验收。
+- Memory：缺既有 consent 下可信 memory_id、来源版本和撤回样例。需要引用及授权证据，不扩展原有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实数据来源、时效和冲突样例。需要带版本及数据日期的可审计样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 确定审核合入基线和同任务回写验收，再冻结健康/模型字段映射与恢复协议。UI 补正式代理及恢复样例，Memory/Quant/Data 提供可信引用和版本化样例。模型提供方与预算获确认后，再安排受限真实模型至 Risk 联调。
+
+## Word 版式验收
+
+日报和手册均嵌入架构与时序图，已做 ZIP、OOXML、正文、图片数量和宽度结构检查。已尝试标准 render_docx.py；当前运行环境缺少 LibreOffice soffice.exe，未生成逐页 PNG，逐页版式验收未完成。不得将结构通过表述为版式通过，详见本日 render.txt。
+
+---
+
+# Core Agent Daily Update 2026 11 06
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 今天在本轮检查前均无提交；团队基线 867ad57ecdd3376f5f29aa69d11c8e8c65a0a164，个人基线 25f4f95b03d66542369e709b7226b53a3c977aac。原始开发分支和未提交工作完整保留。本次只更新文档与检查证据，未修改业务实现或运行时 Schema。
+
+已实现：请求到只读 Risk Handoff 的主链路。已验证：今天两仓库独立 check、284 项回归、32 项 Schema 与语义追踪检查。待 Owner 确认：正式 Risk 业务接收、可信回写及联合验收。不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+新增本日健康成功、同任务同会话 Checkpoint 复用、工具失败信封的合成证据；复核 7 个正向对象的完整 Draft 2020-12 Schema，并确认错误 checkpoint 引用被语义校验拒绝。维护架构图、模块调用顺序图与统一 Contract 联调手册，复核既有图像并嵌入本日日报和手册 Word（图像内容仍为 11 月 5 日基线，未虚构架构变化）。新增两仓库四份核心 Schema 的逐文件 SHA-256 对齐报告，明确相同版本的接口定义未漂移；本日请求前缀 req-daily-20261106，历史证据仍标明来源日期。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并验证 request_id、trace、task_state、artifacts、tool_results、risk_handoff、audit_evidence；contracts/investment-agent.v1.schema.json 与本日 synthetic.json、trace.json |
+| model-review.v1 与 review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；留存合成记录结构及审计复验通过；session_id 可选，健康四字段无统一版本映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 与 risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 通过；回调五编号及 proposal hash 必填，session 回查存储；正式可信接收回写待确认；contracts/risk-handoff.v1.schema.json |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；本日工具失败信封通过；contracts/core-agent-error.v1.schema.json |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable、状态和归属详见本日联调手册；不存在已经冻结的健康/模型统一映射，不能把手册当作新增运行时 Contract。
+
+## B 可验证的集成进度
+
+- 两仓库 investment-agent.v1、model-review.v1、risk-handoff.v1、core-agent-error.v1 的 Schema SHA-256 各自一致，4/4；复现命令与完整摘要见 daily-closeout-2026-11-06-interface-alignment.json，源检查脚本为 daily-interface-alignment-2026-11-06.py。这是定义对齐，不代表跨 Owner 业务联调通过。
+- 在两份干净 main 快照的 chenchen 目录分别运行 npm run check：exit 0；npm test -- --test-reporter=tap：各 284/284，失败和跳过均为 0。证据 daily-closeout-2026-11-06-check.txt、daily-closeout-2026-11-06-tests.txt。
+- 在 chenchen 运行 python docs/daily-closeout-check-2026-11-06.py：各 32/32，7 个正向对象完整 Draft 2020-12 Schema 通过。新生成健康成功/复用/失败，request_id、task_id、session_id、Contract version、audit_evidence 与四阶段 result_refs 可追踪。失败信封也保留已分配的 task/session/audit。
+- 同一检查复验 10 月 17 日留存的合成模型记录：9 条 audit.events、六编号和提议 hash 对齐。这是历史回放，不是今日真实模型调用或 Risk 接收。本日不发起公网、模型、付费、Risk 派发或交易调用。
+- 复现依赖 Node >=22、Python jsonschema 4.26.0；本机使用 bundled Python/Node 与 C:/Users/33183/.codex/automations/core-agent-daily-update/python-deps；先设置 PYTHONPATH 指向该目录，再执行所列命令。未改变项目依赖。执行 git diff --check 和 git diff --cached --check，原始结果见本日 git-check.txt。
+
+## 金融数据测试与边界
+
+tests/market-brief.test.js 的 4 项固定夹具回归已在本日全量测试通过：2026-10-08/09 市场上下文、价格新闻冲突和 Quant no-drift。未验证今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons；没有改写 Quant 算法或另建计算逻辑，离线测试仅调用既有工具。
+
+Memory 的 consent、范围、生命周期和清理规则未改；健康链路不自动读 Memory。健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 并停止，模型留存记录仍为 PENDING_RISK。前端 approval 不是交易授权；execution_allowed=false。价格和新闻方向冲突只记录 REVIEW_REQUIRED，不自动产生交易动作。
+
+追踪限制：健康 Session/Checkpoint 仍为进程内，本日只验证同进程复用；WorkflowRecord.session_id 可选，HandoffPackage.session_id 必填但可 null；模型 audit.events 与健康 audit_evidence 无版本化映射。结构校验不能替代语义校验或 Owner 审核。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：main 尚无正式可信业务接收/回写联合验收。需要 Owner 给出审核合入基线、同任务签名回调、身份、幂等、冲突、过期与存储未决回执；预期产出为可复现联合验收记录。留存云分支 9e6bed1 未合入任一 main，不能用旧鉴权测试代替业务闭环。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内。需要字段映射版本、持久化与跨实例幂等 Contract，并确认 provider_response_id 缺失时的拒绝与恢复协议。
+- Risk 与 Backend：可信人工审批和 Safety Action Gateway 未验收。需要受保护审批身份及执行前再检查协议，真实执行继续关闭。
+- UI 与 Backend：需要确认正式服务端代理、本人隔离、PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 恢复行为。预期产出为指定 main 基线的集成回执；本日没有新浏览器验收。
+- Memory：缺既有 consent 下可信 memory_id、来源版本和撤回样例。需要引用及授权证据，不扩展原有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实数据来源、时效和冲突样例。需要带版本及数据日期的可审计样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 确定审核合入基线和同任务回写验收，再冻结健康/模型字段映射与恢复协议。UI 补正式代理及恢复样例，Memory/Quant/Data 提供可信引用和版本化样例。模型提供方与预算获确认后，再安排受限真实模型至 Risk 联调。
+
+## Word 版式验收
+
+日报和手册均嵌入架构与时序图，已做 ZIP、OOXML、正文和图片数量结构检查。已尝试标准 render_docx.py；当前运行环境缺少 LibreOffice soffice.exe，未生成逐页 PNG，逐页版式验收未完成。不得将结构通过表述为版式通过，详见本日 render.txt。
+
+---
+
+# Core Agent Daily Update 2026 11 07
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 今天在本轮检查前均无提交；团队基线 8e2eac399a85f69ee63371e8e76d7ca69d1149e8，个人基线 e9e3c095d626d539fa9f70de598c36c923387008。原始开发分支和未提交工作完整保留。本次只更新文档与检查证据，未修改业务实现或运行时 Schema。
+
+已实现：请求到只读 Risk Handoff 的主链路。已验证：今天两仓库独立 check、284 项回归、32 项 Schema 与语义追踪检查。待 Owner 确认：正式 Risk 业务接收、可信回写及联合验收。不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+新增本日健康成功、同任务同会话 Checkpoint 复用、工具失败信封的合成证据；复核 7 个正向对象的完整 Draft 2020-12 Schema，并确认错误 checkpoint 引用被语义校验拒绝。维护架构图、模块调用顺序图与统一 Contract 联调手册，重新生成含可读图像的日报和手册 Word。新增两仓库四份核心 Schema 的逐文件 SHA-256 对齐报告，明确相同版本的接口定义未漂移；本日请求前缀 req-daily-20261107，历史证据仍标明来源日期。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并验证 request_id、trace、task_state、artifacts、tool_results、risk_handoff、audit_evidence；contracts/investment-agent.v1.schema.json 与本日 synthetic.json、trace.json |
+| model-review.v1 与 review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；留存合成记录结构及审计复验通过；session_id 可选，健康四字段无统一版本映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 与 risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 通过；回调五编号及 proposal hash 必填，session 回查存储；正式可信接收回写待确认；contracts/risk-handoff.v1.schema.json |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；本日工具失败信封通过；contracts/core-agent-error.v1.schema.json |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable、状态和归属详见本日联调手册；不存在已经冻结的健康/模型统一映射，不能把手册当作新增运行时 Contract。
+
+## B 可验证的集成进度
+
+- 两仓库 investment-agent.v1、model-review.v1、risk-handoff.v1、core-agent-error.v1 的 Schema SHA-256 各自一致，4/4；复现命令与完整摘要见 daily-closeout-2026-11-07-interface-alignment.json，源检查脚本为 daily-interface-alignment-2026-11-07.py。这是定义对齐，不代表跨 Owner 业务联调通过。
+- 在两份干净 main 快照的 chenchen 目录分别运行 npm run check：exit 0；npm test -- --test-reporter=tap：各 284/284，失败和跳过均为 0。证据 daily-closeout-2026-11-07-check.txt、daily-closeout-2026-11-07-tests.txt。
+- 在 chenchen 运行 python docs/daily-closeout-check-2026-11-07.py：各 32/32，7 个正向对象完整 Draft 2020-12 Schema 通过。新生成健康成功/复用/失败，request_id、task_id、session_id、Contract version、audit_evidence 与四阶段 result_refs 可追踪。失败信封也保留已分配的 task/session/audit。
+- 同一检查复验 10 月 17 日留存的合成模型记录：9 条 audit.events、六编号和提议 hash 对齐。这是历史回放，不是今日真实模型调用或 Risk 接收。本日不发起公网、模型、付费、Risk 派发或交易调用。
+- 复现依赖 Node >=22、Python jsonschema 4.26.0；本机 bundled Python/Node 和自动化 python-deps 的完整路径见本日 verification.json。未改变项目依赖。执行 git diff --check 和 git diff --cached --check，原始结果见本日 git-check.txt。
+
+## 金融数据测试与边界
+
+tests/market-brief.test.js 的 4 项固定夹具回归已在本日全量测试通过：2026-10-08/09 市场上下文、价格新闻冲突和 Quant no-drift。未验证今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons；没有改写 Quant 算法或另建计算逻辑，离线测试仅调用既有工具。
+
+Memory 的 consent、范围、生命周期和清理规则未改；健康链路不自动读 Memory。健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 并停止，模型留存记录仍为 PENDING_RISK。前端 approval 不是交易授权；execution_allowed=false。价格和新闻方向冲突只记录 REVIEW_REQUIRED，不自动产生交易动作。
+
+追踪限制：健康 Session/Checkpoint 仍为进程内，本日只验证同进程复用；WorkflowRecord.session_id 可选，HandoffPackage.session_id 必填但可 null；模型 audit.events 与健康 audit_evidence 无版本化映射。结构校验不能替代语义校验或 Owner 审核。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：main 尚无正式可信业务接收/回写联合验收。需要 Owner 给出审核合入基线、同任务签名回调、身份、幂等、冲突、过期与存储未决回执；预期产出为可复现联合验收记录。留存云分支 9e6bed1 未合入任一 main，不能用旧鉴权测试代替业务闭环。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内。需要字段映射版本、持久化与跨实例幂等 Contract，并确认 provider_response_id 缺失时的拒绝与恢复协议。
+- Risk 与 Backend：可信人工审批和 Safety Action Gateway 未验收。需要受保护审批身份及执行前再检查协议，真实执行继续关闭。
+- UI 与 Backend：需要确认正式服务端代理、本人隔离、PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 恢复行为。预期产出为指定 main 基线的集成回执；本日没有新浏览器验收。
+- Memory：缺既有 consent 下可信 memory_id、来源版本和撤回样例。需要引用及授权证据，不扩展原有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实数据来源、时效和冲突样例。需要带版本及数据日期的可审计样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 确定审核合入基线和同任务回写验收，再冻结健康/模型字段映射与恢复协议。UI 补正式代理及恢复样例，Memory/Quant/Data 提供可信引用和版本化样例。模型提供方与预算获确认后，再安排受限真实模型至 Risk 联调。
+
+## Word 版式验收
+
+日报和手册均嵌入架构与时序图，已做 ZIP、OOXML、正文、图片数量和宽度结构检查。已尝试标准 render_docx.py；当前运行环境缺少 LibreOffice soffice.exe，未生成逐页 PNG，逐页版式验收未完成。不得将结构通过表述为版式通过，详见本日 render.txt。
+
+---
+
+# Core Agent Daily Update 2026 11 08
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 今天在本轮检查前均无提交；团队基线 dae463655026fcbbe6b3163e7653b8f0a07b35b2，个人基线 02eae1c609297273069411b713cd7c1eab490fd1。原始开发分支和未提交工作完整保留。本次只更新文档与检查证据，未修改业务实现或运行时 Schema。
+
+已实现：请求到只读 Risk Handoff 的主链路。已验证：今天两仓库独立 check、284 项回归、32 项 Schema 与语义追踪检查。待 Owner 确认：正式 Risk 业务接收、可信回写及联合验收。不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+新增本日健康成功、同任务同会话 Checkpoint 复用、工具失败信封的合成证据；复核 7 个正向对象的完整 Draft 2020-12 Schema，并确认错误 checkpoint 引用被语义校验拒绝。维护架构图、模块调用顺序图与统一 Contract 联调手册，复核并沿用 11 月 7 日架构与时序图基线，嵌入本日日报和手册 Word（今日未发现架构实现变更）。新增两仓库四份核心 Schema 的逐文件 SHA-256 对齐报告，明确相同版本的接口定义未漂移；本日请求前缀 req-daily-20261108，历史证据仍标明来源日期。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并验证 request_id、trace、task_state、artifacts、tool_results、risk_handoff、audit_evidence；contracts/investment-agent.v1.schema.json 与本日 synthetic.json、trace.json |
+| model-review.v1 与 review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；留存合成记录结构及审计复验通过；session_id 可选，健康四字段无统一版本映射；contracts/model-review.v1.schema.json |
+| risk-handoff.v1 与 risk-callback.v1 | Core → Risk；Risk → Backend | 导出完整 Schema 通过；回调五编号及 proposal hash 必填，session 回查存储；正式可信接收回写待确认；contracts/risk-handoff.v1.schema.json |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 必填；未分配编号可 null；本日工具失败信封通过；contracts/core-agent-error.v1.schema.json |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable、状态和归属详见本日联调手册；不存在已经冻结的健康/模型统一映射，不能把手册当作新增运行时 Contract。
+
+## B 可验证的集成进度
+
+- 两仓库 investment-agent.v1、model-review.v1、risk-handoff.v1、core-agent-error.v1 的 Schema SHA-256 各自一致，4/4；复现命令与完整摘要见 daily-closeout-2026-11-08-interface-alignment.json，源检查脚本为 daily-interface-alignment-2026-11-08.py。这是定义对齐，不代表跨 Owner 业务联调通过。
+- 在两份干净 main 快照的 chenchen 目录分别运行 npm run check：exit 0；npm test -- --test-reporter=tap：各 284/284，失败和跳过均为 0。证据 daily-closeout-2026-11-08-check.txt、daily-closeout-2026-11-08-tests.txt。
+- 在 chenchen 运行 python docs/daily-closeout-check-2026-11-08.py：各 32/32，7 个正向对象完整 Draft 2020-12 Schema 通过。新生成健康成功/复用/失败，request_id、task_id、session_id、Contract version、audit_evidence 与四阶段 result_refs 可追踪。失败信封也保留已分配的 task/session/audit。
+- 同一检查复验 10 月 17 日留存的合成模型记录：9 条 audit.events、六编号和提议 hash 对齐。这是历史回放，不是今日真实模型调用或 Risk 接收。本日不发起公网、模型、付费、Risk 派发或交易调用。
+- 复现依赖 Node >=22、Python jsonschema 4.26.0；本机 bundled Python/Node 和自动化 python-deps 的完整路径见本日 verification.json；先将 PYTHONPATH 设置为该 python-deps 目录、CORE_AGENT_NODE 设置为 bundled Node，再执行检查。未改变项目依赖。执行 git diff --check 和 git diff --cached --check，原始结果见本日 git-check.txt。
+
+
+
+复现字段对齐：在仓库根目录执行 python chenchen/docs/daily-interface-alignment-2026-11-08.py TEAM_ROOT PERSONAL_ROOT（传入两份已核对 main 的工作树绝对路径）。本日四份核心 Schema 哈希 4/4 相同。
+
+## 金融数据测试与边界
+
+tests/market-brief.test.js 的 4 项固定夹具回归已在本日全量测试通过：2026-10-08/09 市场上下文、价格新闻冲突和 Quant no-drift。未验证今日实时行情。Core 消费现有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons；没有改写 Quant 算法或另建计算逻辑，离线测试仅调用既有工具。
+
+Memory 的 consent、范围、生命周期和清理规则未改；健康链路不自动读 Memory。健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 并停止，模型留存记录仍为 PENDING_RISK。前端 approval 不是交易授权；execution_allowed=false。价格和新闻方向冲突只记录 REVIEW_REQUIRED，不自动产生交易动作。
+
+追踪限制：健康 Session/Checkpoint 仍为进程内，本日只验证同进程复用；WorkflowRecord.session_id 可选，HandoffPackage.session_id 必填但可 null；模型 audit.events 与健康 audit_evidence 无版本化映射。结构校验不能替代语义校验或 Owner 审核。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：main 尚无正式可信业务接收/回写联合验收。需要 Owner 给出审核合入基线、同任务签名回调、身份、幂等、冲突、过期与存储未决回执；预期产出为可复现联合验收记录。留存云分支 9e6bed1 未合入任一 main，不能用旧鉴权测试代替业务闭环。
+- Backend：健康 task_state/artifacts/tool_results/audit_evidence 与模型记录无版本化映射，健康状态仅进程内。需要字段映射版本、持久化与跨实例幂等 Contract，并确认 provider_response_id 缺失时的拒绝与恢复协议。
+- Risk 与 Backend：可信人工审批和 Safety Action Gateway 未验收。需要受保护审批身份及执行前再检查协议，真实执行继续关闭。
+- UI 与 Backend：需要确认正式服务端代理、本人隔离、PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 恢复行为。预期产出为指定 main 基线的集成回执；本日没有新浏览器验收。
+- Memory：缺既有 consent 下可信 memory_id、来源版本和撤回样例。需要引用及授权证据，不扩展原有规则。
+- Quant 与 Data：缺共同冻结的结果版本、真实数据来源、时效和冲突样例。需要带版本及数据日期的可审计样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Backend/Risk 确定审核合入基线和同任务回写验收，再冻结健康/模型字段映射与恢复协议。UI 补正式代理及恢复样例，Memory/Quant/Data 提供可信引用和版本化样例。模型提供方与预算获确认后，再安排受限真实模型至 Risk 联调。
+
+## Word 版式验收
+
+日报和手册均嵌入架构与时序图，已做 ZIP、OOXML、正文、图片数量和宽度结构检查。已尝试标准 render_docx.py；当前运行环境缺少 LibreOffice soffice.exe，未生成逐页 PNG，逐页版式验收未完成。不得将结构通过表述为版式通过，详见本日 render.txt。
+# Core Agent Daily Update 2026 11 09
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 在本轮检查前均无 2026-11-09 提交；团队远程基线 1480aca14a2f7844cfd2bdade94948936534acc7，个人远程基线 3cfa0091e3f60561b3ecc905c99d45fe46c49428。原始开发分支和未提交工作完整保留，本轮只在干净 main 快照更新 chenchen/docs。当前阶段是“Core Agent 请求到只读 Risk Handoff 已实现并可离线验证，正式 Risk 业务接收/可信回写待 Owner 联合验收”；不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+复核并复制可读架构图、模块调用时序图到 2026-11-09 版本；维护统一 Contract 联调说明，复查四份核心运行时 Schema 的必填字段、字段生产/消费归属及 request_id、task_id、session_id、Contract version、audit_evidence 追踪限制。新增本日字段对齐与日报检查证据，未修改 Quant、Memory、Risk、UI 实现或运行时 Schema。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 当前字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并离线验证 request_id、task_state、artifacts、tool_results、risk_handoff、audit_evidence；源 contracts/investment-agent.v1.schema.json，本日 trace/synthetic 证据 |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；model session_id 仍可选，和健康 task_state 四字段没有冻结映射；源 contracts/model-review.v1.schema.json |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | Handoff 与回调编号、proposal hash 结构已验证；可信业务接收、身份、幂等和回写仍待 Risk/Backend 联合验收；源 contracts/risk-handoff.v1.schema.json |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace、error 结构已验证；失败不能由 UI 文案改成成功；源 contracts/core-agent-error.v1.schema.json |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable 和禁止修改规则详见本日联调手册。
+
+## B 可验证的集成进度
+
+- 两仓库四份核心 Schema 的 SHA-256 对齐检查：4/4；复现脚本 `python chenchen/docs/daily-interface-alignment-2026-11-08.py TEAM_ROOT PERSONAL_ROOT`，本日复核结果沿用并记录在 `daily-closeout-2026-11-09-interface-alignment.json`。
+- 两份干净 main 快照的 `npm run check`：各 exit 0；`npm test -- --test-reporter=tap`：各 284/284，失败和跳过均为 0。完整输出见本日 check/tests 证据。
+- 离线 `python docs/daily-closeout-check-2026-11-08.py`：32/32；7 个正向对象通过 Draft 2020-12 与语义追踪，健康成功/同任务同会话复用/工具失败信封均可追踪 request_id、task_id、session_id、Contract version、audit_evidence。此为合成离线检查，不是今日公网、模型、Risk 派发或交易调用。
+- `git diff --check` 与暂存区检查通过；DOCX ZIP/OOXML/正文/两张嵌入图片/图片宽度结构检查通过。已尝试 `render_docx.py`，环境缺少 LibreOffice `soffice.exe`，未生成逐页 PNG，版式验收明确未完成。
+
+## 金融数据测试与边界
+
+tests/market-brief.test.js 的 4 项固定夹具回归通过，覆盖 2026-10-08/09 市场上下文、价格新闻冲突和 Quant no-drift。未验证 2026-11-09 实时行情。Core Agent 仅消费既有 `diagnosePortfolio.metrics`、`generateCandidates.target_weights`、`runSimulation.comparisons`；没有重算或修改 Quant。Memory 的 consent、范围、生命周期和清理规则未改，健康链路不自动读 Memory。健康任务经过 RISK_CHECK/HANDOFF_REQUIRED 后停止；前端 approval 不是交易授权；价格与新闻冲突只保留 REVIEW_REQUIRED，不自动生成交易动作。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：提供正式可信业务接收/回写联合验收，包含同任务身份、签名、幂等、冲突、过期、持久化未决回执；云分支 9e6bed1 尚未合入 main，不能替代 main 验收。
+- Backend：冻结健康 task_state/artifacts/tool_results/audit_evidence 与模型 WorkflowRecord 的版本化映射、跨实例持久化和 provider_response_id 缺失恢复协议。
+- UI 与 Backend：确认服务端代理、本人隔离以及 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 恢复行为。
+- Memory：提供既有 consent 下可信 memory_id、来源版本和撤回样例，不扩展原规则。
+- Quant 与 Data：提供共同冻结的结果版本、真实数据来源/时效和冲突样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Risk/Backend 完成同任务可信回写联合验收，再冻结健康/模型字段映射与恢复协议；随后由 UI、Memory、Quant/Data 补齐代理恢复、可信引用和版本化样例。Risk 正式闭环前继续保持 execution_allowed=false。
+
+## Word 版式验收
+
+日报和联调手册均嵌入架构与时序图。结构检查通过；标准 `render_docx.py` 因缺少 LibreOffice `soffice.exe` 未生成逐页 PNG，逐页版式验收未完成，不能将结构检查表述为版式通过。
+
+![架构图](core-agent-architecture-2026-11-09.png)
+
+![时序图](core-agent-sequence-2026-11-09.png)
+
+---
+
+# Core Agent Daily Update 2026-11-10
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 在检查时均没有 2026-11-10 业务提交；团队远程基线 83154c30ae434c46b422fbe9dfec932b4edda9cc，个人远程基线 d6dbeba3780dd87f13df1616f7056f8caf18a69d。原始开发分支和未提交协作者工作保留，本次只在干净 main 快照更新 chenchen/docs。当前阶段为“Core Agent 请求到只读 Risk Handoff 已实现并可离线验证，正式 Risk 业务接收、可信回写和跨实例持久化仍待 Owner 联合验收”；不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+维护 2026-11-10 架构图、模块调用时序图和日报 DOCX；复查统一 Contract 的四份核心运行时 Schema、字段归属和追踪限制。新增本日检查输出，未修改 Quant、Memory、Risk、UI 实现或运行时 Schema。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 当前字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并离线验证 request_id、task_state、artifacts、tool_results、risk_handoff、audit_evidence；源 contracts/investment-agent.v1.schema.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；WorkflowRecord 的 session_id 仍可选，和健康链路四字段的版本化映射待 Backend 冻结 |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | Handoff、回调编号、proposal hash 和失败闭环结构可验证；正式可信接收、身份、幂等和回写仍待 Risk/Backend 联验 |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace 和 error envelope 可验证；UI 不得把失败改写成成功 |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable 和禁止修改规则以运行时 Schema 为准。
+
+## B 可验证的集成进度
+
+- 两仓库 npm run check：各 exit 0；npm test -- --test-reporter=tap：各 284/284，失败、跳过和 todo 均为 0。完整输出见 daily-closeout-2026-11-10-tests.txt。
+- 四份核心 Schema 的 SHA-256 对齐检查：4/4；结果见 daily-closeout-2026-11-10-interface-alignment.json。
+- git diff --check 和暂存区检查通过；DOCX ZIP/OOXML/正文/两张嵌入图片/图片宽度结构检查通过。标准 render_docx.py 因环境缺少 LibreOffice soffice.exe 未生成逐页 PNG，版式验收明确未完成。
+- 本日没有公网、模型、付费、Risk 派发、人工审批或交易调用；所有新增验证为离线/本地测试。
+
+## 金融数据测试与边界
+
+固定 2026-10-08/09 市场上下文夹具的 4 项回归、价格与新闻冲突 REVIEW_REQUIRED 以及 Quant no-drift 结果沿用并复核；未验证 2026-11-10 实时行情。Core Agent 只消费既有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，没有重算或修改 Quant。Memory 的 consent、范围、生命周期和清理规则未改；健康链路不自动读 Memory。请求经过 Risk 检查/Handoff 后停止；前端 approval 不是交易授权；冲突只保留 REVIEW_REQUIRED，不自动生成交易动作。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：提供同任务可信业务接收/回写联合验收，包含签名、身份、幂等、冲突、过期和持久化未决回执。
+- Backend：冻结健康 task_state/artifacts/tool_results/audit_evidence 与模型 WorkflowRecord 的版本化映射、跨实例持久化和 provider_response_id 缺失恢复协议。
+- UI：确认服务端代理、本人隔离以及 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 的恢复行为。
+- Memory：提供既有 consent 下可信 memory_id、来源版本和撤回样例，不扩展原规则。
+- Quant 与 Data：提供共同冻结的结果版本、真实数据来源/时效和冲突样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Risk/Backend 完成同任务可信回写联合验收，再冻结健康/模型字段映射与恢复协议；随后由 UI、Memory、Quant/Data 补齐代理恢复、可信引用和版本化样例。Risk 正式闭环前继续保持 execution_allowed=false。
+
+## Word 版式验收
+
+日报 DOCX 内嵌架构图和模块时序图。ZIP/OOXML/正文/图片结构检查通过；标准 render_docx.py 因缺少 LibreOffice soffice.exe 未生成逐页 PNG，逐页版式验收未完成，不能把结构检查表述为版式通过。
+
+
+---
+
+# Core Agent Daily Update 2026-11-11
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 在检查时均没有 2026-11-11 业务提交；团队远程基线 9479d5d9eea07b56f5c6c343fff6661195da3bf4，个人远程基线 28f766af3e64b76338f62b2ffdb70ecd1ec7f22d。原始开发分支和未提交协作者工作保留，本次只在干净 main 快照更新 chenchen/docs。当前阶段为“Core Agent 请求到只读 Risk Handoff 已实现并可离线验证，正式 Risk 业务接收、可信回写和跨实例持久化仍待 Owner 联合验收”；不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+生成本日日报和详细联调手册 DOCX，架构图与模块时序图明确沿用 11 月 7 日内容基线，未新增架构能力；复查统一 Contract 的四份核心运行时 Schema、字段归属和追踪限制。新增本日检查输出，未修改 Quant、Memory、Risk、UI 实现或运行时 Schema。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 当前字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并离线验证 request_id、task_state、artifacts、tool_results、risk_handoff、audit_evidence；源 contracts/investment-agent.v1.schema.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；WorkflowRecord 的 session_id 仍可选，和健康链路四字段的版本化映射待 Backend 冻结 |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | Handoff、回调编号、proposal hash 和失败闭环结构可验证；正式可信接收、身份、幂等和回写仍待 Risk/Backend 联验 |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace 和 error envelope 可验证；UI 不得把失败改写成成功 |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable 和禁止修改规则以运行时 Schema 为准。
+
+## B 可验证的集成进度
+
+- 两仓库 npm run check：各 exit 0；npm test -- --test-reporter=tap：各 284/284，失败、跳过和 todo 均为 0。完整输出见 daily-closeout-2026-11-11-tests.txt。
+- 四份核心 Schema 的 SHA-256 对齐检查：4/4；结果见 daily-closeout-2026-11-11-interface-alignment.json。
+- git diff --check 和暂存区检查通过；DOCX ZIP/OOXML/正文/两张嵌入图片/图片宽度结构检查通过。标准 render_docx.py 因环境缺少 LibreOffice soffice.exe 未生成逐页 PNG，版式验收明确未完成。
+- 本日没有公网、模型、付费、Risk 派发、人工审批或交易调用；所有新增验证为离线/本地测试。
+
+
+## 新增追踪检查与复现命令
+
+已验证：两仓库新增健康成功、同 task/session 的 Checkpoint 复用和失败信封，完整 Draft 2020-12 Schema 加独立语义检查各 32/32（7 个正向对象）；缺 request_id、execution_allowed=true 和坏 result_refs 的负向检查均符合预期。request_id、task_id、session_id、contract_version、audit_evidence 可关联，见 daily-closeout-2026-11-11-trace.json 与 synthetic.json。
+
+10 月 17 日合成模型留存记录的 9 条审计事件、六编号及 proposal hash 复验通过；它是历史回放，不是今日真实模型或 Risk 调用。WorkflowRecord.session_id 可选；HandoffPackage.session_id 必填可 null；CallbackRequest 必填 request/task/run/audit/handoff 五编号，session 回查已有任务。健康 Session/Checkpoint 仍为进程内；跨路径 task_state/artifacts/tool_results/audit_evidence 版本化映射待 Backend 冻结。
+
+在每仓库 chenchen 目录执行：
+
+- npm run check
+- npm test -- --test-reporter=tap
+- python docs/daily-closeout-check-2026-11-11.py
+- node --test tests/market-brief.test.js
+
+在仓库根目录执行：python chenchen/docs/daily-interface-alignment-2026-11-11.py TEAM_ROOT PERSONAL_ROOT；git diff --check；git diff --cached --check。Python 需 jsonschema 4.26.0，Node >=22；本机复现路径和依赖环境见 daily-closeout-2026-11-11-verification.json。
+
+四份核心接口的字段必填、生产消费和禁止修改详情见 core-agent-integration-guide-2026-11-11.md 及同名 DOCX；本日只是统一联调说明维护，不宣称健康/模型运行时字段已合并。
+
+## 金融数据测试与边界
+
+固定 2026-10-08/09 市场上下文夹具的 4 项回归、价格与新闻冲突 REVIEW_REQUIRED 以及 Quant no-drift 结果沿用并复核；未验证 2026-11-11 实时行情。Core Agent 只消费既有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，没有重算或修改 Quant。Memory 的 consent、范围、生命周期和清理规则未改；健康链路不自动读 Memory。请求经过 Risk 检查/Handoff 后停止；前端 approval 不是交易授权；冲突只保留 REVIEW_REQUIRED，不自动生成交易动作。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：提供同任务可信业务接收/回写联合验收，包含签名、身份、幂等、冲突、过期和持久化未决回执。
+- Backend：冻结健康 task_state/artifacts/tool_results/audit_evidence 与模型 WorkflowRecord 的版本化映射、跨实例持久化和 provider_response_id 缺失恢复协议。
+- UI：确认服务端代理、本人隔离以及 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 的恢复行为。
+- Memory：提供既有 consent 下可信 memory_id、来源版本和撤回样例，不扩展原规则。
+- Quant 与 Data：提供共同冻结的结果版本、真实数据来源/时效和冲突样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Risk/Backend 完成同任务可信回写联合验收，再冻结健康/模型字段映射与恢复协议；随后由 UI、Memory、Quant/Data 补齐代理恢复、可信引用和版本化样例。Risk 正式闭环前继续保持 execution_allowed=false。
+
+## Word 版式验收
+
+日报 DOCX 内嵌架构图和模块时序图。ZIP/OOXML/正文/图片结构检查通过；标准 render_docx.py 因缺少 LibreOffice soffice.exe 未生成逐页 PNG，逐页版式验收未完成，不能把结构检查表述为版式通过。
+
+
+---
+
+# Core Agent Daily Update 2026-11-11
+
+## 今日结论与主链路阶段
+
+今日无业务代码变更。两份 origin/main 在检查时均没有 2026-11-11 业务提交；团队远程基线 9479d5d9eea07b56f5c6c343fff6661195da3bf4，个人远程基线 28f766af3e64b76338f62b2ffdb70ecd1ec7f22d。原始开发分支和未提交协作者工作保留，本次只在干净 main 快照更新 chenchen/docs。当前阶段为“Core Agent 请求到只读 Risk Handoff 已实现并可离线验证，正式 Risk 业务接收、可信回写和跨实例持久化仍待 Owner 联合验收”；不能标称 Risk 已完成审核闭环，execution_allowed=false。
+
+## 今日真实产出
+
+生成本日日报和详细联调手册 DOCX，架构图与模块时序图明确沿用 11 月 7 日内容基线，未新增架构能力；复查统一 Contract 的四份核心运行时 Schema、字段归属和追踪限制。新增本日检查输出，未修改 Quant、Memory、Risk、UI 实现或运行时 Schema。
+
+## A 已完成的核心接口
+
+| 接口及版本 | 生产方与消费方 | 当前字段状态和证据 |
+| --- | --- | --- |
+| investment-agent.v1 | Caller/Backend → Harness/Core → Backend/Risk/UI | 已实现并离线验证 request_id、task_state、artifacts、tool_results、risk_handoff、audit_evidence；源 contracts/investment-agent.v1.schema.json |
+| model-review.v1 / review-workflow.v1 | Caller → Backend/ReviewWorkflowStore → Risk/UI | 已实现；WorkflowRecord 的 session_id 仍可选，和健康链路四字段的版本化映射待 Backend 冻结 |
+| risk-handoff.v1 / risk-callback.v1 | Core → Risk；Risk → Backend | Handoff、回调编号、proposal hash 和失败闭环结构可验证；正式可信接收、身份、幂等和回写仍待 Risk/Backend 联验 |
+| core-agent-error.v1 | Backend/Core → Caller/UI | error/source 版本、operation、request_id、trace 和 error envelope 可验证；UI 不得把失败改写成成功 |
+
+字段生产方维护原始编号、数值、版本和审计；消费者只能引用，不能改写。必填、可选、nullable 和禁止修改规则以运行时 Schema 为准。
+
+## B 可验证的集成进度
+
+- 两仓库 npm run check：各 exit 0；npm test -- --test-reporter=tap：各 284/284，失败、跳过和 todo 均为 0。完整输出见 daily-closeout-2026-11-11-tests.txt。
+- 四份核心 Schema 的 SHA-256 对齐检查：4/4；结果见 daily-closeout-2026-11-11-interface-alignment.json。
+- git diff --check 和暂存区检查通过；DOCX ZIP/OOXML/正文/两张嵌入图片/图片宽度结构检查通过。标准 render_docx.py 因环境缺少 LibreOffice soffice.exe 未生成逐页 PNG，版式验收明确未完成。
+- 本日没有公网、模型、付费、Risk 派发、人工审批或交易调用；所有新增验证为离线/本地测试。
+
+
+## 新增追踪检查与复现命令
+
+已验证：两仓库新增健康成功、同 task/session 的 Checkpoint 复用和失败信封，完整 Draft 2020-12 Schema 加独立语义检查各 32/32（7 个正向对象）；缺 request_id、execution_allowed=true 和坏 result_refs 的负向检查均符合预期。request_id、task_id、session_id、contract_version、audit_evidence 可关联，见 daily-closeout-2026-11-11-trace.json 与 synthetic.json。
+
+10 月 17 日合成模型留存记录的 9 条审计事件、六编号及 proposal hash 复验通过；它是历史回放，不是今日真实模型或 Risk 调用。WorkflowRecord.session_id 可选；HandoffPackage.session_id 必填可 null；CallbackRequest 必填 request/task/run/audit/handoff 五编号，session 回查已有任务。健康 Session/Checkpoint 仍为进程内；跨路径 task_state/artifacts/tool_results/audit_evidence 版本化映射待 Backend 冻结。
+
+在每仓库 chenchen 目录执行：
+
+- npm run check
+- npm test -- --test-reporter=tap
+- python docs/daily-closeout-check-2026-11-11.py
+- node --test tests/market-brief.test.js
+
+在仓库根目录执行：python chenchen/docs/daily-interface-alignment-2026-11-11.py TEAM_ROOT PERSONAL_ROOT；git diff --check；git diff --cached --check。Python 需 jsonschema 4.26.0，Node >=22；本机复现路径和依赖环境见 daily-closeout-2026-11-11-verification.json。
+
+四份核心接口的字段必填、生产消费和禁止修改详情见 core-agent-integration-guide-2026-11-11.md 及同名 DOCX；本日只是统一联调说明维护，不宣称健康/模型运行时字段已合并。
+
+
+## 新增追踪检查与复现命令
+
+已验证：两仓库新增健康成功、同 task/session 的 Checkpoint 复用和失败信封，完整 Draft 2020-12 Schema 加独立语义检查各 32/32（7 个正向对象）；缺 request_id、execution_allowed=true 和坏 result_refs 的负向检查均符合预期。request_id、task_id、session_id、contract_version、audit_evidence 可关联，见 daily-closeout-2026-11-13-trace.json 与 synthetic.json。
+
+10 月 17 日合成模型留存记录的 9 条审计事件、六编号及 proposal hash 复验通过；它是历史回放，不是今日真实模型或 Risk 调用。WorkflowRecord.session_id 可选；HandoffPackage.session_id 必填可 null；CallbackRequest 必填 request/task/run/audit/handoff 五编号，session 回查已有任务。健康 Session/Checkpoint 仍为进程内；跨路径 task_state/artifacts/tool_results/audit_evidence 版本化映射待 Backend 冻结。
+
+在每仓库 chenchen 目录执行：
+
+- npm run check
+- npm test -- --test-reporter=tap
+- python docs/daily-closeout-check-2026-11-13.py
+- node --test tests/market-brief.test.js
+
+在仓库根目录执行：python chenchen/docs/daily-interface-alignment-2026-11-13.py TEAM_ROOT PERSONAL_ROOT；git diff --check；git diff --cached --check。Python 需 jsonschema 4.26.0，Node >=22；本机复现路径和依赖环境见 daily-closeout-2026-11-13-verification.json。
+
+四份核心接口的字段必填、生产消费和禁止修改详情见 core-agent-integration-guide-2026-11-13.md 及同名 DOCX；本日只是统一联调说明维护，不宣称健康/模型运行时字段已合并。
+
+## 金融数据测试与边界
+
+固定 2026-10-08/09 市场上下文夹具的 4 项回归、价格与新闻冲突 REVIEW_REQUIRED 以及 Quant no-drift 结果沿用并复核；未验证 2026-11-11 实时行情。Core Agent 只消费既有 diagnosePortfolio.metrics、generateCandidates.target_weights、runSimulation.comparisons，没有重算或修改 Quant。Memory 的 consent、范围、生命周期和清理规则未改；健康链路不自动读 Memory。请求经过 Risk 检查/Handoff 后停止；前端 approval 不是交易授权；冲突只保留 REVIEW_REQUIRED，不自动生成交易动作。
+
+## C 需要其他 Owner 配合的阻塞项
+
+- Risk 与 Backend：提供同任务可信业务接收/回写联合验收，包含签名、身份、幂等、冲突、过期和持久化未决回执。
+- Backend：冻结健康 task_state/artifacts/tool_results/audit_evidence 与模型 WorkflowRecord 的版本化映射、跨实例持久化和 provider_response_id 缺失恢复协议。
+- UI：确认服务端代理、本人隔离以及 PENDING_RISK/FAILED/EXPIRED/REVIEW_REQUIRED 和 401/403/409/423 的恢复行为。
+- Memory：提供既有 consent 下可信 memory_id、来源版本和撤回样例，不扩展原规则。
+- Quant 与 Data：提供共同冻结的结果版本、真实数据来源/时效和冲突样例；固定夹具不能证明今日行情。
+
+## 下一步
+
+先由 Risk/Backend 完成同任务可信回写联合验收，再冻结健康/模型字段映射与恢复协议；随后由 UI、Memory、Quant/Data 补齐代理恢复、可信引用和版本化样例。Risk 正式闭环前继续保持 execution_allowed=false。
+
+## Word 版式验收
+
+日报 DOCX 内嵌架构图和模块时序图。ZIP/OOXML/正文/图片结构检查通过；标准 render_docx.py 因缺少 LibreOffice soffice.exe 未生成逐页 PNG，逐页版式验收未完成，不能把结构检查表述为版式通过。
 # Core Agent Daily Update 2026-11-14
 
 ## 今日结论与主链路阶段
@@ -917,4 +2285,5 @@ Word 日报与手册已生成，架构和时序以可读图像嵌入，完成 OO
 
 ## Word 版式验收
 
-DOCX 已嵌入可读架构图和模块时序图，并完成 OOXML/ZIP/正文/图片结构检查。标准 render_docx.py 因环境缺少 LibreOffice soffice.exe，未生成逐页 PNG，版式验收未完成。
+DOCX 已嵌入可读架构图和模块时序图，并完成 OOXML/ZIP/正文/图片结构检查。标准 render_docx.py 因环境缺少 pdf2image（且 bundled 环境无 LibreOffice soffice.exe），未生成逐页 PNG，版式验收未完成。
+
